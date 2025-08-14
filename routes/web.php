@@ -1,6 +1,7 @@
 <?php
 
 use App\Livewire\Auth\System\SystemLogin;
+use App\Livewire\PosSystemTest;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -56,7 +57,8 @@ Route::prefix('system')->name('system.')->group(function(){
 });
 
 // ROTAS PARA AS EMPRESA
-
-
+Route::prefix('restaurant')->name('restaurant.')->group(function(){
+    Route::get('pos', PosSystemTest::class)->name('pos');
+});
 
 require __DIR__.'/auth.php';
