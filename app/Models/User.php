@@ -168,4 +168,13 @@ class User extends Authenticatable
     {
         return $this->status === 'active';
     }
+
+     public function isSuperAdmin(): bool
+    {
+        return $this->user_type === 'super_admin' || $this->is_super_admin == true;
+    }
+     public function scopeSuperAdmin($query)
+    {
+        return $query->where('user_type', 'super_admin')->orWhere('is_super_admin', true);
+    }
 }

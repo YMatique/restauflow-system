@@ -41,24 +41,24 @@ class UserManagement extends Component
     public $companies = [];
 
     // Available permissions for company users
-    public $availablePermissions = [
-        'repair_orders.create' => 'Criar Ordens de Reparação',
-        'repair_orders.edit' => 'Editar Ordens de Reparação',
-        'repair_orders.delete' => 'Eliminar Ordens de Reparação',
-        'repair_orders.view' => 'Ver Ordens de Reparação',
-        'repair_orders.export' => 'Exportar Ordens de Reparação',
-        'employees.manage' => 'Gerir Funcionários',
-        'clients.manage' => 'Gerir Clientes',
-        'materials.manage' => 'Gerir Materiais',
-        'departments.manage' => 'Gerir Departamentos',
-        'billing.view' => 'Ver Faturação',
-        'billing.manage' => 'Gerir Faturação',
-        'performance.view' => 'Ver Avaliações de Desempenho',
-        'performance.manage' => 'Gerir Avaliações de Desempenho',
-        'reports.view' => 'Ver Relatórios',
-        'reports.export' => 'Exportar Relatórios',
-        'settings.manage' => 'Gerir Configurações',
-    ];
+    // public $availablePermissions = [
+    //     'repair_orders.create' => 'Criar Ordens de Reparação',
+    //     'repair_orders.edit' => 'Editar Ordens de Reparação',
+    //     'repair_orders.delete' => 'Eliminar Ordens de Reparação',
+    //     'repair_orders.view' => 'Ver Ordens de Reparação',
+    //     'repair_orders.export' => 'Exportar Ordens de Reparação',
+    //     'employees.manage' => 'Gerir Funcionários',
+    //     'clients.manage' => 'Gerir Clientes',
+    //     'materials.manage' => 'Gerir Materiais',
+    //     'departments.manage' => 'Gerir Departamentos',
+    //     'billing.view' => 'Ver Faturação',
+    //     'billing.manage' => 'Gerir Faturação',
+    //     'performance.view' => 'Ver Avaliações de Desempenho',
+    //     'performance.manage' => 'Gerir Avaliações de Desempenho',
+    //     'reports.view' => 'Ver Relatórios',
+    //     'reports.export' => 'Exportar Relatórios',
+    //     'settings.manage' => 'Gerir Configurações',
+    // ];
 
     protected $rules = [
         'name' => 'required|string|min:2|max:255',
@@ -67,8 +67,8 @@ class UserManagement extends Component
         'company_id' => 'required_unless:user_type,super_admin|exists:companies,id',
         'user_type' => 'required|in:super_admin,company_admin,company_user',
         'phone' => 'nullable|string|max:20',
-        'permissions' => 'array',
-        'permissions.*' => 'string',
+        // 'permissions' => 'array',
+        // 'permissions.*' => 'string',
         'is_active' => 'boolean',
         'send_welcome_email' => 'boolean',
     ];
@@ -157,7 +157,7 @@ class UserManagement extends Component
         $this->company_id = '';
         $this->user_type = 'company_user';
         $this->phone = '';
-        $this->permissions = [];
+        // $this->permissions = [];
         $this->is_active = true;
         $this->send_welcome_email = true;
     }
@@ -166,13 +166,14 @@ class UserManagement extends Component
     {
         $user = User::findOrFail($userId);
         
+        // dd($user);
         $this->editingId = $user->id;
         $this->name = $user->name;
         $this->email = $user->email;
         $this->company_id = $user->company_id;
         $this->user_type = $user->user_type;
         $this->phone = $user->phone;
-        $this->permissions = $user->permissions ?? [];
+        // $this->permissions = $user->permissions ?? [];
         $this->is_active = $user->status === 'active';
         $this->send_welcome_email = false; // Default false for editing
         
@@ -256,10 +257,10 @@ class UserManagement extends Component
     private function createUser()
     {
         // Set default permissions based on user type
-        $permissions = $this->permissions;
-        if ($this->user_type === 'company_admin') {
-            $permissions = array_keys($this->availablePermissions); // All permissions
-        }
+        // $permissions = $this->permissions;
+        // if ($this->user_type === 'company_admin') {
+        //     $permissions = array_keys($this->availablePermissions); // All permissions
+        // }
 
         $user = User::create([
             'name' => $this->name,
@@ -268,7 +269,7 @@ class UserManagement extends Component
             'company_id' => $this->user_type === 'super_admin' ? null : $this->company_id,
             'user_type' => $this->user_type,
             'phone' => $this->phone,
-            'permissions' => $permissions,
+            // 'permissions' => $permissions,
             'status' => $this->is_active ? 'active' : 'inactive',
             'email_verified_at' => now(), // Auto-verify for admin created users
         ]);
@@ -282,13 +283,14 @@ class UserManagement extends Component
     {
         $user = User::findOrFail($this->editingId);
         
+        // dd($this->user_type, $user);
         $updateData = [
             'name' => $this->name,
             'email' => $this->email,
             'company_id' => $this->user_type === 'super_admin' ? null : $this->company_id,
             'user_type' => $this->user_type,
             'phone' => $this->phone,
-            'permissions' => $this->permissions,
+            // 'permissions' => $this->permissions,
             'status' => $this->is_active ? 'active' : 'inactive',
         ];
 
@@ -391,20 +393,20 @@ class UserManagement extends Component
     // Auto-update permissions when user type changes
     public function updatedUserType()
     {
-        if ($this->user_type === 'company_admin') {
-            $this->permissions = array_keys($this->availablePermissions);
-        } elseif ($this->user_type === 'super_admin') {
-            $this->permissions = []; // Super admin doesn't need specific permissions
-            $this->company_id = ''; // Clear company for super admin
-        } else {
-            // company_user gets basic permissions
-            $this->permissions = [
-                'repair_orders.create',
-                'repair_orders.edit',
-                'repair_orders.view',
-                'reports.view',
-            ];
-        }
+        // if ($this->user_type === 'company_admin') {
+        //     $this->permissions = array_keys($this->availablePermissions);
+        // } elseif ($this->user_type === 'super_admin') {
+        //     $this->permissions = []; // Super admin doesn't need specific permissions
+        //     $this->company_id = ''; // Clear company for super admin
+        // } else {
+        //     // company_user gets basic permissions
+        //     $this->permissions = [
+        //         'repair_orders.create',
+        //         'repair_orders.edit',
+        //         'repair_orders.view',
+        //         'reports.view',
+        //     ];
+        // }
     }
 
     // Livewire lifecycle hooks

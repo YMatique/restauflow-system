@@ -480,7 +480,7 @@
                         </div>
 
                         <!-- Permissões (se for company_user) -->
-                        @if($user_type === 'company_user')
+                        {{-- @if($user_type === 'company_user')
                             <div class="mt-6 space-y-4">
                                 <label class="block text-sm font-semibold text-zinc-700 dark:text-zinc-300">
                                     Permissões
@@ -499,7 +499,7 @@
                                     </div>
                                 </div>
                             </div>
-                        @endif
+                        @endif --}}
 
                         <!-- Configurações adicionais -->
                         <div class="mt-6 space-y-4">
