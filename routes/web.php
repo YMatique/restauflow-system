@@ -21,4 +21,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
 });
 
+// ROTAS DO ADMIN MASTER
+
+
+// ROTAS PARA AS EMPRESA
+
+
+
 require __DIR__.'/auth.php';
