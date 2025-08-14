@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
+            $table->foreignId('company_id')->nullable()->after('password')->constrained('companies')->onDelete('cascade');
             // User type
             $table->enum('user_type', ['super_admin', 'company_admin', 'company_user'])
                   ->default('company_user')
