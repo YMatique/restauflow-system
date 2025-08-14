@@ -3,6 +3,7 @@
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
+use App\Livewire\System\SystemDashboard;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -22,7 +23,12 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // ROTAS DO ADMIN MASTER
-
+Route::prefix('system')->name('system.')->group(function(){
+    Route::get('dashboard', SystemDashboard::class)->name('dashboard');
+    // Route::get('companies', \App\Livewire\System\Companies::class)->name('companies');
+    // Route::get('plans', \App\Livewire\System\Plans::class)->name('plans');
+    // Route::get('subscriptions', \App\Livewire\System\Subscriptions::class)->name('subscriptions');
+});
 
 // ROTAS PARA AS EMPRESA
 
