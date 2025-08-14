@@ -35,17 +35,14 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+    ];
 
     /**
      * Get the user's initials
@@ -176,5 +173,33 @@ class User extends Authenticatable
      public function scopeSuperAdmin($query)
     {
         return $query->where('user_type', 'super_admin')->orWhere('is_super_admin', true);
+    }
+
+
+       public function emails()
+    {
+        return $this->morphMany(Email::class, 'emailable');
+    }
+
+
+    public function telephones()
+    {
+        return $this->morphMany(Telephone::class, 'telephonable');
+    }
+
+
+    public function telephonable(){
+        return $this->morphTo();
+    }
+
+     public function addresses()
+    {
+        return $this->morphMany(Address::class, 'addressable');
+    }
+
+      public function primaryTelephone()
+    {
+        return $this->telephones()->where('is_primary', true)->first()
+            ?? $this->telephones()->first();
     }
 }

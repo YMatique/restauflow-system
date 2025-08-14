@@ -13,13 +13,30 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->uuid('public_id');
+            
             $table->string('name');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+
+            // Relacionamento com empresas
+            $table->foreignId('company_id')->nullable()
+                ->constrained('companies')
+                ->onDelete('cascade');
+
+            // Tipo de usuário
+            $table->enum('user_type', ['super_admin', 'company_admin', 'company_user'])
+                ->default('company_user');
+
+            // Status do usuário
+            $table->enum('status', ['active', 'inactive', 'suspended'])
+                ->default('active');
+
             $table->rememberToken();
             $table->timestamps();
         });
+
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();

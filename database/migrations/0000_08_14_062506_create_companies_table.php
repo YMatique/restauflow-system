@@ -11,18 +11,17 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('companies', function (Blueprint $table) {
+         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-                 $table->string('name');
-            $table->string('email')->unique();
-            $table->text('address')->nullable();
-            $table->string('phone')->nullable();
-            $table->string('nuit')->nullable(); // Número Único de Identificação Tributária (Moçambique)
+            $table->uuid('public_id');
+            $table->string('name', 50)->unique();
+            $table->text('social_reason');
+            $table->string('nuit', 30)->unique();
+            $table->string('avatar')->default('company.png');
+            $table->text('desc')->nullable();
             $table->enum('status', ['active', 'inactive', 'suspended'])->default('active');
-            $table->timestamp('email_verified_at')->nullable();
-            
             $table->timestamps();
-             $table->index(['status']);
+            $table->index(['status']);
             $table->index(['created_at']);
         });
     }
