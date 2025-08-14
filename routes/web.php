@@ -1,6 +1,6 @@
 <?php
 
-use App\Livewire\Auth\SystemLogin;
+use App\Livewire\Auth\System\SystemLogin;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
