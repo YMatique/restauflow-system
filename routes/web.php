@@ -1,9 +1,15 @@
 <?php
 
+use App\Livewire\Auth\SystemLogin;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
+use App\Livewire\System\CompanyManagement;
+use App\Livewire\System\PlanManagement;
+use App\Livewire\System\SubscriptionManagement;
 use App\Livewire\System\SystemDashboard;
+use App\Livewire\System\UserManagement;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -22,9 +28,28 @@ Route::middleware(['auth'])->group(function () {
     Route::get('settings/appearance', Appearance::class)->name('settings.appearance');
 });
 
+
+Route::get('/system/login', SystemLogin::class)->name('system.login');
+Route::post('/system/logout', function () {
+    $user = Auth::user();
+
+    Auth::logout();
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+
+    return redirect()->route('system.login')->with('message', 'Logout realizado com sucesso.');
+})
+    ->middleware('auth')
+    ->name('system.logout');
+
+
 // ROTAS DO ADMIN MASTER
 Route::prefix('system')->name('system.')->group(function(){
     Route::get('dashboard', SystemDashboard::class)->name('dashboard');
+    Route::get('companies',CompanyManagement::class)->name('companies');
+    Route::get('plans', PlanManagement::class)->name('plans');
+    Route::get('subscriptions', SubscriptionManagement::class)->name('subscriptions');
+    Route::get('users', UserManagement::class)->name('users');
     // Route::get('companies', \App\Livewire\System\Companies::class)->name('companies');
     // Route::get('plans', \App\Livewire\System\Plans::class)->name('plans');
     // Route::get('subscriptions', \App\Livewire\System\Subscriptions::class)->name('subscriptions');

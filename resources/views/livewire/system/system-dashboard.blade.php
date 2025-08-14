@@ -265,7 +265,7 @@
             </div>
         </div>
     </div>
-    @livewire('system.audit-widget')
+    {{-- @livewire('system.audit-widget') --}}
 </div>
 
 

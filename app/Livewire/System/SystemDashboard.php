@@ -5,6 +5,7 @@ namespace App\Livewire\System;
 use App\Models\System\Company;
 use App\Models\System\Plan;
 use App\Models\System\Subscription;
+use App\Models\User;
 use Carbon\Carbon;
 use Livewire\Component;
 
@@ -161,9 +162,9 @@ class SystemDashboard extends Component
         }
 
         // Verificar empresas inativas há mais de 30 dias
-        $inactiveCount = Company::where('last_activity_at', '<', Carbon::now()->subDays(30))
+        $inactiveCount = 0;/*Company::where('last_activity_at', '<', Carbon::now()->subDays(30))
                                ->orWhereNull('last_activity_at')
-                               ->count();
+                               ->count();*/
         if ($inactiveCount > 5) {
             $alerts[] = [
                 'type' => 'warning',
