@@ -252,6 +252,18 @@
                         </div>
                     </div>
                 </div>
+                                <div class="my-4 border-t border-zinc-200 dark:border-zinc-700"></div>
+                <div class=" border-gray-200 dark:border-gray-600">
+                        <form method="POST" action="{{ route('system.logout') }}" class="w-full">
+                            @csrf
+                            <button type="submit" class="w-full group flex items-center px-4 py-3 text-sm font-medium text-gray-600 dark:text-gray-400 rounded-sm hover:bg-red-50 hover:text-red-700 dark:hover:bg-red-900/20 transition-all duration-200 border border-gray-200 dark:border-gray-600 hover:border-red-200">
+                                <svg class="mr-3 w-5 h-5 group-hover:text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                </svg>
+                                <span>Terminar Sessão</span>
+                            </button>
+                        </form>
+                </div>
             </div>
         </div>
 
