@@ -5,6 +5,8 @@ namespace App\Models\System;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Str;
+
 
 class Company extends Model
 {
@@ -28,7 +30,23 @@ class Company extends Model
         'status' => 'active',
     ];
 
-     public function users()
+
+     /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted()
+    {
+        // Gerar um UUID para public_id antes de criar o registro
+        static::creating(function ($company) {
+            if (empty($company->public_id)) {
+                $company->public_id = Str::uuid();
+            }
+        });
+    }
+
+    public function users()
     {
         return $this->hasMany(\App\Models\User::class);
     }

@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Models\Company;
+use App\Models\System\Company;
 use App\Models\Country;
 use App\Models\Province;
 use App\Models\City;
