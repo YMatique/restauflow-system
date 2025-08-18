@@ -37,11 +37,8 @@ Route::post('/system/logout', function () {
     Auth::logout();
     request()->session()->invalidate();
     request()->session()->regenerateToken();
-
     return redirect()->route('system.login')->with('message', 'Logout realizado com sucesso.');
-})
-    ->middleware('auth')
-    ->name('system.logout');
+}) ->middleware('auth')->name('system.logout');
 
 
 // ROTAS DO ADMIN MASTER

@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'public_id'
     ];
 
     /**
@@ -63,6 +64,27 @@ class User extends Authenticatable
     {
         return $this->belongsTo(\App\Models\System\Company::class);
     }
+
+
+
+    /**
+     * Roles associadas ao usuário
+     */
+    public function roles()
+    {
+        return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
+    }
+
+
+    /**
+     * Um usuário pode ter vários turnos (shifts)
+     */
+    public function shifts()
+    {
+        return $this->hasMany(Shift::class, 'user_id');
+    }
+
+
     /**
      * Scope para usuários ativos
      */

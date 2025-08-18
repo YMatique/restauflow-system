@@ -7,6 +7,7 @@ use App\Models\System\Company;
 use App\Models\Country;
 use App\Models\Province;
 use App\Models\City;
+use App\Models\Role;
 use Faker\Factory as Faker;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
@@ -18,6 +19,11 @@ class UserSeeder extends Seeder
     {
         $faker = Faker::create();
 
+        // Cria roles padrão
+        Role::seedDefaultRoles();
+        $this->command->info('Roles padrão criadas com sucesso!');
+
+        // Cria ou pega empresa padrão
         $company = Company::first() ?? Company::create([
             'public_id' => Str::uuid(),
             'name' => 'Empresa Padrão',
@@ -28,15 +34,17 @@ class UserSeeder extends Seeder
             'status' => 'active',
         ]);
 
-        $country = Country::firstWhere('code', 'MZ'); // Moçambique
+        // Verifica país Moçambique
+        $country = Country::firstWhere('code', 'MZ');
         if (!$country) {
             $this->command->info('País Moçambique não encontrado. Rode primeiro o CountrySeeder.');
             return;
         }
 
         $provinces = Province::where('country_id', $country->id)->get();
-        $cities = City::all(); // cidades independentes
+        $cities = City::all();
 
+        // Usuários padrão
         $users = [
             ['name' => 'Super Admin', 'email' => 'superadmin@example.com', 'user_type' => 'super_admin'],
             ['name' => 'Admin Empresa', 'email' => 'admin@example.com', 'user_type' => 'company_admin'],
@@ -59,7 +67,14 @@ class UserSeeder extends Seeder
                 ]
             );
 
-            // Escolhe uma província e uma cidade aleatória
+            // Associar role correspondente usando método seguro
+            $role = Role::where('name', $userData['user_type'])->first();
+            if ($role) {
+                $user->roles()->syncWithoutDetaching($role->id);
+                // syncWithoutDetaching evita duplicação
+            }
+
+            // Endereço aleatório
             $province = $provinces->random();
             $city = $cities->random();
 
@@ -104,5 +119,7 @@ class UserSeeder extends Seeder
                 ],
             ]);
         }
+
+        $this->command->info('Usuários padrão criados e roles associadas com sucesso!');
     }
 }
