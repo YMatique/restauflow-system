@@ -13,6 +13,8 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->integer('current_quantity')->default(0);
             $table->dateTime('last_updated')->nullable();
+            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
+
             $table->timestamps();
         });
     }

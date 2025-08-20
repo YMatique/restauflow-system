@@ -15,6 +15,7 @@ return new class extends Migration
             $table->decimal('amount', 10, 2);
             $table->string('description')->nullable();
             $table->dateTime('date');
+            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             $table->timestamps();
         });
     }

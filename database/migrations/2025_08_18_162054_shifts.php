@@ -19,6 +19,7 @@ return new class extends Migration
             $table->dateTime('closed_at')->nullable();
             $table->decimal('final_amount', 10, 2)->nullable();
             $table->enum('status', ['open', 'closed'])->default('open');
+            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             $table->timestamps();
         });
     }

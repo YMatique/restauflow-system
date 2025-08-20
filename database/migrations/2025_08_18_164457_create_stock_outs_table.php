@@ -17,6 +17,7 @@ return new class extends Migration
                 $table->integer('quantity'); // Quantidade retirada
                 $table->dateTime('date'); // Data da saída
                 $table->string('reason')->nullable(); // Motivo da saída
+                $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
                 $table->timestamps();
         });
     }

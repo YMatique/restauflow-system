@@ -17,6 +17,8 @@ return new class extends Migration
             $table->integer('quantity'); // Quantidade adicionada
             $table->dateTime('date'); // Data da entrada
             $table->string('supplier')->nullable(); // Fornecedor, opcional
+            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
+
             $table->timestamps();
         });
     }
