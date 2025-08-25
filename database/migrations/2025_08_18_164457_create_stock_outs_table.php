@@ -18,6 +18,8 @@ return new class extends Migration
                 $table->dateTime('date'); // Data da saída
                 $table->string('reason')->nullable(); // Motivo da saída
                 $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
+                $table->decimal('previous_stock', 10, 3); 
+                $table->foreignId('user_id')->constrained('users');
                 $table->timestamps();
         });
     }

@@ -11,22 +11,23 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('stock_entries', function (Blueprint $table) {
+        Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('product_id')->constrained('products')->onDelete('cascade'); // Produto que entrou
-            $table->integer('quantity'); // Quantidade adicionada
-            $table->dateTime('date'); // Data da entrada
-            $table->string('supplier')->nullable(); // Fornecedor, opcional
+             $table->string('name');
+            $table->string('color', 7)->default('#3B82F6');
+            $table->string('emoji')->nullable();
+            $table->integer('sort_order')->default(0);
+            $table->boolean('is_active')->default(true);
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
-            $table->foreignId('user_id')->constrained('users');
             $table->timestamps();
         });
     }
+
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('stock_entries');
+        Schema::dropIfExists('categories');
     }
 };

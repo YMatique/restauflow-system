@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('client_id')->constrained('clients')->onDelete('cascade'); // cliente
             $table->foreignId('shift_id')->constrained('shifts')->onDelete('cascade');   // turno/shift
+            $table->string('invoice_number')->unique();
             $table->dateTime('sold_at');
             $table->decimal('total', 10, 2);
             $table->enum('payment_method', ['cash', 'card', 'mpesa', 'other'])->default('cash');
+            $table->enum('status', ['pending', 'completed', 'cancelled'])->default('pending');
             $table->timestamps();
         });
     }
