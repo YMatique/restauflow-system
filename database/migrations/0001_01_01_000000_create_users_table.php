@@ -34,7 +34,7 @@ return new class extends Migration
                 ->default('active');
 
 
-            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
+
 
 
             $table->rememberToken();
