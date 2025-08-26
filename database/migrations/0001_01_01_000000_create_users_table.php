@@ -20,18 +20,18 @@ return new class extends Migration
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
 
-            // Relacionamento com empresas
-            $table->foreignId('company_id')->nullable()
-                ->constrained('companies')
-                ->onDelete('cascade');
+            // // Relacionamento com empresas
+            // $table->foreignId('company_id')->nullable()
+            //     ->constrained('companies')
+            //     ->onDelete('cascade');
 
             // Tipo de usuário
-            $table->enum('user_type', ['super_admin', 'company_admin', 'company_user'])
-                ->default('company_user');
+            // $table->enum('user_type', ['super_admin', 'company_admin', 'company_user'])
+            //     ->default('company_user');
 
             // Status do usuário
-            $table->enum('status', ['active', 'inactive', 'suspended'])
-                ->default('active');
+            // $table->enum('status', ['active', 'inactive', 'suspended'])
+            //     ->default('active');
 
             $table->rememberToken();
             $table->timestamps();
