@@ -79,6 +79,9 @@ class ShiftManagement extends Component
     }
     public function render()
     {
-        return view('livewire.shifts.shift-management');
+        return view('livewire.shifts.shift-management', [
+            'title' => 'Gestão de Turnos',
+            'breadcrumb' => 'Dashboard > Turnos'
+        ]);
     }
 }
