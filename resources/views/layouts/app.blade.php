@@ -62,7 +62,7 @@
 
     <!-- Header Component -->
     @if(!isset($hideHeader))
-        @include('layouts.header')
+        @include('layouts.components.header')
     @endif
     
     <!-- Main Content -->

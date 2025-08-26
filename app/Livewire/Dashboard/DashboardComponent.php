@@ -12,6 +12,6 @@ class DashboardComponent extends Component
         return view('livewire.dashboard.dashboard-component', [
             'title' => 'Dashboard Principal',
             'breadcrumb' => 'Dashboard'
-        ]);
+        ])->layout('layouts.app');
     }
 }
