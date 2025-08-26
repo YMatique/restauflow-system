@@ -2,11 +2,16 @@
 
 namespace App\Models\System;
 
+use App\Models\CashMovement;
 use App\Models\Category;
 use App\Models\Client;
 use App\Models\Product;
+use App\Models\Reservation;
 use App\Models\Sale;
 use App\Models\Shift;
+use App\Models\StockMovement;
+use App\Models\Supplier;
+use App\Models\Table;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -20,15 +25,16 @@ class Company extends Model
 
     protected $fillable = [
         'name',
-        'email',
+        // 'email',
         'slug',
-        'address',
-        'phone',
-        'tax_number',
+        // 'address',
+        // 'phone',
+        'social_reason',
+        // 'tax_number',
         'settings',
         'logo',
-        'currency',
-        'tax_rate',
+        // 'currency',
+        // 'tax_rate',
         'status',
         'nuit',
         'email_verified_at',
