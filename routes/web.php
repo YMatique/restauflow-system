@@ -1,10 +1,16 @@
 <?php
 
 use App\Livewire\Auth\System\SystemLogin;
+use App\Livewire\Dashboard\DashboardComponent;
+use App\Livewire\POS\POSComponent;
 use App\Livewire\PosSystemTest;
+use App\Livewire\Products\ProductManagement;
+use App\Livewire\Reports\ReportsComponent;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
+use App\Livewire\Shifts\ShiftManagement;
+use App\Livewire\Stock\StockManagement;
 use App\Livewire\System\CompanyManagement;
 use App\Livewire\System\PlanManagement;
 use App\Livewire\System\SubscriptionManagement;
@@ -17,9 +23,9 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+// Route::view('dashboard', 'dashboard')
+//     ->middleware(['auth', 'verified'])
+//     ->name('dashboard');
 
 Route::middleware(['auth'])->group(function () {
     Route::redirect('settings', 'settings/profile');
@@ -54,8 +60,28 @@ Route::prefix('system')->name('system.')->group(function(){
 });
 
 // ROTAS PARA AS EMPRESA
-Route::prefix('restaurant')->name('restaurant.')->group(function(){
-    Route::get('pos', PosSystemTest::class)->name('pos');
+Route::middleware(['auth'])->prefix('restaurant')->name('restaurant.')->group(function(){
+     Route::get('/dashboard', DashboardComponent::class)->name('dashboard');
+    
+    // POS System
+    Route::get('/pos', POSComponent::class)->name('pos');
+    
+    // Shift Management
+    Route::get('/shifts', ShiftManagement::class)->name('shifts');
+    
+    // Products Management
+    Route::get('/products', ProductManagement::class)->name('products');
+    
+    // Stock Management
+    Route::get('/stock', StockManagement::class)->name('stock');
+    
+    // Reports
+    Route::get('/reports', ReportsComponent::class)->name('reports');
+    
+    // Redirect root to dashboard
+    Route::get('/', function () {
+        return redirect()->route('dashboard');
+    });
 });
 
 require __DIR__.'/auth.php';
