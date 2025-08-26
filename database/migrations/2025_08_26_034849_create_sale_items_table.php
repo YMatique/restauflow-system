@@ -28,7 +28,7 @@ return new class extends Migration
             // Indexes for performance
             $table->index(['company_id', 'sale_id'], 'idx_sale_items_company_sale');
             $table->index(['company_id', 'product_id'], 'idx_sale_items_company_product');
-            $table->index('status', 'idx_sale_items_status');
+            
         });
     }
 
