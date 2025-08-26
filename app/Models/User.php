@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
@@ -22,7 +23,11 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'public_id'
+        'public_id',
+        'role',
+        'is_active',
+        'phone',
+        'company_id',
     ];
 
     /**
@@ -188,17 +193,17 @@ class User extends Authenticatable
         return $this->status === 'active';
     }
 
-     public function isSuperAdmin(): bool
+    public function isSuperAdmin(): bool
     {
         return $this->user_type === 'super_admin' || $this->is_super_admin == true;
     }
-     public function scopeSuperAdmin($query)
+    public function scopeSuperAdmin($query)
     {
         return $query->where('user_type', 'super_admin')->orWhere('is_super_admin', true);
     }
 
 
-       public function emails()
+    public function emails()
     {
         return $this->morphMany(Email::class, 'emailable');
     }
@@ -210,18 +215,99 @@ class User extends Authenticatable
     }
 
 
-    public function telephonable(){
+    public function telephonable()
+    {
         return $this->morphTo();
     }
 
-     public function addresses()
+    public function addresses()
     {
         return $this->morphMany(Address::class, 'addressable');
     }
 
-      public function primaryTelephone()
+    public function primaryTelephone()
     {
         return $this->telephones()->where('is_primary', true)->first()
             ?? $this->telephones()->first();
+    }
+
+
+     public function sales(): HasMany
+    {
+        return $this->hasMany(Sale::class);
+    }
+
+    public function cashMovements(): HasMany
+    {
+        return $this->hasMany(CashMovement::class);
+    }
+
+    public function stockMovements(): HasMany
+    {
+        return $this->hasMany(StockMovement::class);
+    }
+
+    public function createdReservations(): HasMany
+    {
+        return $this->hasMany(Reservation::class, 'created_by');
+    }
+
+    public function approvedCashMovements(): HasMany
+    {
+        return $this->hasMany(CashMovement::class, 'approved_by');
+    }
+
+    // Scopes
+  
+
+    public function scopeByRole($query, $role)
+    {
+        return $query->where('role', $role);
+    }
+
+    public function scopeByCompany($query, $companyId)
+    {
+        return $query->where('company_id', $companyId);
+    }
+
+    // Methods
+    public function hasActiveShift(): bool
+    {
+        return $this->shifts()->where('status', 'open')->exists();
+    }
+
+    public function getActiveShift(): ?Shift
+    {
+        return $this->shifts()->where('status', 'open')->first();
+    }
+
+    public function canManage(): bool
+    {
+        return in_array($this->role, ['owner', 'manager']);
+    }
+
+    public function canOperatePOS(): bool
+    {
+        return in_array($this->role, ['owner', 'manager', 'cashier']);
+    }
+
+    public function canManageStock(): bool
+    {
+        return in_array($this->role, ['owner', 'manager', 'stock_manager']);
+    }
+
+    public function isOwner(): bool
+    {
+        return $this->role === 'owner';
+    }
+
+    public function isManager(): bool
+    {
+        return $this->role === 'manager';
+    }
+
+    public function isCashier(): bool
+    {
+        return $this->role === 'cashier';
     }
 }
