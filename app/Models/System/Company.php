@@ -2,8 +2,14 @@
 
 namespace App\Models\System;
 
+use App\Models\Category;
+use App\Models\Client;
+use App\Models\Product;
+use App\Models\Sale;
+use App\Models\Shift;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Str;
 
@@ -15,15 +21,24 @@ class Company extends Model
     protected $fillable = [
         'name',
         'email',
+        'slug',
         'address',
         'phone',
-        'nuit',
+        'tax_number',
+        'settings',
+        'logo',
+        'currency',
+        'tax_rate',
         'status',
+        'nuit',
         'email_verified_at',
     ];
+
     protected $casts = [
         'email_verified_at' => 'datetime',
         'status' => 'string',
+        'settings' => 'array',
+        'tax_rate' => 'decimal:2'
     ];
 
     protected $attributes = [
@@ -31,7 +46,7 @@ class Company extends Model
     ];
 
 
-     /**
+    /**
      * The "booted" method of the model.
      *
      * @return void
@@ -96,4 +111,70 @@ class Company extends Model
         return $this->activeSubscription !== null;
     }
 
+     // Relationships
+   
+
+    public function categories(): HasMany
+    {
+        return $this->hasMany(Category::class);
+    }
+
+    public function products(): HasMany
+    {
+        return $this->hasMany(Product::class);
+    }
+
+    public function sales(): HasMany
+    {
+        return $this->hasMany(Sale::class);
+    }
+
+    public function shifts(): HasMany
+    {
+        return $this->hasMany(Shift::class);
+    }
+
+    public function tables(): HasMany
+    {
+        return $this->hasMany(Table::class);
+    }
+
+    public function clients(): HasMany
+    {
+        return $this->hasMany(Client::class);
+    }
+
+    public function suppliers(): HasMany
+    {
+        return $this->hasMany(Supplier::class);
+    }
+
+    public function reservations(): HasMany
+    {
+        return $this->hasMany(Reservation::class);
+    }
+
+    public function stockMovements(): HasMany
+    {
+        return $this->hasMany(StockMovement::class);
+    }
+
+    public function cashMovements(): HasMany
+    {
+        return $this->hasMany(CashMovement::class);
+    }
+
+
+    // Methods
+    public function getFormattedTaxRateAttribute(): string
+    {
+        return $this->tax_rate . '%';
+    }
+
+    public function generateInvoiceNumber(): string
+    {
+        $lastSale = $this->sales()->orderBy('id', 'desc')->first();
+        $nextNumber = $lastSale ? intval(substr($lastSale->invoice_number, -6)) + 1 : 1;
+        return strtoupper($this->slug) . '-' . date('Y') . '-' . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+    }
 }
