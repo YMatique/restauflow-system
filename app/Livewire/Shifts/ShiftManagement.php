@@ -194,9 +194,14 @@ class ShiftManagement extends Component
     }
     public function render()
     {
+        // Refresh shift data periodically
+        if ($this->activeShift) {
+            $this->activeShift = $this->activeShift->fresh();
+        }
         return view('livewire.shifts.shift-management', [
             'title' => 'Gestão de Turnos',
-            'breadcrumb' => 'Dashboard > Turnos'
-        ]);
+            'breadcrumb' => 'Dashboard > Turnos',
+            'shiftStats' => $this->getShiftStats()
+        ])->layout('layouts.app');
     }
 }

@@ -341,7 +341,7 @@ public function canUsePOS(): bool
 /**
  * Check if user can perform action based on role
  */
-public function can(string $action): bool
+public function canPerformAction(string $action): bool
 {
     $permissions = [
         'owner' => ['*'], // All permissions
