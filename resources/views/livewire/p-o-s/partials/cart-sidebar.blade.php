@@ -1,8 +1,36 @@
 {{-- resources/views/livewire/p-o-s/partials/cart-sidebar.blade.php --}}
 <!-- Cart Sidebar (Right Panel) -->
 <div class="w-80 bg-white border-l-2 border-gray-200 p-4 flex flex-col h-full">
+    <!-- Cash Management Widget -->
+    @if($activeShift)
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+        <div class="flex items-center justify-between mb-2">
+            <h4 class="text-sm font-semibold text-blue-900">💰 Controle de Caixa</h4>
+            <div class="text-xs text-blue-600">{{ $activeShift->opened_at->format('H:i') }}</div>
+        </div>
+        
+        <div class="text-center mb-3">
+            <div class="text-2xl font-bold text-blue-600">
+                {{ number_format($currentCashBalance, 0) }} MT
+            </div>
+            <div class="text-xs text-blue-700">Saldo atual em caixa</div>
+        </div>
+        
+        <div class="grid grid-cols-2 gap-2">
+            <button wire:click="openWithdrawalModal"
+                    class="bg-yellow-500 hover:bg-yellow-600 text-white text-xs py-2 px-3 rounded-lg font-medium transition-colors">
+                💸 Retirada
+            </button>
+            <button wire:click="openCloseShiftModal"
+                    class="bg-red-500 hover:bg-red-600 text-white text-xs py-2 px-3 rounded-lg font-medium transition-colors">
+                🔒 Fechar
+            </button>
+        </div>
+    </div>
+    @endif
+
     <!-- Cart Header -->
-    <div class="flex justify-between items-center mb-4 pb-3 border-b w-full">
+    <div class="flex justify-between items-center mb-4 pb-3 border-b">
         <div>
             <h3 class="font-bold text-lg">🛒 Carrinho</h3>
             <p class="text-sm text-gray-600">{{ count($cart) }} {{ count($cart) === 1 ? 'item' : 'itens' }}</p>
@@ -135,6 +163,31 @@
     </div>
     @endif
 
+    <!-- Recent Cash Movements Widget -->
+    @if($activeShift && $recentMovements->count() > 0)
+    <div class="mt-4 pt-4 border-t">
+        <h4 class="text-sm font-semibold text-gray-700 mb-3">📝 Últimos Movimentos</h4>
+        <div class="space-y-2 max-h-32 overflow-y-auto scrollbar-thin">
+            @foreach($recentMovements as $movement)
+            <div class="flex items-center justify-between text-xs p-2 bg-gray-50 rounded-lg">
+                <div class="flex items-center space-x-2">
+                    <span class="{{ $movement->type === 'in' ? 'text-green-600' : 'text-red-600' }}">
+                        {{ $movement->type === 'in' ? '📈' : '📉' }}
+                    </span>
+                    <div>
+                        <div class="font-medium">{{ Str::limit($movement->description, 20) }}</div>
+                        <div class="text-gray-500">{{ $movement->date->format('H:i') }}</div>
+                    </div>
+                </div>
+                <div class="font-bold {{ $movement->type === 'in' ? 'text-green-600' : 'text-red-600' }}">
+                    {{ $movement->type === 'in' ? '+' : '-' }}{{ number_format($movement->amount, 0) }} MT
+                </div>
+            </div>
+            @endforeach
+        </div>
+    </div>
+    @endif
+
     <!-- Quick Actions -->
     <div class="mt-4 pt-4 border-t">
         <div class="text-xs text-gray-600 mb-2">Ações Rápidas:</div>
@@ -165,6 +218,153 @@
     </div>
     @endif
 </div>
+
+<!-- Withdrawal Modal -->
+@if($showWithdrawalModal)
+<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" wire:click.self="closeWithdrawalModal">
+    <div class="bg-white rounded-xl max-w-md w-full">
+        <div class="bg-yellow-500 text-white p-4 rounded-t-xl">
+            <h2 class="text-lg font-bold">💸 Registrar Retirada</h2>
+            <p class="text-yellow-100 text-sm">Informações da retirada de caixa</p>
+        </div>
+        
+        <form wire:submit.prevent="registerWithdrawal" class="p-4">
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    💵 Valor da Retirada (MT)
+                </label>
+                <input type="number" 
+                       wire:model="withdrawalForm.amount"
+                       class="w-full p-3 text-lg font-bold border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500"
+                       step="0.01"
+                       required>
+                @error('withdrawalForm.amount') 
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p> 
+                @enderror
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    📝 Descrição
+                </label>
+                <textarea wire:model="withdrawalForm.description"
+                          rows="3"
+                          placeholder="Motivo da retirada (ex: troco, despesas, etc.)..."
+                          class="w-full p-3 border border-gray-300 rounded-lg resize-none"
+                          required></textarea>
+                @error('withdrawalForm.description') 
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p> 
+                @enderror
+            </div>
+
+            <div class="flex space-x-3">
+                <button type="button" 
+                        wire:click="closeWithdrawalModal"
+                        class="flex-1 py-3 px-4 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-colors">
+                    Cancelar
+                </button>
+                
+                <button type="submit"
+                        class="flex-1 py-3 px-4 bg-yellow-500 hover:bg-yellow-600 text-white rounded-lg font-medium transition-colors">
+                    💸 Registrar
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
+
+<!-- Close Shift Modal -->
+@if($showCloseShiftModal)
+<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" wire:click.self="closeCloseShiftModal">
+    <div class="bg-white rounded-xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-red-500 text-white p-4 rounded-t-xl">
+            <h2 class="text-lg font-bold">🔒 Fechar Turno</h2>
+            <p class="text-red-100 text-sm">Confirme os valores de fechamento</p>
+        </div>
+        
+        <form wire:submit.prevent="closeShift" class="p-4">
+            <!-- Current Cash Info -->
+            <div class="bg-blue-50 rounded-lg p-4 mb-4">
+                <h4 class="font-semibold text-blue-800 mb-3">💰 Resumo do Caixa</h4>
+                <div class="space-y-2 text-sm">
+                    <div class="flex justify-between">
+                        <span>Fundo Inicial:</span>
+                        <span>{{ number_format($activeShift->initial_amount ?? 0, 0) }} MT</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>+ Vendas em Dinheiro:</span>
+                        <span class="text-green-600">{{ number_format($activeShift->getSalesByPaymentMethod()['cash'] ?? 0, 0) }} MT</span>
+                    </div>
+                    <div class="flex justify-between">
+                        <span>- Retiradas:</span>
+                        <span class="text-red-600">{{ number_format($activeShift->withdrawals ?? 0, 0) }} MT</span>
+                    </div>
+                    <hr>
+                    <div class="flex justify-between font-bold text-base">
+                        <span>Valor Esperado:</span>
+                        <span class="text-blue-600">{{ number_format($currentCashBalance, 0) }} MT</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    💵 Valor Final do Caixa (MT)
+                </label>
+                <input type="number" 
+                       wire:model.live="closeShiftForm.final_amount"
+                       class="w-full p-3 text-lg font-bold border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500"
+                       step="0.01"
+                       required>
+                @error('closeShiftForm.final_amount') 
+                    <p class="text-red-500 text-sm mt-1">{{ $message }}</p> 
+                @enderror
+                
+                <!-- Difference Calculator -->
+                @if($closeShiftForm['final_amount'] > 0)
+                    @php
+                        $difference = $closeShiftForm['final_amount'] - $currentCashBalance;
+                    @endphp
+                    <div class="mt-2 p-2 rounded-lg text-sm {{ $difference >= 0 ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
+                        <strong>Diferença: {{ $difference >= 0 ? '+' : '' }}{{ number_format($difference, 0) }} MT</strong>
+                        @if(abs($difference) < 0.01)
+                            🎯 Caixa conferido!
+                        @elseif($difference > 0)
+                            📈 Sobra no caixa
+                        @else
+                            📉 Falta no caixa
+                        @endif
+                    </div>
+                @endif
+            </div>
+
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">
+                    📝 Observações de Fechamento
+                </label>
+                <textarea wire:model="closeShiftForm.closing_notes"
+                          rows="3"
+                          placeholder="Observações sobre o fechamento, diferenças encontradas, etc..."
+                          class="w-full p-3 border border-gray-300 rounded-lg resize-none"></textarea>
+            </div>
+
+            <div class="flex space-x-3">
+                <button type="button" 
+                        wire:click="closeCloseShiftModal"
+                        class="flex-1 py-3 px-4 bg-gray-200 text-gray-800 rounded-lg font-medium hover:bg-gray-300 transition-colors">
+                    Cancelar
+                </button>
+                
+                <button type="submit"
+                        class="flex-1 py-3 px-4 bg-red-500 hover:bg-red-600 text-white rounded-lg font-medium transition-colors">
+                    🔒 Fechar Turno
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+@endif
 
 <style>
     .scrollbar-thin::-webkit-scrollbar {
