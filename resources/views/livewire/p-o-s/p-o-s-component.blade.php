@@ -168,17 +168,19 @@
 @include('livewire.p-o-s.partials.payment-modal')
 
 <!-- Toast Notifications -->
+<!-- Toast Notifications -->
 <div x-data="{ 
-    show: false, 
-    message: '', 
-    type: 'success' 
-}" 
-     @toast.window="
-        message = $event.detail.message; 
-        type = $event.detail.type; 
-        show = true; 
-        setTimeout(() => show = false, 3000)
-     "
+        show: false, 
+        message: '', 
+        type: 'success',
+        showToast(data) {
+            this.message = data.detail[0].message;
+            this.type = data.detail[0].type;
+            this.show = true;
+            setTimeout(() => this.show = false, 3000);
+        }
+     }" 
+     @toast.window="showToast($event)"
      x-show="show"
      x-transition:enter="transition ease-out duration-300"
      x-transition:enter-start="opacity-0 transform translate-y-2"
@@ -186,26 +188,33 @@
      x-transition:leave="transition ease-in duration-200"
      x-transition:leave-start="opacity-100 transform translate-y-0"
      x-transition:leave-end="opacity-0 transform translate-y-2"
-     class="fixed top-4 right-4 z-50 max-w-sm w-full">
+     class="fixed top-20 right-4 z-[9999] max-w-sm w-full"
+     style="z-index: 9999;">
     
-    <div :class="{
-        'bg-green-100 border-green-500 text-green-700': type === 'success',
-        'bg-red-100 border-red-500 text-red-700': type === 'error',
-        'bg-yellow-100 border-yellow-500 text-yellow-700': type === 'warning',
-        'bg-blue-100 border-blue-500 text-blue-700': type === 'info'
-    }" 
-    class="border-l-4 p-4 rounded-r-lg shadow-lg">
+    <div class="border-l-4 p-4 rounded-r-lg shadow-xl backdrop-blur-sm"
+         :class="type === 'success' ? 'bg-green-100 border-green-500 text-green-700' : 
+                 type === 'error' ? 'bg-red-100 border-red-500 text-red-700' : 
+                 type === 'warning' ? 'bg-yellow-100 border-yellow-500 text-yellow-700' : 
+                 'bg-blue-100 border-blue-500 text-blue-700'">
         <div class="flex items-center">
-            <div class="flex-shrink-0">
-                <span x-show="type === 'success'">✅</span>
-                <span x-show="type === 'error'">❌</span>
-                <span x-show="type === 'warning'">⚠️</span>
-                <span x-show="type === 'info'">ℹ️</span>
+            <div class="flex-shrink-0 text-lg">
+                <template x-if="type === 'success'">
+                    <span>✅</span>
+                </template>
+                <template x-if="type === 'error'">
+                    <span>❌</span>
+                </template>
+                <template x-if="type === 'warning'">
+                    <span>⚠️</span>
+                </template>
+                <template x-if="type === 'info'">
+                    <span>ℹ️</span>
+                </template>
             </div>
             <div class="ml-3 flex-1">
                 <p class="text-sm font-medium" x-text="message"></p>
             </div>
-            <button @click="show = false" class="ml-4 text-gray-400 hover:text-gray-600">
+            <button @click="show = false" class="ml-4 text-gray-400 hover:text-gray-600 transition-colors">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                 </svg>
