@@ -16,7 +16,7 @@
         body { overflow: hidden; }
     </style>
     
-    @stack('styles')
+    @yield('styles')
 </head>
 <body class="h-screen bg-gray-50 antialiased">
     <!-- POS Header -->
@@ -59,6 +59,6 @@
     <div id="modals-container"></div>
     
     @livewireScripts
-    @stack('scripts')
+    @yield('scripts')
 </body>
 </html>

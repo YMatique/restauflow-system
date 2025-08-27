@@ -53,56 +53,94 @@
         </div>
 
         <!-- Products Grid -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
             @forelse($products as $product)
-                <div wire:click="addToCart({{ $product->id }})"
-                     class="product-card {{ !$product->canSell() ? 'unavailable' : '' }}"
-                     title="{{ $product->description }}">
+                 <div wire:click="addToCart({{ $product->id }})"
+                     class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer border border-gray-100 overflow-hidden group {{ !$product->canSell() ? 'opacity-50 cursor-not-allowed' : '' }}">
                     
-                    <!-- Stock Indicator -->
-                    <div class="flex justify-between items-start mb-3">
-                        <div class="stock-indicator {{ $product->getStockStatus() }}"></div>
-                        @if($product->is_featured)
-                            <div class="text-yellow-500 text-lg">⭐</div>
-                        @endif
-                    </div>
-                    
-                    <!-- Product Image/Icon -->
-                    <div class="product-image">
-                        {{ $product->category->emoji ?? '🍽️' }}
-                    </div>
-                    
-                    <!-- Product Info -->
-                    <div class="product-info">
-                        <h3 class="product-name">{{ $product->name }}</h3>
-                        
-                        <div class="product-price">
-                            {{ number_format($product->price, 0) }} MT
-                        </div>
-                        
-                        <!-- Stock Info -->
-                        <div class="stock-info">
-                            @if($product->track_stock)
-                                Stock: {{ number_format($product->stock_quantity, 0) }}
-                            @else
-                                <span class="text-green-600">✓ Disponível</span>
+                    <!-- Card Header with Status -->
+                    <div class="relative p-4 pb-2">
+                        <div class="flex justify-between items-start">
+                            <!-- Stock Status -->
+                            <div class="flex items-center space-x-1">
+                                @if($product->getStockStatus() === 'in_stock')
+                                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
+                                    <span class="text-xs text-green-600 font-medium">Disponível</span>
+                                @elseif($product->getStockStatus() === 'low_stock')
+                                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
+                                    <span class="text-xs text-yellow-600 font-medium">Baixo</span>
+                                @else
+                                    <div class="w-2 h-2 bg-red-500 rounded-full"></div>
+                                    <span class="text-xs text-red-600 font-medium">Esgotado</span>
+                                @endif
+                            </div>
+                            
+                            <!-- Featured Badge -->
+                            @if($product->is_featured)
+                                <div class="bg-yellow-100 text-yellow-600 px-2 py-1 rounded-full text-xs font-medium">
+                                    ⭐ Destaque
+                                </div>
                             @endif
                         </div>
+                    </div>
+
+                    <!-- Product Image/Icon -->
+                    <div class="flex justify-center py-4">
+                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300">
+                            {{ $product->category->emoji ?? '🍽️' }}
+                        </div>
+                    </div>
+
+                    <!-- Product Info -->
+                    <div class="px-4 pb-4">
+                        <!-- Product Name -->
+                        <h3 class="font-semibold text-gray-900 text-sm mb-1 line-clamp-2 leading-tight">
+                            {{ $product->name }}
+                        </h3>
                         
-                        @if(!$product->canSell())
-                            <div class="unavailable-badge">
+                        <!-- Product Description -->
+                        @if($product->description)
+                            <p class="text-xs text-gray-500 mb-2 line-clamp-2">
+                                {{ $product->description }}
+                            </p>
+                        @endif
+
+                        <!-- Price -->
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="text-lg font-bold text-blue-600">
+                                {{ number_format($product->price, 0) }}
+                                <span class="text-xs text-gray-500">MT</span>
+                            </div>
+                            
+                            <!-- Stock Quantity -->
+                            <div class="text-xs text-gray-500">
+                                @if($product->track_stock)
+                                    📦 {{ number_format($product->stock_quantity, 0) }}
+                                @else
+                                    ♾️ Ilimitado
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Add Button -->
+                        @if($product->canSell())
+                            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200 transform group-hover:scale-105">
+                                🛒 Adicionar
+                            </button>
+                        @else
+                            <div class="w-full bg-gray-300 text-gray-500 text-sm font-medium py-2 px-3 rounded-lg text-center">
                                 ❌ Indisponível
                             </div>
                         @endif
                     </div>
-                    
-                    <!-- Quick Add Button -->
-                    @if($product->canSell())
-                    <div class="quick-add-btn">
-                        <button class="add-btn">
-                            ➕ Adicionar
-                        </button>
-                    </div>
+
+                    <!-- Unavailable Overlay -->
+                    @if(!$product->canSell())
+                        <div class="absolute inset-0 bg-gray-900 bg-opacity-20 flex items-center justify-center">
+                            <div class="bg-white rounded-full p-3 shadow-lg">
+                                <span class="text-2xl">🚫</span>
+                            </div>
+                        </div>
                     @endif
                 </div>
             @empty
@@ -192,10 +230,10 @@
         <div><kbd class="bg-gray-700 px-2 py-1 rounded text-xs">Ctrl+Shift+H</kbd> Esta ajuda</div>
     </div>
 </div>
+
 </div>
 
-@push('styles')
-    <!-- Styles -->
+@section('styles')
 <style>
     .scrollbar-thin::-webkit-scrollbar {
         width: 4px;
@@ -213,82 +251,19 @@
     .scrollbar-thin::-webkit-scrollbar-thumb:hover {
         background: #94a3b8;
     }
-
-    .product-card {
-        @apply bg-white rounded-xl p-4 cursor-pointer transition-all duration-200 hover:shadow-lg hover:-translate-y-1 relative overflow-hidden;
-        min-height: 160px;
-    }
-    
-    .product-card.unavailable {
-        @apply opacity-50 cursor-not-allowed;
-    }
-    
-    .product-card.unavailable:hover {
-        transform: none;
-        box-shadow: none;
-    }
-    
-    .stock-indicator {
-        @apply w-3 h-3 rounded-full;
-    }
-    
-    .stock-indicator.in_stock {
-        @apply bg-green-500;
-    }
-    
-    .stock-indicator.low_stock {
-        @apply bg-yellow-500;
-    }
-    
-    .stock-indicator.out_of_stock {
-        @apply bg-red-500;
-    }
-    
-    .product-image {
-        @apply bg-gray-100 rounded-lg h-16 flex items-center justify-center text-3xl mb-3;
-    }
-    
-    .product-info {
-        @apply text-center flex-1;
-    }
-    
-    .product-name {
-        @apply font-semibold text-gray-800 text-sm mb-1 leading-tight;
+/* Line clamp for text truncation */
+    .line-clamp-2 {
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
-    
-    .product-price {
-        @apply text-lg font-bold text-blue-600 mb-1;
-    }
-    
-    .stock-info {
-        @apply text-xs text-gray-500;
-    }
-    
-    .unavailable-badge {
-        @apply text-xs font-medium text-red-600 bg-red-100 px-2 py-1 rounded-full mt-2;
-    }
-    
-    .quick-add-btn {
-        @apply absolute bottom-0 left-0 right-0 bg-gradient-to-t from-white via-white to-transparent pt-4 pb-2 px-2 opacity-0 transition-opacity;
-    }
-    
-    .product-card:hover .quick-add-btn {
-        @apply opacity-100;
-    }
-    
-    .add-btn {
-        @apply w-full py-2 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors;
-    }
 </style>
-@endpush
+@endsection
 
 
 
-@push('scripts')
+@section('scripts')
     <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Keyboard shortcuts
@@ -329,4 +304,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 60000);
 });
 </script>
-@endpush
+@endsection
