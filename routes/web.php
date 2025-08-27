@@ -80,7 +80,7 @@ Route::middleware(['auth'])->prefix('restaurant')->name('restaurant.')->group(fu
     
     // Redirect root to dashboard
     Route::get('/', function () {
-        return redirect()->route('dashboard');
+        return redirect()->route('restaurant.dashboard');
     });
 });
 
