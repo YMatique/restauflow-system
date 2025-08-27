@@ -1,5 +1,6 @@
 {{-- resources/views/livewire/p-o-s/p-o-s-component.blade.php --}}
-<div class="flex h-full w-full">
+<div class="w-full">
+    <div class="flex h-full w-full">
     <!-- Left Sidebar - Categories -->
     <div class="w-48 bg-white border-r-2 border-gray-200 p-4 overflow-y-auto scrollbar-thin">
         <div class="space-y-2">
@@ -128,7 +129,73 @@
 @include('livewire.p-o-s.partials.table-modal')
 @include('livewire.p-o-s.partials.payment-modal')
 
-<!-- Styles -->
+<!-- Toast Notifications -->
+<div x-data="{ 
+    show: false, 
+    message: '', 
+    type: 'success' 
+}" 
+     @toast.window="
+        message = $event.detail.message; 
+        type = $event.detail.type; 
+        show = true; 
+        setTimeout(() => show = false, 3000)
+     "
+     x-show="show"
+     x-transition:enter="transition ease-out duration-300"
+     x-transition:enter-start="opacity-0 transform translate-y-2"
+     x-transition:enter-end="opacity-100 transform translate-y-0"
+     x-transition:leave="transition ease-in duration-200"
+     x-transition:leave-start="opacity-100 transform translate-y-0"
+     x-transition:leave-end="opacity-0 transform translate-y-2"
+     class="fixed top-4 right-4 z-50 max-w-sm w-full">
+    
+    <div :class="{
+        'bg-green-100 border-green-500 text-green-700': type === 'success',
+        'bg-red-100 border-red-500 text-red-700': type === 'error',
+        'bg-yellow-100 border-yellow-500 text-yellow-700': type === 'warning',
+        'bg-blue-100 border-blue-500 text-blue-700': type === 'info'
+    }" 
+    class="border-l-4 p-4 rounded-r-lg shadow-lg">
+        <div class="flex items-center">
+            <div class="flex-shrink-0">
+                <span x-show="type === 'success'">✅</span>
+                <span x-show="type === 'error'">❌</span>
+                <span x-show="type === 'warning'">⚠️</span>
+                <span x-show="type === 'info'">ℹ️</span>
+            </div>
+            <div class="ml-3 flex-1">
+                <p class="text-sm font-medium" x-text="message"></p>
+            </div>
+            <button @click="show = false" class="ml-4 text-gray-400 hover:text-gray-600">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Keyboard Shortcuts Help -->
+<div x-data="{ showHelp: false }" 
+     @keydown.window.ctrl.shift.h="showHelp = !showHelp"
+     x-show="showHelp"
+     x-transition
+     class="fixed bottom-4 left-4 bg-gray-900 text-white p-4 rounded-lg shadow-lg z-40">
+    
+    <h4 class="font-bold mb-2">⌨️ Atalhos de Teclado</h4>
+    <div class="text-sm space-y-1">
+        <div><kbd class="bg-gray-700 px-2 py-1 rounded text-xs">F1</kbd> Abrir Mesa</div>
+        <div><kbd class="bg-gray-700 px-2 py-1 rounded text-xs">F2</kbd> Finalizar Pagamento</div>
+        <div><kbd class="bg-gray-700 px-2 py-1 rounded text-xs">F3</kbd> Limpar Carrinho</div>
+        <div><kbd class="bg-gray-700 px-2 py-1 rounded text-xs">Esc</kbd> Fechar Modais</div>
+        <div><kbd class="bg-gray-700 px-2 py-1 rounded text-xs">Ctrl+Shift+H</kbd> Esta ajuda</div>
+    </div>
+</div>
+</div>
+
+@push('styles')
+    <!-- Styles -->
 <style>
     .scrollbar-thin::-webkit-scrollbar {
         width: 4px;
@@ -217,72 +284,12 @@
         @apply w-full py-2 bg-blue-600 text-white text-xs font-medium rounded-lg hover:bg-blue-700 transition-colors;
     }
 </style>
+@endpush
 
-<!-- Toast Notifications -->
-<div x-data="{ 
-    show: false, 
-    message: '', 
-    type: 'success' 
-}" 
-     @toast.window="
-        message = $event.detail.message; 
-        type = $event.detail.type; 
-        show = true; 
-        setTimeout(() => show = false, 3000)
-     "
-     x-show="show"
-     x-transition:enter="transition ease-out duration-300"
-     x-transition:enter-start="opacity-0 transform translate-y-2"
-     x-transition:enter-end="opacity-100 transform translate-y-0"
-     x-transition:leave="transition ease-in duration-200"
-     x-transition:leave-start="opacity-100 transform translate-y-0"
-     x-transition:leave-end="opacity-0 transform translate-y-2"
-     class="fixed top-4 right-4 z-50 max-w-sm w-full">
-    
-    <div :class="{
-        'bg-green-100 border-green-500 text-green-700': type === 'success',
-        'bg-red-100 border-red-500 text-red-700': type === 'error',
-        'bg-yellow-100 border-yellow-500 text-yellow-700': type === 'warning',
-        'bg-blue-100 border-blue-500 text-blue-700': type === 'info'
-    }" 
-    class="border-l-4 p-4 rounded-r-lg shadow-lg">
-        <div class="flex items-center">
-            <div class="flex-shrink-0">
-                <span x-show="type === 'success'">✅</span>
-                <span x-show="type === 'error'">❌</span>
-                <span x-show="type === 'warning'">⚠️</span>
-                <span x-show="type === 'info'">ℹ️</span>
-            </div>
-            <div class="ml-3 flex-1">
-                <p class="text-sm font-medium" x-text="message"></p>
-            </div>
-            <button @click="show = false" class="ml-4 text-gray-400 hover:text-gray-600">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
-        </div>
-    </div>
-</div>
 
-<!-- Keyboard Shortcuts Help -->
-<div x-data="{ showHelp: false }" 
-     @keydown.window.ctrl.shift.h="showHelp = !showHelp"
-     x-show="showHelp"
-     x-transition
-     class="fixed bottom-4 left-4 bg-gray-900 text-white p-4 rounded-lg shadow-lg z-40">
-    
-    <h4 class="font-bold mb-2">⌨️ Atalhos de Teclado</h4>
-    <div class="text-sm space-y-1">
-        <div><kbd class="bg-gray-700 px-2 py-1 rounded text-xs">F1</kbd> Abrir Mesa</div>
-        <div><kbd class="bg-gray-700 px-2 py-1 rounded text-xs">F2</kbd> Finalizar Pagamento</div>
-        <div><kbd class="bg-gray-700 px-2 py-1 rounded text-xs">F3</kbd> Limpar Carrinho</div>
-        <div><kbd class="bg-gray-700 px-2 py-1 rounded text-xs">Esc</kbd> Fechar Modais</div>
-        <div><kbd class="bg-gray-700 px-2 py-1 rounded text-xs">Ctrl+Shift+H</kbd> Esta ajuda</div>
-    </div>
-</div>
 
-<script>
+@push('scripts')
+    <script>
 document.addEventListener('DOMContentLoaded', function() {
     // Keyboard shortcuts
     document.addEventListener('keydown', function(e) {
@@ -322,3 +329,4 @@ document.addEventListener('DOMContentLoaded', function() {
     }, 60000);
 });
 </script>
+@endpush

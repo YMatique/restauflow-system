@@ -2,7 +2,7 @@
 <!-- Cart Sidebar (Right Panel) -->
 <div class="w-80 bg-white border-l-2 border-gray-200 p-4 flex flex-col h-full">
     <!-- Cart Header -->
-    <div class="flex justify-between items-center mb-4 pb-3 border-b">
+    <div class="flex justify-between items-center mb-4 pb-3 border-b w-full">
         <div>
             <h3 class="font-bold text-lg">🛒 Carrinho</h3>
             <p class="text-sm text-gray-600">{{ count($cart) }} {{ count($cart) === 1 ? 'item' : 'itens' }}</p>
