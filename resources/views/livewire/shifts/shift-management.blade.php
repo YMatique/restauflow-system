@@ -1,10 +1,17 @@
 {{-- resources/views/livewire/shifts/shift-management.blade.php --}}
 <div>
-    <x-layouts.header 
+    {{-- <x-layouts.header 
         title="Gestão de Turnos" 
         breadcrumb="Dashboard > Turnos"
         variant="primary"
-    />
+    /> --}}
+     @include('layouts.components.header', [
+        'title' => 'Gestão de Turnos',
+        'subtitle' => 'Bem-vindo ao sistema',
+        'variant' => 'purple',
+        'breadcrumb' => 'Dashboard > Turnos',
+       
+    ])
     
     <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="bg-white rounded-2xl shadow-xl p-8">
