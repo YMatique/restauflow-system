@@ -205,4 +205,48 @@ class Product extends Model
     {
         return $this->saleItems()->sum('total_price');
     }
+
+    
+/**
+ * Check if product can be sold
+ */
+// public function canSell(float $quantity = 1): bool
+// {
+//     if (!$this->is_active) {
+//         return false;
+//     }
+    
+//     // Check stock if tracking is enabled
+//     if ($this->track_stock) {
+//         return $this->stock_quantity >= $quantity;
+//     }
+    
+//     return true;
+// }
+
+/**
+ * Get stock status
+ */
+// public function getStockStatus(): string
+// {
+//     if (!$this->track_stock) {
+//         return 'in_stock';
+//     }
+    
+//     if ($this->stock_quantity <= 0) {
+//         return 'out_of_stock';
+//     } elseif ($this->stock_quantity <= $this->min_stock_level) {
+//         return 'low_stock';
+//     } else {
+//         return 'in_stock';
+//     }
+// }
+
+/**
+ * Check if product needs restock alert
+ */
+public function needsRestockAlert(): bool
+{
+    return $this->track_stock && $this->stock_quantity <= $this->min_stock_level;
+}
 }

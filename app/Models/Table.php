@@ -72,10 +72,10 @@ class Table extends Model
     }
 
     // Methods
-    public function isAvailable(): bool
-    {
-        return $this->status === 'available' && $this->is_active;
-    }
+    // public function isAvailable(): bool
+    // {
+    //     return $this->status === 'available' && $this->is_active;
+    // }
 
     public function occupy(): void
     {
@@ -120,4 +120,45 @@ class Table extends Model
             ->where('status', 'completed')
             ->sum('total');
     }
+
+
+
+   /**
+ * Check if table is available
+ */
+public function isAvailable(): bool
+{
+    return $this->is_active && $this->status === 'available';
+}
+
+/**
+ * Mark table as occupied
+ */
+public function markOccupied(): void
+{
+    $this->update(['status' => 'occupied']);
+}
+
+/**
+ * Mark table as available
+ */
+public function markAvailable(): void
+{
+    $this->update(['status' => 'available']);
+}
+
+/**
+ * Get table status badge
+ */
+public function getStatusBadge(): array
+{
+    $badges = [
+        'available' => ['color' => 'green', 'text' => 'Disponível', 'icon' => '✅'],
+        'occupied' => ['color' => 'red', 'text' => 'Ocupada', 'icon' => '🔴'],
+        'reserved' => ['color' => 'yellow', 'text' => 'Reservada', 'icon' => '🟡'],
+        'maintenance' => ['color' => 'gray', 'text' => 'Manutenção', 'icon' => '🔧']
+    ];
+    
+    return $badges[$this->status] ?? $badges['available'];
+}
 }
