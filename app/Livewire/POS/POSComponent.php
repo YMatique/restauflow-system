@@ -13,17 +13,17 @@ use Livewire\Component;
 
 class POSComponent extends Component
 {
- 
+
     public $currentTable = null;
     public $selectedCategory = null;
     public $cart = [];
     public $showTableModal = false;
     public $showPaymentModal = false;
-    
+
     // Cash Management Modals
     public $showWithdrawalModal = false;
     public $showCloseShiftModal = false;
-    
+
     // Payment Form
     public $paymentForm = [
         'payment_method' => 'cash',
@@ -35,22 +35,22 @@ class POSComponent extends Component
         'service_charge' => 0,
         'discount_amount' => 0
     ];
-    
+
     // Cash Management Forms
     public $withdrawalForm = [
         'amount' => 0,
         'description' => ''
     ];
-    
+
     public $closeShiftForm = [
         'final_amount' => 0,
         'closing_notes' => ''
     ];
-    
+
     // Mixed Payment
     public $mixedPayments = [];
     public $showMixedPayment = false;
-    
+
     public function mount()
     {
         // Check if user has active shift
@@ -61,36 +61,36 @@ class POSComponent extends Component
             ]);
             return redirect()->route('restaurant.shifts');
         }
-        
+
         // Get first active category
         $this->selectedCategory = Category::active()
             ->byCompany(auth()->user()->company_id)
             ->first()?->id;
     }
-    
+
     // ===== CASH MANAGEMENT METHODS =====
-    
+
     public function openWithdrawalModal()
     {
         $this->showWithdrawalModal = true;
         $this->reset('withdrawalForm');
     }
-    
+
     public function closeWithdrawalModal()
     {
         $this->showWithdrawalModal = false;
         $this->reset('withdrawalForm');
     }
-    
+
     public function registerWithdrawal()
     {
         $this->validate([
             'withdrawalForm.amount' => 'required|numeric|min:0.01',
             'withdrawalForm.description' => 'required|string|min:3|max:255'
         ]);
-        
+
         $activeShift = auth()->user()->getActiveShift();
-        
+
         try {
             // Create cash movement
             CashMovement::create([
@@ -103,17 +103,16 @@ class POSComponent extends Component
                 'user_id' => auth()->id(),
                 'company_id' => auth()->user()->company_id
             ]);
-            
+
             // Update shift withdrawals
             $activeShift->increment('withdrawals', $this->withdrawalForm['amount']);
-            
+
             $this->closeWithdrawalModal();
-            
+
             $this->dispatch('toast', [
                 'type' => 'success',
                 'message' => 'Retirada registrada com sucesso!'
             ]);
-            
         } catch (\Exception $e) {
             $this->dispatch('toast', [
                 'type' => 'error',
@@ -121,55 +120,67 @@ class POSComponent extends Component
             ]);
         }
     }
-    
+
     public function openCloseShiftModal()
     {
         $activeShift = auth()->user()->getActiveShift();
-        
-        // Calculate expected amount
-        $expectedAmount = $activeShift->initial_amount + 
-                         ($activeShift->getSalesByPaymentMethod()['cash'] ?? 0) - 
-                         ($activeShift->withdrawals ?? 0);
-        
-        $this->closeShiftForm['final_amount'] = $expectedAmount;
+        // dd($activeShift);
+
+
+        try {
+            // Calculate expected amount
+            $expectedAmount = $activeShift->initial_amount +
+                ($activeShift->getSalesByPaymentMethod()['cash'] ?? 0) -
+                ($activeShift->withdrawals ?? 0);
+
+            $this->closeShiftForm['final_amount'] = $expectedAmount;
+            $this->dispatch('toast', [
+                'type' => 'success',
+                'message' => 'Turno fechado com sucesso'
+            ]);
+        } catch (\Throwable $th) {
+            $this->dispatch('toast', [
+                'type' => 'error',
+                'message' => 'Erro ao fechar turno: ' . $th->getMessage()
+            ]);
+        }
         $this->showCloseShiftModal = true;
     }
-    
+
     public function closeCloseShiftModal()
     {
         $this->showCloseShiftModal = false;
         $this->reset('closeShiftForm');
     }
-    
+
     public function closeShift()
     {
         $this->validate([
             'closeShiftForm.final_amount' => 'required|numeric|min:0',
             'closeShiftForm.closing_notes' => 'nullable|string|max:500'
         ]);
-        
+
         $activeShift = auth()->user()->getActiveShift();
-        
+
         try {
             $activeShift->close(
                 $this->closeShiftForm['final_amount'],
                 $this->closeShiftForm['closing_notes'],
                 $activeShift->withdrawals ?? 0
             );
-            
+
             $this->closeCloseShiftModal();
-            
+
             $this->dispatch('toast', [
                 'type' => 'success',
                 'message' => 'Turno fechado com sucesso! Redirecionando...'
             ]);
-            
+
             // Redirect to shift management after 2 seconds
             $this->dispatch('redirect-after-delay', [
                 'url' => route('restaurant.shifts'),
                 'delay' => 2000
             ]);
-            
         } catch (\Exception $e) {
             $this->dispatch('toast', [
                 'type' => 'error',
@@ -177,28 +188,28 @@ class POSComponent extends Component
             ]);
         }
     }
-    
+
     public function getCurrentCashBalance()
     {
         $activeShift = auth()->user()->getActiveShift();
         if (!$activeShift) return 0;
-        
-        return $activeShift->initial_amount + 
-               ($activeShift->getSalesByPaymentMethod()['cash'] ?? 0) - 
-               ($activeShift->withdrawals ?? 0);
+
+        return $activeShift->initial_amount +
+            ($activeShift->getSalesByPaymentMethod()['cash'] ?? 0) -
+            ($activeShift->withdrawals ?? 0);
     }
-    
+
     public function getRecentCashMovements()
     {
         $activeShift = auth()->user()->getActiveShift();
         if (!$activeShift) return collect();
-        
+
         return $activeShift->cashMovements()
             ->latest()
             ->limit(5)
             ->get();
     }
-    
+
     // ===== TABLE MANAGEMENT =====
     public function selectTable($tableId)
     {
@@ -206,7 +217,7 @@ class POSComponent extends Component
         if ($table && $table->isAvailable()) {
             $this->currentTable = $table;
             $this->showTableModal = false;
-            
+
             $this->dispatch('toast', [
                 'type' => 'success',
                 'message' => "Mesa {$table->name} selecionada"
@@ -218,27 +229,27 @@ class POSComponent extends Component
             ]);
         }
     }
-    
+
     public function openTableModal()
     {
         $this->showTableModal = true;
     }
-    
+
     public function closeTableModal()
     {
         $this->showTableModal = false;
     }
-    
+
     // ===== CATEGORY & PRODUCT MANAGEMENT =====
     public function selectCategory($categoryId)
     {
         $this->selectedCategory = $categoryId;
     }
-    
+
     public function addToCart($productId, $quantity = 1)
     {
         $product = Product::find($productId);
-        
+
         if (!$product) {
             $this->dispatch('toast', [
                 'type' => 'error',
@@ -246,7 +257,7 @@ class POSComponent extends Component
             ]);
             return;
         }
-        
+
         if (!$product->canSell($quantity)) {
             $this->dispatch('toast', [
                 'type' => 'error',
@@ -254,9 +265,9 @@ class POSComponent extends Component
             ]);
             return;
         }
-        
+
         $cartKey = $productId;
-        
+
         if (isset($this->cart[$cartKey])) {
             $this->cart[$cartKey]['quantity'] += $quantity;
             $this->cart[$cartKey]['total_price'] = $this->cart[$cartKey]['quantity'] * $this->cart[$cartKey]['unit_price'];
@@ -269,15 +280,15 @@ class POSComponent extends Component
                 'total_price' => $product->price * $quantity
             ];
         }
-        
+
         $this->updatePaymentCalculations();
-        
+
         $this->dispatch('toast', [
             'type' => 'success',
             'message' => "{$product->name} adicionado ao carrinho"
         ]);
     }
-    
+
     public function updateCartQuantity($cartKey, $newQuantity)
     {
         if ($newQuantity <= 0) {
@@ -296,25 +307,25 @@ class POSComponent extends Component
                 ]);
                 return;
             }
-            
+
             $this->cart[$cartKey]['quantity'] = $newQuantity;
             $this->cart[$cartKey]['total_price'] = $newQuantity * $this->cart[$cartKey]['unit_price'];
         }
-        
+
         $this->updatePaymentCalculations();
     }
-    
+
     public function clearCart()
     {
         $this->cart = [];
         $this->updatePaymentCalculations();
-        
+
         $this->dispatch('toast', [
             'type' => 'info',
             'message' => 'Carrinho limpo'
         ]);
     }
-    
+
     // ===== PAYMENT MANAGEMENT =====
     public function openPaymentModal()
     {
@@ -325,7 +336,7 @@ class POSComponent extends Component
             ]);
             return;
         }
-        
+
         if (!$this->currentTable) {
             $this->dispatch('toast', [
                 'type' => 'warning',
@@ -333,27 +344,27 @@ class POSComponent extends Component
             ]);
             return;
         }
-        
+
         $this->updatePaymentCalculations();
         $this->paymentForm['received_amount'] = $this->paymentForm['total_amount'];
         $this->showPaymentModal = true;
     }
-    
+
     public function closePaymentModal()
     {
         $this->showPaymentModal = false;
         $this->showMixedPayment = false;
         $this->mixedPayments = [];
     }
-    
+
     public function updatePaymentCalculations()
     {
         $subtotal = collect($this->cart)->sum('total_price');
         $serviceCharge = $this->paymentForm['service_charge'];
         $discount = $this->paymentForm['discount_amount'];
-        
+
         $this->paymentForm['total_amount'] = $subtotal + $serviceCharge - $discount;
-        
+
         // Calculate change for cash payments
         if ($this->paymentForm['payment_method'] === 'cash') {
             $this->paymentForm['change_amount'] = max(0, $this->paymentForm['received_amount'] - $this->paymentForm['total_amount']);
@@ -361,22 +372,22 @@ class POSComponent extends Component
             $this->paymentForm['change_amount'] = 0;
         }
     }
-    
+
     public function updatedPaymentFormReceivedAmount()
     {
         $this->updatePaymentCalculations();
     }
-    
+
     public function updatedPaymentFormServiceCharge()
     {
         $this->updatePaymentCalculations();
     }
-    
+
     public function updatedPaymentFormDiscountAmount()
     {
         $this->updatePaymentCalculations();
     }
-    
+
     public function updatedPaymentFormPaymentMethod($value)
     {
         if ($value === 'mixed') {
@@ -388,7 +399,7 @@ class POSComponent extends Component
         }
         $this->updatePaymentCalculations();
     }
-    
+
     public function initializeMixedPayments()
     {
         $this->mixedPayments = [
@@ -396,7 +407,7 @@ class POSComponent extends Component
             ['method' => 'card', 'amount' => 0]
         ];
     }
-    
+
     // ===== PROCESS SALE =====
     public function processPayment()
     {
@@ -407,7 +418,7 @@ class POSComponent extends Component
             'paymentForm.service_charge' => 'nullable|numeric|min:0',
             'paymentForm.discount_amount' => 'nullable|numeric|min:0'
         ]);
-        
+
         if (empty($this->cart)) {
             $this->dispatch('toast', [
                 'type' => 'error',
@@ -415,61 +426,62 @@ class POSComponent extends Component
             ]);
             return;
         }
-        
+
         // Validate payment amount
-        if ($this->paymentForm['payment_method'] !== 'credit' && 
-            $this->paymentForm['received_amount'] < $this->paymentForm['total_amount']) {
+        if (
+            $this->paymentForm['payment_method'] !== 'credit' &&
+            $this->paymentForm['received_amount'] < $this->paymentForm['total_amount']
+        ) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Valor recebido é insuficiente'
             ]);
             return;
         }
-        
+
         // Process sale in database transaction
         try {
             DB::beginTransaction();
-            
+
             $sale = $this->createSale();
             $this->createSaleItems($sale);
             $this->updateStock($sale);
             $this->createCashMovement($sale);
-            
+
             // Update table status if needed
             if ($this->currentTable) {
                 $this->currentTable->markOccupied();
             }
-            
+
             DB::commit();
-            
+
             $this->dispatch('toast', [
                 'type' => 'success',
                 'message' => 'Venda processada com sucesso!'
             ]);
-            
+
             // Reset form
             $this->resetAfterSale();
-            
+
             // Optional: Print receipt or redirect
             $this->dispatch('sale-completed', ['saleId' => $sale->id]);
-            
         } catch (\Exception $e) {
             DB::rollBack();
-            
+
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Erro ao processar venda: ' . $e->getMessage()
             ]);
         }
     }
-    
+
     private function createSale()
     {
         $activeShift = auth()->user()->getActiveShift();
         $company = auth()->user()->company;
         $subtotal = collect($this->cart)->sum('total_price');
         $taxAmount = $subtotal * ($company->tax_rate / 100);
-        
+
         $sale = Sale::create([
             'invoice_number' => $company->generateInvoiceNumber(),
             'table_id' => $this->currentTable?->id,
@@ -490,10 +502,10 @@ class POSComponent extends Component
             'company_id' => auth()->user()->company_id,
             'completed_at' => now()
         ]);
-        
+
         return $sale;
     }
-    
+
     private function createSaleItems($sale)
     {
         foreach ($this->cart as $item) {
@@ -507,17 +519,17 @@ class POSComponent extends Component
             ]);
         }
     }
-    
+
     private function updateStock($sale)
     {
         foreach ($this->cart as $item) {
             $product = Product::find($item['product_id']);
             $previousStock = $product->stock_quantity;
             $newStock = $previousStock - $item['quantity'];
-            
+
             // Update product stock
             $product->update(['stock_quantity' => $newStock]);
-            
+
             // Create stock movement
             StockMovement::create([
                 'product_id' => $product->id,
@@ -535,11 +547,11 @@ class POSComponent extends Component
             ]);
         }
     }
-    
+
     private function createCashMovement($sale)
     {
         $activeShift = auth()->user()->getActiveShift();
-        
+
         // Create cash in movement for the sale
         CashMovement::create([
             'shift_id' => $activeShift->id,
@@ -553,12 +565,12 @@ class POSComponent extends Component
             'user_id' => auth()->id(),
             'company_id' => auth()->user()->company_id
         ]);
-        
+
         // Update shift totals
         $activeShift->increment('total_sales', $sale->total);
         $activeShift->increment('total_orders');
     }
-    
+
     private function resetAfterSale()
     {
         $this->cart = [];
@@ -566,7 +578,7 @@ class POSComponent extends Component
         $this->showPaymentModal = false;
         $this->showMixedPayment = false;
         $this->mixedPayments = [];
-        
+
         $this->paymentForm = [
             'payment_method' => 'cash',
             'total_amount' => 0,
@@ -578,13 +590,13 @@ class POSComponent extends Component
             'discount_amount' => 0
         ];
     }
-    
+
     public function render()
     {
 
         $companyId = auth()->user()->company_id;
         $activeShift = auth()->user()->getActiveShift();
-        
+
         // dd(Table::active()->get());
         return view('livewire.p-o-s.p-o-s-component', [
             'categories' => Category::active()
