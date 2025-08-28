@@ -8,7 +8,7 @@ use Livewire\Component;
 
 class ShiftManagement extends Component
 {
-    public $activeShift = null;
+ public $activeShift = null;
     public $showOpenModal = false;
     public $showCloseModal = false;
     public $showWithdrawalModal = false;
@@ -30,12 +30,6 @@ class ShiftManagement extends Component
         'description' => ''
     ];
     
-    protected $listeners = [
-        'refreshShiftData' => 'refreshData',
-        'shiftOpened' => 'handleShiftOpened',
-        'shiftClosed' => 'handleShiftClosed'
-    ];
-    
     public function mount()
     {
         $this->activeShift = auth()->user()->getActiveShift();
@@ -48,26 +42,11 @@ class ShiftManagement extends Component
     public function openShift()
     {
         $this->validate([
-            'openShiftForm.initial_amount' => 'required|numeric|min:0|max:999999',
+            'openShiftForm.initial_amount' => 'required|numeric|min:0',
             'openShiftForm.opening_notes' => 'nullable|string|max:500'
-        ], [
-            'openShiftForm.initial_amount.required' => 'O valor inicial é obrigatório',
-            'openShiftForm.initial_amount.numeric' => 'O valor deve ser numérico',
-            'openShiftForm.initial_amount.min' => 'O valor deve ser maior que zero',
-            'openShiftForm.initial_amount.max' => 'O valor é muito alto',
         ]);
         
         try {
-            // Verificar se já existe turno ativo
-            $existingShift = auth()->user()->getActiveShift();
-            if ($existingShift) {
-                $this->dispatch('toast', [
-                    'type' => 'warning',
-                    'message' => 'Já existe um turno ativo!'
-                ]);
-                return;
-            }
-            
             $this->activeShift = Shift::create([
                 'user_id' => auth()->id(),
                 'company_id' => auth()->user()->company_id,
@@ -94,24 +73,16 @@ class ShiftManagement extends Component
             
             $this->showOpenModal = false;
             $this->reset('openShiftForm');
-            $this->openShiftForm['initial_amount'] = 2000; // Reset to default
             
             $this->dispatch('toast', [
                 'type' => 'success',
-                'message' => 'Turno iniciado com sucesso! Sistema POS liberado.',
-                'duration' => 5000
+                'message' => 'Turno iniciado com sucesso! Sistema POS liberado.'
             ]);
             
-            // Emit event for other components
-            $this->dispatch('shiftOpened', ['shiftId' => $this->activeShift->id]);
-            
         } catch (\Exception $e) {
-            \Log::error('Erro ao abrir turno: ' . $e->getMessage());
-            
             $this->dispatch('toast', [
                 'type' => 'error',
-                'message' => 'Erro ao abrir turno. Tente novamente.',
-                'duration' => 6000
+                'message' => 'Erro ao abrir turno: ' . $e->getMessage()
             ]);
         }
     }
@@ -122,78 +93,28 @@ class ShiftManagement extends Component
             'closeShiftForm.final_amount' => 'required|numeric|min:0',
             'closeShiftForm.withdrawals' => 'nullable|numeric|min:0',
             'closeShiftForm.closing_notes' => 'nullable|string|max:500'
-        ], [
-            'closeShiftForm.final_amount.required' => 'O valor final é obrigatório',
-            'closeShiftForm.final_amount.numeric' => 'O valor deve ser numérico',
-            'closeShiftForm.final_amount.min' => 'O valor deve ser positivo',
         ]);
         
         try {
-            if (!$this->activeShift) {
-                $this->dispatch('toast', [
-                    'type' => 'error',
-                    'message' => 'Nenhum turno ativo encontrado!'
-                ]);
-                return;
-            }
+            $this->activeShift->close(
+                $this->closeShiftForm['final_amount'],
+                $this->closeShiftForm['closing_notes'],
+                $this->closeShiftForm['withdrawals'] ?? 0
+            );
             
-            // Calculate expected amount
-            $expectedAmount = ($this->activeShift->initial_amount + 
-                             ($this->activeShift->getSalesByPaymentMethod()['cash'] ?? 0)) - 
-                             ($this->closeShiftForm['withdrawals'] ?? 0);
-            
-            $difference = $this->closeShiftForm['final_amount'] - $expectedAmount;
-            
-            $this->activeShift->update([
-                'closed_at' => now(),
-                'final_amount' => $this->closeShiftForm['final_amount'],
-                'closing_notes' => $this->closeShiftForm['closing_notes'],
-                'withdrawals' => $this->closeShiftForm['withdrawals'] ?? 0,
-                'difference' => $difference,
-                'status' => 'closed'
-            ]);
-            
-            // Create closing cash movement
-            CashMovement::create([
-                'shift_id' => $this->activeShift->id,
-                'type' => 'closing',
-                'amount' => $this->closeShiftForm['final_amount'],
-                'description' => "Fechamento do turno #{$this->activeShift->id}" . 
-                               ($difference != 0 ? " (Diferença: " . number_format($difference, 2) . " MT)" : ""),
-                'category' => 'closing',
-                'date' => now(),
-                'user_id' => auth()->id(),
-                'company_id' => auth()->user()->company_id
-            ]);
-            
-            $shiftId = $this->activeShift->id;
             $this->activeShift = null;
             $this->showCloseModal = false;
             $this->reset('closeShiftForm');
             
-            $message = 'Turno fechado com sucesso!';
-            if ($difference > 0) {
-                $message .= ' Sobra de ' . number_format($difference, 0) . ' MT detectada.';
-            } elseif ($difference < 0) {
-                $message .= ' Falta de ' . number_format(abs($difference), 0) . ' MT detectada.';
-            }
-            
             $this->dispatch('toast', [
                 'type' => 'success',
-                'message' => $message,
-                'duration' => 6000
+                'message' => 'Turno fechado com sucesso! Sistema bloqueado.'
             ]);
             
-            // Emit event for other components
-            $this->dispatch('shiftClosed', ['shiftId' => $shiftId]);
-            
         } catch (\Exception $e) {
-            \Log::error('Erro ao fechar turno: ' . $e->getMessage());
-            
             $this->dispatch('toast', [
                 'type' => 'error',
-                'message' => 'Erro ao fechar turno. Tente novamente.',
-                'duration' => 6000
+                'message' => 'Erro ao fechar turno: ' . $e->getMessage()
             ]);
         }
     }
@@ -201,61 +122,32 @@ class ShiftManagement extends Component
     public function addWithdrawal()
     {
         $this->validate([
-            'withdrawalForm.amount' => 'required|numeric|min:0.01|max:50000',
+            'withdrawalForm.amount' => 'required|numeric|min:0.01',
             'withdrawalForm.description' => 'required|string|min:3|max:255'
-        ], [
-            'withdrawalForm.amount.required' => 'O valor da retirada é obrigatório',
-            'withdrawalForm.amount.numeric' => 'O valor deve ser numérico',
-            'withdrawalForm.amount.min' => 'O valor mínimo é 0.01 MT',
-            'withdrawalForm.amount.max' => 'O valor máximo é 50,000 MT',
-            'withdrawalForm.description.required' => 'A descrição é obrigatória',
-            'withdrawalForm.description.min' => 'A descrição deve ter pelo menos 3 caracteres',
         ]);
         
         try {
-            if (!$this->activeShift) {
-                $this->dispatch('toast', [
-                    'type' => 'error',
-                    'message' => 'Nenhum turno ativo encontrado!'
-                ]);
-                return;
-            }
+            $this->activeShift->addWithdrawal(
+                $this->withdrawalForm['amount'],
+                $this->withdrawalForm['description'],
+                auth()->id()
+            );
             
-            // Create withdrawal cash movement
-            CashMovement::create([
-                'shift_id' => $this->activeShift->id,
-                'type' => 'withdrawal',
-                'amount' => -$this->withdrawalForm['amount'], // Negative for withdrawal
-                'description' => $this->withdrawalForm['description'],
-                'category' => 'withdrawal',
-                'date' => now(),
-                'user_id' => auth()->id(),
-                'company_id' => auth()->user()->company_id
-            ]);
-            
-            // Update shift withdrawals
-            $this->activeShift->increment('withdrawals', $this->withdrawalForm['amount']);
-            
-            // Refresh data
-            $this->activeShift = $this->activeShift->fresh();
-            $this->closeShiftForm['withdrawals'] = $this->activeShift->withdrawals;
+            // Update local form data
+            $this->closeShiftForm['withdrawals'] = $this->activeShift->fresh()->withdrawals;
             
             $this->showWithdrawalModal = false;
             $this->reset('withdrawalForm');
             
             $this->dispatch('toast', [
                 'type' => 'success',
-                'message' => 'Retirada de ' . number_format($this->withdrawalForm['amount'] ?? 0, 0) . ' MT registrada!',
-                'duration' => 4000
+                'message' => 'Retirada registrada com sucesso!'
             ]);
             
         } catch (\Exception $e) {
-            \Log::error('Erro ao registrar retirada: ' . $e->getMessage());
-            
             $this->dispatch('toast', [
                 'type' => 'error',
-                'message' => 'Erro ao registrar retirada. Tente novamente.',
-                'duration' => 5000
+                'message' => 'Erro ao registrar retirada: ' . $e->getMessage()
             ]);
         }
     }
@@ -263,14 +155,7 @@ class ShiftManagement extends Component
     public function updatedCloseShiftFormFinalAmount()
     {
         // Auto-calculate expected values when final amount changes
-        if ($this->activeShift) {
-            $this->dispatch('recalculate-difference');
-        }
-    }
-    
-    public function setQuickAmount($amount)
-    {
-        $this->openShiftForm['initial_amount'] = $amount;
+        $this->dispatch('recalculate-difference');
     }
     
     public function getShiftStats()
@@ -279,19 +164,7 @@ class ShiftManagement extends Component
             return [];
         }
         
-        $stats = [
-            'duration' => $this->activeShift->getDurationFormatted(),
-            'total_sales' => $this->activeShift->total_sales ?? 0,
-            'total_orders' => $this->activeShift->total_orders ?? 0,
-            'average_ticket' => $this->activeShift->total_orders > 0 
-                ? $this->activeShift->total_sales / $this->activeShift->total_orders 
-                : 0,
-            'sales_per_hour' => $this->activeShift->getDurationInMinutes() > 0 
-                ? ($this->activeShift->total_sales / $this->activeShift->getDurationInMinutes()) * 60 
-                : 0
-        ];
-        
-        return $stats;
+        return $this->activeShift->getStats();
     }
     
     public function exportShiftReport()
@@ -318,62 +191,6 @@ class ShiftManagement extends Component
         if ($this->activeShift) {
             $this->closeShiftForm['withdrawals'] = $this->activeShift->withdrawals ?? 0;
         }
-        
-        $this->dispatch('toast', [
-            'type' => 'info',
-            'message' => 'Dados atualizados',
-            'duration' => 2000
-        ]);
-    }
-    
-    public function handleShiftOpened($data)
-    {
-        $this->refreshData();
-    }
-    
-    public function handleShiftClosed($data)
-    {
-        $this->refreshData();
-    }
-    
-    public function getLastShiftProperty()
-    {
-        return auth()->user()->shifts()
-            ->where('status', 'closed')
-            ->latest('closed_at')
-            ->first();
-    }
-    
-    public function getRecentSalesProperty()
-    {
-        if (!$this->activeShift) {
-            return collect();
-        }
-        
-        return $this->activeShift->sales()
-            ->with(['table'])
-            ->latest('sold_at')
-            ->limit(5)
-            ->get();
-    }
-    
-    public function getCashSummaryProperty()
-    {
-        if (!$this->activeShift) {
-            return [];
-        }
-        
-        $cashSales = $this->activeShift->getSalesByPaymentMethod()['cash'] ?? 0;
-        $expected = $this->activeShift->initial_amount + $cashSales - $this->activeShift->withdrawals;
-        
-        return [
-            'initial' => $this->activeShift->initial_amount,
-            'cash_sales' => $cashSales,
-            'withdrawals' => $this->activeShift->withdrawals,
-            'expected' => $expected,
-            'current' => $this->closeShiftForm['final_amount'] ?? 0,
-            'difference' => ($this->closeShiftForm['final_amount'] ?? 0) - $expected
-        ];
     }
     public function render()
     {
@@ -382,12 +199,9 @@ class ShiftManagement extends Component
             $this->activeShift = $this->activeShift->fresh();
         }
         return view('livewire.shifts.shift-management', [
-              'title' => 'Gestão de Turnos',
+            'title' => 'Gestão de Turnos',
             'breadcrumb' => 'Dashboard > Turnos',
-            'shiftStats' => $this->getShiftStats(),
-            'lastShift' => $this->lastShift,
-            'recentSales' => $this->recentSales,
-            'cashSummary' => $this->cashSummary
+            'shiftStats' => $this->getShiftStats()
         ])->layout('layouts.app');
     }
 }
