@@ -16,6 +16,7 @@ use App\Livewire\System\PlanManagement;
 use App\Livewire\System\SubscriptionManagement;
 use App\Livewire\System\SystemDashboard;
 use App\Livewire\System\UserManagement;
+use App\Livewire\Teste;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -77,6 +78,8 @@ Route::middleware(['auth'])->prefix('restaurant')->name('restaurant.')->group(fu
     
     // Reports
     Route::get('/reports', ReportsComponent::class)->name('reports');
+
+    Route::get('/teste', Teste::class)->name('teste');
     
     // Redirect root to dashboard
     Route::get('/', function () {
