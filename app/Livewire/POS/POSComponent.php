@@ -138,6 +138,7 @@ class POSComponent extends Component
                 'type' => 'success',
                 'message' => 'Turno fechado com sucesso'
             ]);
+            
         } catch (\Throwable $th) {
             $this->dispatch('toast', [
                 'type' => 'error',
@@ -145,6 +146,8 @@ class POSComponent extends Component
             ]);
         }
         $this->showCloseShiftModal = true;
+
+
     }
 
     public function closeCloseShiftModal()
