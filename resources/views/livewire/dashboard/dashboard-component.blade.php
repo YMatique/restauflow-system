@@ -1,7 +1,7 @@
 {{-- resources/views/livewire/dashboard/dashboard-component.blade.php --}}
 <div>
     {{-- <x-layouts.components.header
-        title="Dashboard Principal" 
+        title="Dashboard Principal"
         breadcrumb="Dashboard"
         variant="primary"
     /> --}}
@@ -10,7 +10,7 @@
         'subtitle' => 'Bem-vindo ao sistema',
         'variant' => 'purple',
         'breadcrumb' => 'Home',
-       
+
     ])
 
 
@@ -65,7 +65,7 @@
                     <div class="text-4xl mb-4">📦</div>
                     <h3 class="text-lg font-semibold mb-2">Gestão de Stock</h3>
                     <p class="text-gray-600 mb-4">Controle produtos e ingredientes</p>
-                    <x-ui.button href="{{ route('restaurant.stock') }}" variant="warning" icon="📋">
+                    <x-ui.button href="{{ route('restaurant.stock') }}" variant="warning" icon="📋" :isLink="true">
                         Gerir Stock
                     </x-ui.button>
                 </div>

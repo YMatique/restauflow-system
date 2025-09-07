@@ -9,7 +9,7 @@
 @php
 $gradients = [
     'primary' => 'from-blue-600 to-purple-600',
-    'success' => 'from-emerald-500 to-green-600', 
+    'success' => 'from-emerald-500 to-green-600',
     'warning' => 'from-amber-500 to-orange-600',
     'danger' => 'from-red-500 to-red-600',
     'purple' => 'from-purple-600 to-indigo-600'
@@ -26,7 +26,7 @@ $gradients = [
                     <div class="text-2xl">🍽️</div>
                     <div class="font-bold text-xl hidden sm:block">RestaurantPOS</div>
                 </div>
-                
+
                 <!-- Breadcrumb -->
                 @if($breadcrumb)
                     <div class="hidden md:flex items-center text-sm text-white/80">
@@ -34,7 +34,7 @@ $gradients = [
                     </div>
                 @endif
             </div>
-            
+
             <!-- Center Section (Title) -->
             @if($title)
                 <div class="flex-1 text-center px-4">
@@ -44,7 +44,7 @@ $gradients = [
                     @endif
                 </div>
             @endif
-            
+
             <!-- Right Section -->
             <div class="flex items-center space-x-3">
                 @if($actions)
@@ -60,8 +60,15 @@ $gradients = [
                             <span>🕐</span>
                             <span x-data x-text="new Date().toLocaleTimeString('pt-PT', { hour: '2-digit', minute: '2-digit' })"></span>
                         </div>
+
+                        {{-- Opções de mudança de lingua --}}
+                        <livewire:lang.language-switcher />
+
+
                     </div>
-                    
+
+
+
                     <!-- Menu Button (Mobile) -->
                     <button @click="$dispatch('toggle-mobile-menu')" class="sm:hidden p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-colors">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

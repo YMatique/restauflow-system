@@ -19,6 +19,7 @@ use App\Livewire\System\UserManagement;
 use App\Livewire\Teste;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 
 Route::get('/', function () {
     return view('welcome');
@@ -63,28 +64,39 @@ Route::prefix('system')->name('system.')->group(function(){
 // ROTAS PARA AS EMPRESA
 Route::middleware(['auth'])->prefix('restaurant')->name('restaurant.')->group(function(){
      Route::get('/dashboard', DashboardComponent::class)->name('dashboard');
-    
+
     // POS System
     Route::get('/pos', POSComponent::class)->name('pos');
-    
+
     // Shift Management
     Route::get('/shifts', ShiftManagement::class)->name('shifts');
-    
+
     // Products Management
     Route::get('/products', ProductManagement::class)->name('products');
-    
+
     // Stock Management
     Route::get('/stock', StockManagement::class)->name('stock');
-    
+
     // Reports
     Route::get('/reports', ReportsComponent::class)->name('reports');
 
     Route::get('/teste', Teste::class)->name('teste');
-    
+
     // Redirect root to dashboard
     Route::get('/', function () {
         return redirect()->route('restaurant.dashboard');
     });
 });
+
+
+
+Route::get('/lang/{locale}', function ($locale) {
+    // verifica se o idioma é suportado
+    if (in_array($locale, ['en', 'pt'])) {
+        Session::put('locale', $locale);
+    }
+    return redirect()->back(); // volta para a página anterior
+})->name('lang.switch');
+
 
 require __DIR__.'/auth.php';

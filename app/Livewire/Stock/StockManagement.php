@@ -9,11 +9,11 @@ use Livewire\Component;
 class StockManagement extends Component
 {
     protected string $layout = 'layouts.app';
-    
+
     public $activeTab = 'products';
     public $showMovementModal = false;
     public $movementType = 'in'; // 'in' or 'out'
-    
+
     public $movementForm = [
         'item_type' => '',
         'item_id' => '',
@@ -24,14 +24,14 @@ class StockManagement extends Component
         'invoice_number' => '',
         'notes' => ''
     ];
-    
+
     public function openMovementModal($type = 'in')
     {
         $this->movementType = $type;
         $this->showMovementModal = true;
         $this->reset('movementForm');
     }
-    
+
     public function saveMovement()
     {
         $this->validate([
@@ -42,9 +42,9 @@ class StockManagement extends Component
             'movementForm.reason' => 'required|string',
             'movementForm.notes' => 'nullable|string|max:500'
         ]);
-        
+
         $product = Product::find($this->movementForm['item_id']);
-        
+
         $movementData = [
             'product_id' => $product->id,
             'type' => $this->movementType,
@@ -56,14 +56,14 @@ class StockManagement extends Component
             'user_id' => auth()->id(),
             'company_id' => auth()->user()->company_id
         ];
-        
+
         if ($this->movementType === 'in') {
             $movementData = array_merge($movementData, [
                 'supplier' => $this->movementForm['supplier'],
                 'unit_cost' => $this->movementForm['unit_cost'],
                 'invoice_number' => $this->movementForm['invoice_number']
             ]);
-            
+
             $product->addStock(
                 $this->movementForm['quantity'],
                 $this->movementForm['reason'],
@@ -77,10 +77,10 @@ class StockManagement extends Component
                 auth()->id()
             );
         }
-        
+
         $this->showMovementModal = false;
         $this->reset('movementForm');
-        
+
         $this->dispatch('toast', [
             'type' => 'success',
             'message' => 'Movimento de stock registrado com sucesso!'
@@ -96,18 +96,19 @@ class StockManagement extends Component
                 ->selectRaw('SUM(stock_quantity * price) as total')
                 ->value('total') ?? 0
         ];
-        
+
         $recentMovements = StockMovement::byCompany(auth()->user()->company_id)
             ->with(['product', 'user'])
             ->latest('date')
             ->limit(20)
             ->get();
-            
+
         $lowStockAlerts = Product::byCompany(auth()->user()->company_id)
             ->lowStock()
             ->with('category')
             ->get();
-        
+
+
         return view('livewire.stock.stock-management', [
             'stats' => $stats,
             'recentMovements' => $recentMovements,
@@ -116,8 +117,10 @@ class StockManagement extends Component
                 ->active()
                 ->with('category')
                 ->get(),
-            'title' => 'Gestão de Stock',
-            'breadcrumb' => 'Dashboard > Stock'
+                'title' =>  __('messages.stock_management.title'),
+                // 'title' =>  __('messages.welcome',  ['name' => 'dayle']),
+
+            'breadcrumb' => 'Dashboard  > Stock'
         ]);
     }
 }

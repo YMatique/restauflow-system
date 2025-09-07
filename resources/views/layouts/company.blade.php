@@ -14,10 +14,10 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-    
+
     <!-- Livewire Styles -->
     @livewireStyles
-    
+
     <!-- Additional Styles -->
     @stack('styles')
 </head>
@@ -99,7 +99,7 @@
                         <p class="text-xs text-gray-500 capitalize">{{ auth()->user()->role }}</p>
                     </div>
                 </div>
-                
+
                 <!-- Settings/Menu -->
                 <div class="relative" x-data="{ open: false }">
                     <button @click="open = !open" class="bg-gray-200 hover:bg-gray-300 p-2 rounded-lg transition-colors">
@@ -110,7 +110,7 @@
 
                     <!-- Dropdown Menu -->
                     <div x-show="open" @click.away="open = false" x-transition class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-1 z-50">
-                        <a href="{{ route('dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <a href="{{ route('restaurant.dashboard') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             📊 Dashboard
                         </a>
                         <a href="" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -142,7 +142,7 @@
             <aside class="fixed inset-y-0 left-0 z-30 w-64 bg-white shadow-lg border-r transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0"
                    :class="{ '-translate-x-full': !sidebarOpen, 'translate-x-0': sidebarOpen }"
                    style="top: 80px;">
-                
+
                 <!-- Sidebar Content -->
                 <div class="flex flex-col h-full">
                     <!-- Navigation Section -->
@@ -175,8 +175,8 @@
             </aside>
 
             <!-- Overlay for mobile -->
-            <div x-show="sidebarOpen" 
-                 @click="sidebarOpen = false" 
+            <div x-show="sidebarOpen"
+                 @click="sidebarOpen = false"
                  x-transition:enter="transition-opacity ease-linear duration-300"
                  x-transition:enter-start="opacity-0"
                  x-transition:enter-end="opacity-100"
@@ -240,10 +240,10 @@
 
     <!-- Livewire Scripts -->
     @livewireScripts
-    
+
     <!-- Alpine.js -->
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
+
     <!-- Additional Scripts -->
     @stack('scripts')
 </body>

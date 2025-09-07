@@ -17,10 +17,10 @@ class DatabaseSeeder extends Seeder
             // CountrySeeder::class,
             // ProvinceSeeder::class,
             // UserSeeder::class,
-
             CompanySeeder::class,
             UserSeeder::class,
             CategorySeeder::class,
+            SubcategorySeeder::class,
             ProductSeeder::class,
             TableSeeder::class,
         ]);

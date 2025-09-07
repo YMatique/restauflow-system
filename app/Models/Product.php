@@ -110,6 +110,10 @@ class Product extends Model
             if (empty($product->slug)) {
                 $product->slug = Str::slug($product->name);
             }
+
+            if (empty($product->code)) {
+                $product->code = Str::upper(Str::random(8));
+            }
         });
 
         static::updating(function ($product) {
@@ -206,7 +210,7 @@ class Product extends Model
         return $this->saleItems()->sum('total_price');
     }
 
-    
+
 /**
  * Check if product can be sold
  */
@@ -215,12 +219,12 @@ class Product extends Model
 //     if (!$this->is_active) {
 //         return false;
 //     }
-    
+
 //     // Check stock if tracking is enabled
 //     if ($this->track_stock) {
 //         return $this->stock_quantity >= $quantity;
 //     }
-    
+
 //     return true;
 // }
 
@@ -232,7 +236,7 @@ class Product extends Model
 //     if (!$this->track_stock) {
 //         return 'in_stock';
 //     }
-    
+
 //     if ($this->stock_quantity <= 0) {
 //         return 'out_of_stock';
 //     } elseif ($this->stock_quantity <= $this->min_stock_level) {

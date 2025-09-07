@@ -203,35 +203,6 @@ class User extends Authenticatable
     }
 
 
-    public function emails()
-    {
-        return $this->morphMany(Email::class, 'emailable');
-    }
-
-
-    public function telephones()
-    {
-        return $this->morphMany(Telephone::class, 'telephonable');
-    }
-
-
-    public function telephonable()
-    {
-        return $this->morphTo();
-    }
-
-    public function addresses()
-    {
-        return $this->morphMany(Address::class, 'addressable');
-    }
-
-    public function primaryTelephone()
-    {
-        return $this->telephones()->where('is_primary', true)->first()
-            ?? $this->telephones()->first();
-    }
-
-
      public function sales(): HasMany
     {
         return $this->hasMany(Sale::class);
@@ -258,7 +229,7 @@ class User extends Authenticatable
     }
 
     // Scopes
-  
+
 
     public function scopeByRole($query, $role)
     {
@@ -271,7 +242,7 @@ class User extends Authenticatable
     }
 
     // Methods
-   
+
 
 
     public function canManage(): bool
@@ -331,8 +302,8 @@ public function hasActiveShift(): bool
  */
 public function canUsePOS(): bool
 {
-    return $this->is_active && 
-           in_array($this->role, ['owner', 'manager', 'cashier']) && 
+    return $this->is_active &&
+           in_array($this->role, ['owner', 'manager', 'cashier']) &&
            $this->hasActiveShift();
 }
 
@@ -350,14 +321,14 @@ public function canPerformAction(string $action): bool
         'stock_manager' => ['stock', 'products'],
         'waiter' => ['pos_limited'] // Limited POS access
     ];
-    
+
     $userPermissions = $permissions[$this->role] ?? [];
-    
+
     return in_array('*', $userPermissions) || in_array($action, $userPermissions);
 }
 
 // ===================================================================
-// Adicionar ao app/Models/Shift.php  
+// Adicionar ao app/Models/Shift.php
 // ===================================================================
 
 /**
@@ -368,13 +339,13 @@ public function getDurationFormatted(): string
     if (!$this->opened_at) {
         return '0h 0min';
     }
-    
+
     $endTime = $this->closed_at ?? now();
     $duration = $this->opened_at->diffInMinutes($endTime);
-    
+
     $hours = floor($duration / 60);
     $minutes = $duration % 60;
-    
+
     return "{$hours}h {$minutes}min";
 }
 
@@ -386,7 +357,7 @@ public function getDurationInMinutes(): int
     if (!$this->opened_at) {
         return 0;
     }
-    
+
     $endTime = $this->closed_at ?? now();
     return $this->opened_at->diffInMinutes($endTime);
 }
@@ -403,13 +374,13 @@ public function close(float $finalAmount, ?string $notes = null, float $withdraw
         'withdrawals' => $withdrawals,
         'status' => 'closed'
     ]);
-    
+
     // Calculate difference
     $expectedAmount = $this->initial_amount + $this->total_sales - $withdrawals;
     $difference = $finalAmount - $expectedAmount;
-    
+
     $this->update(['cash_difference' => $difference]);
-    
+
     // Create closing cash movement
     $this->cashMovements()->create([
         'type' => 'closing',
@@ -467,7 +438,7 @@ public function getHourlySales(): array
                   ->groupBy('hour')
                   ->orderBy('hour')
                   ->get();
-    
+
     $hourlySales = [];
     for ($i = 0; $i < 24; $i++) {
         $hourlySales[$i] = [
@@ -476,7 +447,7 @@ public function getHourlySales(): array
             'count' => 0
         ];
     }
-    
+
     foreach ($sales as $sale) {
         $hourlySales[$sale->hour] = [
             'hour' => sprintf('%02d:00', $sale->hour),
@@ -484,7 +455,7 @@ public function getHourlySales(): array
             'count' => (int) $sale->count
         ];
     }
-    
+
     return array_values($hourlySales);
 }
 
@@ -503,7 +474,7 @@ public function getPerformanceRating(): string
 {
     $averageOrderValue = $this->total_orders > 0 ? $this->total_sales / $this->total_orders : 0;
     $salesPerHour = $this->getDurationInMinutes() > 0 ? ($this->total_sales / $this->getDurationInMinutes()) * 60 : 0;
-    
+
     if ($salesPerHour > 5000 && $averageOrderValue > 300) {
         return 'excellent';
     } elseif ($salesPerHour > 3000 && $averageOrderValue > 200) {
@@ -546,12 +517,12 @@ public function canSell(float $quantity = 1): bool
     if (!$this->is_active) {
         return false;
     }
-    
+
     // Check stock if tracking is enabled
     if ($this->track_stock) {
         return $this->stock_quantity >= $quantity;
     }
-    
+
     return true;
 }
 
@@ -563,7 +534,7 @@ public function getStockStatus(): string
     if (!$this->track_stock) {
         return 'in_stock';
     }
-    
+
     if ($this->stock_quantity <= 0) {
         return 'out_of_stock';
     } elseif ($this->stock_quantity <= $this->min_stock_level) {
@@ -582,7 +553,7 @@ public function needsRestockAlert(): bool
 }
 
 // ===================================================================
-// Adicionar ao app/Models/Table.php  
+// Adicionar ao app/Models/Table.php
 // ===================================================================
 
 /**
@@ -620,7 +591,7 @@ public function getStatusBadge(): array
         'reserved' => ['color' => 'yellow', 'text' => 'Reservada', 'icon' => '🟡'],
         'maintenance' => ['color' => 'gray', 'text' => 'Manutenção', 'icon' => '🔧']
     ];
-    
+
     return $badges[$this->status] ?? $badges['available'];
 }
 }

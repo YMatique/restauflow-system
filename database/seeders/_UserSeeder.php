@@ -17,8 +17,6 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $faker = Faker::create();
-
         // Cria roles padrão
         Role::seedDefaultRoles();
         $this->command->info('Roles padrão criadas com sucesso!');
@@ -34,15 +32,6 @@ class UserSeeder extends Seeder
             'status' => 'active',
         ]);
 
-        // Verifica país Moçambique
-        $country = Country::firstWhere('code', 'MZ');
-        if (!$country) {
-            $this->command->info('País Moçambique não encontrado. Rode primeiro o CountrySeeder.');
-            return;
-        }
-
-        $provinces = Province::where('country_id', $country->id)->get();
-        $cities = City::all();
 
         // Usuários padrão
         $users = [
@@ -74,50 +63,6 @@ class UserSeeder extends Seeder
                 // syncWithoutDetaching evita duplicação
             }
 
-            // Endereço aleatório
-            $province = $provinces->random();
-            $city = $cities->random();
-
-            $user->addresses()->create([
-                'public_id' => Str::uuid(),
-                'country_id' => $country->id,
-                'province_id' => $province->id,
-                'city_id' => $city->id,
-                'street' => $faker->streetAddress,
-                'postalcode' => $faker->postcode,
-            ]);
-
-            // Telefones
-            $user->telephones()->createMany([
-                [
-                    'public_id' => Str::uuid(),
-                    'number' => $faker->numerify('8#######'),
-                    'format' => '+258',
-                    'type' => 'mobile',
-                    'is_primary' => true,
-                ],
-                [
-                    'public_id' => Str::uuid(),
-                    'number' => $faker->numerify('8#######'),
-                    'format' => '+258',
-                    'type' => 'whatsapp',
-                    'is_primary' => false,
-                ],
-            ]);
-
-            // Emails adicionais
-            $user->emails()->createMany([
-                [
-                    'public_id' => Str::uuid(),
-                    'email' => $faker->unique()->safeEmail,
-                    'is_primary' => true,
-                ],
-                [
-                    'public_id' => Str::uuid(),
-                    'email' => $faker->unique()->safeEmail,
-                    'is_primary' => false,
-                ],
-            ]);
         }
 
         $this->command->info('Usuários padrão criados e roles associadas com sucesso!');
