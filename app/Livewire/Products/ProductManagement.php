@@ -16,6 +16,7 @@ class ProductManagement extends Component
 
     protected string $layout = 'layouts.app';
 
+    public $subcategories = [];
     public $search = '';
     public $categoryFilter = '';
     public $statusFilter = '';
@@ -93,6 +94,20 @@ class ProductManagement extends Component
         $this->showModal = true;
     }
 
+    public function updatedProductFormCategoryId($categoryId)
+    {
+        if ($categoryId) {
+            $this->subcategories = \App\Models\Subcategory::where('category_id', $categoryId)
+                                        ->where('is_active', true)
+                                        ->get();
+        } else {
+            $this->subcategories = [];
+        }
+
+        // Limpar a seleção de subcategoria ao mudar de categoria
+        $this->productForm['subcategory_id'] = null;
+    }
+
     public function deleteProduct(Product $product)
     {
         $product->update(['is_active' => false]);
@@ -146,7 +161,6 @@ class ProductManagement extends Component
         return view('livewire.products.product-management', [
             'products' => $products,
             'categories' => Category::active()->byCompany(auth()->user()->company_id)->get(),
-            'subcategories' => [],//Subcategory::active()->byCompany(auth()->user()->company_id)->get(),
             'title' => 'Gestão de Produtos',
             'breadcrumb' => 'Dashboard > Produtos'
         ]);

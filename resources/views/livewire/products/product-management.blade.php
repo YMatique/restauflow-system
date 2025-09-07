@@ -100,9 +100,9 @@
                         @error('productForm.price') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
-                    <div>
+                   <div>
                         <label class="block text-sm font-medium">Category</label>
-                        <select wire:model.defer="productForm.category_id" class="w-full border rounded p-2">
+                        <select wire:model.live="productForm.category_id" class="w-full border rounded p-2">
                             <option value="">-- Select --</option>
                             @foreach($categories as $category)
                                 <option value="{{ $category->id }}">{{ $category->name }}</option>
@@ -111,16 +111,17 @@
                         @error('productForm.category_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
 
-                     <div>
+                    <div>
                         <label class="block text-sm font-medium">Subcategory</label>
-                        <select wire:model.defer="productForm.category_id" class="w-full border rounded p-2">
+                        <select wire:model.defer="productForm.subcategory_id" class="w-full border rounded p-2">
                             <option value="">-- Select --</option>
                             @foreach($subcategories as $subcategory)
                                 <option value="{{ $subcategory->id }}">{{ $subcategory->name }}</option>
                             @endforeach
                         </select>
-                        @error('productForm.category_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        @error('productForm.subcategory_id') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                     </div>
+
 
                     <div class="flex justify-end space-x-2">
                         <button type="button" wire:click="resetForm" class="px-4 py-2 bg-gray-400 text-white rounded">Cancel</button>
