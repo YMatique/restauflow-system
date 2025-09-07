@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->foreignId('subcategory_id')->constrained('subcategories')->onDelete('cascade');
             $table->string('code')->unique();
-            $table->string('name');
+            $table->string('name')->unique();
             $table->string('slug');
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);

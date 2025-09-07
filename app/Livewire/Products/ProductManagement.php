@@ -16,14 +16,21 @@ class ProductManagement extends Component
 
     protected string $layout = 'layouts.app';
 
-    public $subcategories = [];
     public $search = '';
+
+    public $subcategories = [];
+
     public $categoryFilter = '';
+
     public $statusFilter = '';
+
     public $viewMode = 'grid'; // grid or table
 
     public $showModal = false;
+
     public $editingProduct = null;
+
+    public $perPage = 10;//PAgination
 
     public $productForm = [
         'name' => '',
@@ -47,6 +54,10 @@ class ProductManagement extends Component
         'productForm.stock_quantity' => 'nullable|numeric|min:0',
         'productForm.min_level' => 'nullable|numeric|min:0',
     ];
+
+    public function updatePerPage(){
+        $this->resetPage();
+    }
 
     public function updatedSearch()
     {
@@ -156,7 +167,7 @@ class ProductManagement extends Component
                 };
             })
             ->with(['category'])
-            ->paginate(10);
+            ->paginate($this->perPage);
 
         return view('livewire.products.product-management', [
             'products' => $products,

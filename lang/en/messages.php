@@ -12,11 +12,29 @@ return [
     */
 
     // General
+    'home' => 'Home Page',
     'welcome' => 'Welcome to Restflow, :NAME!',
     'success' => 'Operation completed successfully.',
     'error'   => 'An error occurred. Please try again.',
     'nothing_found' =>  'No :record found!',
     'product' => 'Products',
+
+
+    //MENU
+    'dashboard' => [
+        'title'     => 'Dashboard',
+        'subtitle'  => 'Manangment',
+        'stoks'     => 'Stocks',
+        'products'  => 'Products'
+    ],
+
+    // Reports
+    'reports' => [
+        'title'            => 'Reports',
+        'subtitle'         => 'Summaries',
+        'daily_report'     => 'Daily Report',
+        'monthly_report'   => 'Monthly Report',
+    ],
 
 
     // Authentication
@@ -54,9 +72,6 @@ return [
         'stock_updated' => 'Stock updated.',
     ],
 
-    // Reports
-    'report'           => 'Report',
-    'daily_report'     => 'Daily Report',
-    'monthly_report'   => 'Monthly Report',
+
 
 ];

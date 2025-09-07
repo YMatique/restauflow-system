@@ -6,6 +6,7 @@ use App\Livewire\POS\POSComponent;
 use App\Livewire\PosSystemTest;
 use App\Livewire\Products\ProductManagement;
 use App\Livewire\Reports\ReportsComponent;
+use App\Livewire\Restflow\Dashboard;
 use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
@@ -63,7 +64,9 @@ Route::prefix('system')->name('system.')->group(function(){
 
 // ROTAS PARA AS EMPRESA
 Route::middleware(['auth'])->prefix('restaurant')->name('restaurant.')->group(function(){
-     Route::get('/dashboard', DashboardComponent::class)->name('dashboard');
+
+    //Leva para Homepage
+     Route::get('/homepage', DashboardComponent::class)->name('homepage');
 
     // POS System
     Route::get('/pos', POSComponent::class)->name('pos');
@@ -71,11 +74,15 @@ Route::middleware(['auth'])->prefix('restaurant')->name('restaurant.')->group(fu
     // Shift Management
     Route::get('/shifts', ShiftManagement::class)->name('shifts');
 
+
+    // Dashboard
+    Route::get('/dashboard', Dashboard::class)->name('dashboard');
+
     // Products Management
     Route::get('/products', ProductManagement::class)->name('products');
 
     // Stock Management
-    Route::get('/stock', StockManagement::class)->name('stock');
+    Route::get('/stock', StockManagement::class)->name('stocks');
 
     // Reports
     Route::get('/reports', ReportsComponent::class)->name('reports');
@@ -84,7 +91,7 @@ Route::middleware(['auth'])->prefix('restaurant')->name('restaurant.')->group(fu
 
     // Redirect root to dashboard
     Route::get('/', function () {
-        return redirect()->route('restaurant.dashboard');
+        return redirect()->route('restaurant.homepage');
     });
 });
 

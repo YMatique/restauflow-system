@@ -10,14 +10,14 @@ class Stock extends Model
         'product_id', 'current_quantity', 'last_updated'
     ];
 
-    public function product()
-    {
-        return $this->belongsTo(Product::class, 'product_id');
-    }
+    // public function product()
+    // {
+    //     return $this->belongsTo(Product::class, 'product_id');
+    // }
 
-    public function stockMoviments()
-    {
-        return $this->hasMany(StockMovement::class)->orderBy('id', 'desc');
-    }
+    // public function stockMoviments()
+    // {
+    //     return $this->hasMany(StockMovement::class)->orderBy('id', 'desc');
+    // }
 
 }

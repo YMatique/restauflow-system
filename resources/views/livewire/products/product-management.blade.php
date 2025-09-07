@@ -18,16 +18,38 @@
     </div>
 
     <!-- BODY -->
+
     <div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-md space-y-4">
 
-        <!-- Search -->
-        <div class="flex justify-end mb-4">
-            <input
-                type="text"
-                wire:model.live="search"
-                {{-- wire:model.debounce.300ms="search" --}}
-                placeholder="Search products..."
-                class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full max-w-xs">
+
+
+        <!-- SEARCH & FILTER -->
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between mb-4 space-y-2 md:space-y-0 md:space-x-4">
+
+             <!-- Rows per Page -->
+            <select wire:model.live="perPage" class="border rounded p-2 w-15">
+                <option value="05">05</option>
+                <option value="10">10</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+            </select>
+
+            <input type="text" wire:model.live="search" placeholder="Search products..."
+                class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-1/3">
+
+            <select wire:model.live="categoryFilter" class="border rounded p-2">
+                <option value="">-- All Categories --</option>
+                @foreach($categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                @endforeach
+            </select>
+
+            <select wire:model.live="statusFilter" class="border rounded p-2">
+                <option value="">-- All Status --</option>
+                <option value="available">Available</option>
+                <option value="unavailable">Unavailable</option>
+                <option value="low-stock">Low Stock</option>
+            </select>
         </div>
 
         <!-- Table -->

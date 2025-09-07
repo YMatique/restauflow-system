@@ -7,14 +7,36 @@
         <flux:sidebar sticky stashable class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.toggle class="lg:hidden" icon="x-mark" />
 
-            <a href="{{ route('restaurant.dashboard') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
+            <a href="{{ route('restaurant.homepage') }}" class="me-5 flex items-center space-x-2 rtl:space-x-reverse" wire:navigate>
                 <x-app-logo />
             </a>
 
             <flux:navlist variant="outline">
-                <flux:navlist.group :heading="__('Platform')" class="grid">
-                    <flux:navlist.item icon="home" :href="route('restaurant.dashboard')" :current="request()->routeIs('restaurant.dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+
+                <flux:navlist.group :heading="__('messages.dashboard.subtitle')" class="grid">
+
+                    {{-- Dashboard --}}
+                    <flux:navlist.item icon="home" :href="route('restaurant.dashboard')" :current="request()->routeIs('restaurant.dashboard')" wire:navigate>{{ __('messages.dashboard.title') }}</flux:navlist.item>
+
+                     {{-- Products --}}
+                    <flux:navlist.item icon="home" :href="route('restaurant.products')" :current="request()->routeIs('restaurant.products')" wire:navigate>{{ __('messages.dashboard.products') }}</flux:navlist.item>
+
+                    {{-- Stocks --}}
+                    <flux:navlist.item icon="home" :href="route('restaurant.stocks')" :current="request()->routeIs('restaurant.stocks')" wire:navigate>{{ __('messages.dashboard.stoks') }}</flux:navlist.item>
+
                 </flux:navlist.group>
+
+            </flux:navlist>
+
+            <flux:navlist variant="outline">
+
+                <flux:navlist.group :heading="__('messages.reports.subtitle')" class="grid">
+
+                    {{-- Reports --}}
+                    <flux:navlist.item icon="bolt" :href="route('restaurant.dashboard')" :current="request()->routeIs('restaurant.dashboards')" wire:navigate>{{ __('messages.reports.title') }}</flux:navlist.item>
+
+                </flux:navlist.group>
+
             </flux:navlist>
 
             <flux:spacer />
