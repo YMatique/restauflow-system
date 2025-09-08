@@ -23,7 +23,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'António Silva',
                 'email' => 'antonio.silva@saboresdomar.mz',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make('antonio.silva@saboresdomar.mz'),
                 'role' => 'owner',
                 'is_active' => true,
                 'phone' => '+258 84 123 4567',
@@ -32,7 +32,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Maria Santos',
                 'email' => 'maria.santos@saboresdomar.mz',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make('maria.santos@saboresdomar.mz'),
                 'role' => 'manager',
                 'is_active' => true,
                 'phone' => '+258 84 234 5678',
@@ -41,7 +41,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'João Fernandes',
                 'email' => 'joao.fernandes@saboresdomar.mz',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make('joao.fernandes@saboresdomar.mz'),
                 'role' => 'cashier',
                 'is_active' => true,
                 'phone' => '+258 84 345 6789',
@@ -50,7 +50,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Carlos Pereira',
                 'email' => 'carlos@pizzariamilano.mz',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make('carlos@pizzariamilano.mz'),
                 'role' => 'owner',
                 'is_active' => true,
                 'phone' => '+258 84 456 7890',
@@ -59,7 +59,7 @@ class UserSeeder extends Seeder
             [
                 'name' => 'Ana Costa',
                 'email' => 'ana.costa@pizzariamilano.mz',
-                'password' => Hash::make('password123'),
+                'password' => Hash::make('ana.costa@pizzariamilano.mz'),
                 'role' => 'cashier',
                 'is_active' => true,
                 'phone' => '+258 84 567 8901',

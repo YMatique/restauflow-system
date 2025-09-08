@@ -2,7 +2,7 @@
     {{-- resources/views/livewire/auth/system-login.blade.php --}}
 
 <div class="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-indigo-900 to-slate-900 relative overflow-hidden">
-    <!-- Background Pattern -->
+     <!-- Background Pattern -->
     <div class="absolute inset-0 bg-black/20">
         <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Ccircle cx="30" cy="30" r="1"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-40"></div>
     </div>
@@ -53,14 +53,14 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207"></path>
                             </svg>
                         </div>
-                        <input wire:model="email" 
-                               type="email" 
+                        <input wire:model="email"
+                               type="email"
                                autocomplete="email"
                                placeholder="admin@sistema.com"
                                class="block w-full pl-12 pr-4 py-4 bg-white/20 border border-white/30 rounded-xl text-white placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm"
                                required>
                     </div>
-                    @error('email') 
+                    @error('email')
                         <p class="mt-2 text-sm text-red-300 flex items-center">
                             <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
@@ -79,13 +79,13 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                             </svg>
                         </div>
-                        <input wire:model="password" 
+                        <input wire:model="password"
                                :type="showPassword ? 'text' : 'password'"
                                autocomplete="current-password"
                                placeholder="Sua senha segura"
                                class="block w-full pl-12 pr-14 py-4 bg-white/20 border border-white/30 rounded-xl text-white placeholder-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 backdrop-blur-sm"
                                required>
-                        <button type="button" 
+                        <button type="button"
                                 @click="showPassword = !showPassword"
                                 class="absolute inset-y-0 right-0 pr-4 flex items-center">
                             <svg x-show="!showPassword" class="h-5 w-5 text-slate-400 hover:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,7 +97,7 @@
                             </svg>
                         </button>
                     </div>
-                    @error('password') 
+                    @error('password')
                         <p class="mt-2 text-sm text-red-300 flex items-center">
                             <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
@@ -110,19 +110,19 @@
                 <!-- Remember Me -->
                 <div class="flex items-center justify-between">
                     <label class="flex items-center">
-                        <input wire:model="remember" 
-                               type="checkbox" 
+                        <input wire:model="remember"
+                               type="checkbox"
                                class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-white/30 rounded bg-white/20">
                         <span class="ml-2 text-sm text-slate-300">Manter-me conectado</span>
                     </label>
-                    <a href="{{ route('password.request') }}" 
+                    <a href="{{ route('password.request') }}"
                        class="text-sm text-indigo-300 hover:text-indigo-200 font-medium transition-colors">
                         Esqueceu a senha?
                     </a>
                 </div>
 
                 <!-- Submit Button -->
-                <button type="submit" 
+                <button type="submit"
                         wire:loading.attr="disabled"
                         class="w-full flex justify-center items-center px-4 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 border border-transparent rounded-xl font-semibold text-white hover:from-indigo-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] shadow-lg">
                     <svg wire:loading class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
@@ -141,7 +141,7 @@
                         <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
                     </svg>
                     <p class="text-xs text-amber-200">
-                        <strong>Aviso de Segurança:</strong> Esta área é restrita para Super Administradores. 
+                        <strong>Aviso de Segurança:</strong> Esta área é restrita para Super Administradores.
                         Todas as tentativas de acesso são registradas e monitoradas.
                     </p>
                 </div>
@@ -151,7 +151,7 @@
         <!-- Footer -->
         <div class="text-center">
             <p class="text-xs text-slate-400">
-                Sistema protegido por autenticação multi-camada • 
+                Sistema protegido por autenticação multi-camada •
                 <a href="#" class="hover:text-slate-300 transition-colors">Políticas de Segurança</a>
             </p>
         </div>
@@ -165,15 +165,15 @@
         66% { transform: translate(-20px, 20px) scale(0.9); }
         100% { transform: translate(0px, 0px) scale(1); }
     }
-    
+
     .animate-blob {
         animation: blob 7s infinite;
     }
-    
+
     .animation-delay-2000 {
         animation-delay: 2s;
     }
-    
+
     .animation-delay-4000 {
         animation-delay: 4s;
     }

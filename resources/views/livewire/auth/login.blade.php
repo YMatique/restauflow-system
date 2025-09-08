@@ -10,6 +10,7 @@
             wire:model="email"
             :label="__('Email address')"
             type="email"
+            value="antonio.silva@saboresdomar.mz"
             required
             autofocus
             autocomplete="email"
@@ -22,6 +23,7 @@
                 wire:model="password"
                 :label="__('Password')"
                 type="password"
+                value="password123" 
                 required
                 autocomplete="current-password"
                 :placeholder="__('Password')"

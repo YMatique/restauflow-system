@@ -30,7 +30,7 @@ class ProductManagement extends Component
 
     public $editingProduct = null;
 
-    public $perPage = 10;//PAgination
+    public $perPage = 10; //PAgination
 
     public $productForm = [
         'name' => '',
@@ -55,14 +55,6 @@ class ProductManagement extends Component
         'productForm.min_level' => 'nullable|numeric|min:0',
     ];
 
-    public function updatePerPage(){
-        $this->resetPage();
-    }
-
-    public function updatedSearch()
-    {
-        $this->resetPage();
-    }
 
     public function createProduct()
     {
@@ -72,6 +64,8 @@ class ProductManagement extends Component
 
     public function saveProduct()
     {
+
+        dd($this->productForm);
         $this->validate();
 
         $data = array_merge($this->productForm, [

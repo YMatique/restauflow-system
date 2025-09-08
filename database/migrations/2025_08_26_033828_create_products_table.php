@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
             $table->foreignId('subcategory_id')->constrained('subcategories')->onDelete('cascade');
             $table->string('code')->unique();
-            $table->string('name')->unique();
+            $table->string('name');
             $table->string('slug');
             $table->text('description')->nullable();
             $table->decimal('price', 10, 2);
@@ -41,6 +41,9 @@ return new class extends Migration
 
             $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
             $table->timestamps();
+
+            // Índice único composto
+            $table->unique(['name', 'company_id']);
 
             // Indexes for performance
             $table->index(['company_id', 'category_id', 'is_active'], 'idx_products_company_category_active');

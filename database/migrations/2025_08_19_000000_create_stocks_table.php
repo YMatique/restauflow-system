@@ -13,12 +13,22 @@ return new class extends Migration
     {
         Schema::create('stocks', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->unique();
+            $table->string('name');
 
             // Observações
             $table->text('notes')->nullable();
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
             $table->timestamps();
+
+
+            // 🔹 Armazém status
+            $table->enum('status', ['active', 'inactive', 'maintenance'])
+                ->default('active')
+                ->comment('Status do armazém');
+
+            //CONNSTRAIN -- Grantir que cada empresa
+            // tenha apenas um stock com mesmo nome
+            $table->unique(['company_id', 'name']);
 
             // 🔹 Indexes extras para performance
             $table->index('company_id', 'idx_stocks_company');

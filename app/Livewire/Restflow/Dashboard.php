@@ -14,7 +14,7 @@ class Dashboard extends Component
 
     public function render()
     {
-        return view('livewire.stock.stock-management', [
+        return view('livewire.restflow.dashboard', [
             'title' =>  __('messages.stock_management.title'),
             'breadcrumb' => 'Dashboard'
         ]);

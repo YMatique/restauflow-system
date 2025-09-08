@@ -1,32 +1,94 @@
-
 <?php
 
 return [
 
     /*
     |--------------------------------------------------------------------------
-    | Mensagens do Sistema Restflow
+    | Restflow System Messages
     |--------------------------------------------------------------------------
-    | Aqui ficam as mensagens de interface, feedbacks e textos usados no
-    | sistema em português. Você pode alterar conforme a necessidade.
+    | This file contains interface messages, feedbacks, and texts used in the
+    | system in Portuguese. You can modify them as needed.
     |
     */
 
-    // Gerais
-    'welcome' => 'Bem-vindo ao Restflow,, :NAME!' ,
-    'success' => 'Operação realizada com sucesso.',
-    'error'   => 'Ocorreu um erro. Tente novamente.',
-    'nothing_found' => 'Nenhum :record encontrado!',
+    // General
+    'appName' => 'Restflow',
+    'home' => 'Página Inicial',
+    'welcome' => 'Bem-vindo ao Restflow, :NAME!',
+    'success' => 'Operação concluída com sucesso.',
+    'error'   => 'Ocorreu um erro. Por favor, tente novamente.',
+    'nothing_found' =>  'Nenhum :record encontrado!',
+    'product' => 'Produtos',
 
-    // Autenticação
+    // STATUS
+    'status' => [
+        'active'            => 'Ativo',
+        'inactive'          => 'Inativo',
+        'maintenance'       => 'Manutenção',
+
+        'unavailable'       => 'Indisponível',
+        'available'         => 'Disponível',
+        'low-stock'         => 'Estoque baixo',
+    ],
+
+    // MODAL
+    'modal' => [
+        'save' => 'Salvar',
+        'cancel' => 'Cancelar',
+        'edit' => 'Editar',
+        'create' => 'Criar'
+    ],
+
+    // FORMS
+    'forms' => [
+        'title' => [
+            'see'       => 'Ver item',
+            'delete'    => 'Excluir item',
+            'edit'      => 'Editar item'
+        ],
+    ],
+
+    // TOAST MESSAGES
+    'toast' => [
+        'success' => [
+            'key'   => 'Sucesso!',
+            'value' => ':verb :object com sucesso.',
+        ],
+        'error' => [
+            'key'   => 'Erro!',
+            'value' => 'Falha ao :verb :object.',
+        ],
+        'warning' => [
+            'key'   => 'Atenção!',
+            'value' => 'Aviso: :verb :object.',
+        ],
+    ],
+
+    // MENU
+    'dashboard' => [
+        'title'     => 'Painel de Controle',
+        'subtitle'  => 'Gerenciamento',
+        'stoks'     => 'Estoques',
+        'products'  => 'Produtos'
+    ],
+
+    // Reports
+    'reports' => [
+        'title'            => 'Relatórios',
+        'subtitle'         => 'Resumos',
+        'daily_report'     => 'Relatório Diário',
+        'monthly_report'   => 'Relatório Mensal',
+    ],
+
+    // Authentication
     'login'          => 'Entrar',
     'logout'         => 'Sair',
     'register'       => 'Registrar',
-    'email'          => 'E-mail',
+    'email'          => 'Email',
     'password'       => 'Senha',
     'forgot_password'=> 'Esqueceu sua senha?',
 
-    // Restaurante
+    // Restaurant
     'menu'           => 'Cardápio',
     'order'          => 'Pedido',
     'table'          => 'Mesa',
@@ -35,30 +97,27 @@ return [
     'bar'            => 'Bar',
     'waiter'         => 'Garçom',
 
-    // Pedidos
+    // Orders
     'order_created'   => 'Pedido criado com sucesso!',
     'order_updated'   => 'Pedido atualizado.',
     'order_delivered' => 'Pedido entregue.',
     'order_cancelled' => 'Pedido cancelado.',
 
-    // Pagamento
+    // Payment
     'payment'          => 'Pagamento',
-    'payment_success'  => 'Pagamento realizado com sucesso.',
-    'payment_error'    => 'Erro no pagamento. Verifique os dados.',
+    'payment_success'  => 'Pagamento concluído com sucesso.',
+    'payment_error'    => 'Erro no pagamento. Por favor, verifique os detalhes.',
 
-    // Estoque
-    'stock_management' =>[
-        'title'            => 'Gestão de Stock',
-        'stock_low'        => 'Estoque baixo para :item.',
-        'stock_updated'    => 'Estoque atualizado.',
+    // Products Management
+    'product_management' => [
+        'title'         => 'Gestão de Produtos',
     ],
 
-    // Relatórios
-    'report'           => 'Relatório',
-    'daily_report'     => 'Relatório diário',
-    'monthly_report'   => 'Relatório mensal',
-
-
-
+    // Stock Management
+    'stock_management' => [
+        'title'         => 'Gestão de Estoque',
+        'stock_low'     => 'Estoque baixo para :item.',
+        'stock_updated' => 'Estoque atualizado.',
+    ],
 
 ];

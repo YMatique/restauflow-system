@@ -12,6 +12,7 @@ return [
     */
 
     // General
+    'appName' => 'Restflow',
     'home' => 'Home Page',
     'welcome' => 'Welcome to Restflow, :NAME!',
     'success' => 'Operation completed successfully.',
@@ -19,6 +20,50 @@ return [
     'nothing_found' =>  'No :record found!',
     'product' => 'Products',
 
+    //STATUS
+    'status' => [
+        'active'            => 'Active',
+        'inactive'          => 'Inactive',
+        'maintenance'       => 'Maintenance',
+
+        'unavailable'       => 'Unavailable',
+        'available'         => 'Available',
+        'low-stock'         => 'Low stock',
+    ],
+
+    //MODAL
+    'modal' => [
+        'save' => 'Save',
+        'cancel' => 'Cancel',
+        'edit' => 'Edit',
+        'create' => 'Create'
+    ],
+
+
+    //FORMS
+    'forms' => [
+        'title' => [
+            'see'       => 'See item',
+            'delete'    => 'Delete item',
+            'edit'      => 'Edit item'
+        ],
+    ],
+
+    // TOAST MESSAGES
+    'toast' => [
+        'success' => [
+            'key'   => 'Success!',
+            'value' => 'Successfully :verb :object.',
+        ],
+        'error' => [
+            'key'   => 'Error!',
+            'value' => 'Failed to :verb :object.',
+        ],
+        'warning' => [
+            'key'   => 'Warning!',
+            'value' => 'Warning: :verb :object.',
+        ],
+    ],
 
     //MENU
     'dashboard' => [
@@ -65,7 +110,13 @@ return [
     'payment_success'  => 'Payment completed successfully.',
     'payment_error'    => 'Payment error. Please check the details.',
 
-    // Stock
+    //Products Managment
+    'product_management' => [
+        'title'         => 'Products Management',
+    ],
+
+
+    // Stock Managment
     'stock_management' => [
         'title'         => 'Stock Management',
         'stock_low'     => 'Low stock for :item.',

@@ -2,122 +2,121 @@
 
 namespace App\Livewire\Stock;
 
-use App\Models\Product;
 use App\Models\Stock;
-use App\Models\StockMovement;
+use App\Traits\WithToast;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
+use Livewire\WithPagination;
+
+// #[Layout('components.layouts.app-main')]
 
 class StockManagement extends Component
 {
+    use WithPagination, WithToast;
+
     protected string $layout = 'layouts.app';
 
-    public $activeTab = 'products';
-    public $showMovementModal = false;
-    public $movementType = 'in'; // 'in' or 'out'
+    //PAGination
+    public $perPage = 10;
 
-    public  $categories = [];
+    //Filters and seacher
+    public $statusFilter = '';
 
-    public $movementForm = [
-        'item_type'     => '',
-        'item_id'       => '',
-        'quantity'      => '',
-        'reason'        => 'stock_entry',
-        'supplier'      => '',
-        'unit_cost'     => '',
-        'invoice_number'=> '',
-        'notes'         => ''
+    public $search = '';
+
+    public $showModal = false;
+
+
+    public $editingStock  = null;
+
+    //Select
+    public $statusDropDown = [];
+
+    //StockForm
+    public $stockForm = [
+        'name' => '',
+        'notes' => '',
+        'status' => ''
     ];
 
-    public function openMovementModal($type = 'in')
+
+
+    public function mount()
     {
-        $this->movementType = $type;
-        $this->showMovementModal = true;
-        $this->reset('movementForm');
+        $this->statusDropDown = [
+            'active' => __('messages.status.active'),
+            'inactive' => __('messages.status.inactive'),
+            'maintenance' => __('messages.status.maintenance'),
+        ];
     }
 
-    public function saveMovement()
-    {
-        $this->validate([
-            'movementForm.item_type' => 'required|in:product,ingredient',
-            'movementForm.item_id'   => 'required|exists:products,id',
-            'movementForm.quantity'  => 'required|numeric|min:0.01',
-            'movementForm.unit_cost' => 'nullable|numeric|min:0',
-            'movementForm.reason'    => 'required|string',
-            'movementForm.notes'     => 'nullable|string|max:500'
-        ]);
+    // Validation rules
+    protected $rules = [
+        'stockForm.name' => 'required|string|max:255',
+        'stockForm.notes' => 'nullable|string',
+        'stockForm.status' => 'required|in:active,inactive,maintenance',
+    ];
 
-        $product = Product::find($this->movementForm['item_id']);
 
-        $movementData = [
-            'product_id'     => $product->id,
-            'type'           => $this->movementType,
-            'quantity'       => $this->movementForm['quantity'],
-            'previous_stock' => $product->stock_quantity,
-            'reason'         => $this->movementForm['reason'],
-            'notes'          => $this->movementForm['notes'],
-            'date'           => now(),
-            'user_id'        => auth()->id(),
-            'company_id'     => auth()->user()->company_id
-        ];
 
-        if ($this->movementType === 'in') {
-            $movementData = array_merge($movementData, [
-                'supplier'      => $this->movementForm['supplier'],
-                'unit_cost'     => $this->movementForm['unit_cost'],
-                'invoice_number'=> $this->movementForm['invoice_number']
-            ]);
+    public function createStock(){
+        $this->reset(['stockForm']);
+        $this->showModal = true;
+    }
 
-            $product->addStock(
-                $this->movementForm['quantity'],
-                $this->movementForm['reason'],
-                auth()->id(),
-                $movementData
-            );
-        } else {
-            $product->reduceStock(
-                $this->movementForm['quantity'],
-                $this->movementForm['reason'],
-                auth()->id()
+    public function resetForm(){
+        $this->reset(['stockForm']);
+        $this->showModal = false;
+    }
+
+
+    public function saveStock(){
+
+        $this->validate();
+
+        $companyId = auth()->user()->company_id;
+
+        $this->stockForm = array_merge(['company_id' => $companyId], $this->stockForm);
+
+        if(Stock::create($this->stockForm)){
+            $this->toastSuccess('');
+
+            $this->reset(['stockForm', 'showModal']);
+
+            $this->toastError(
+                __('messages.toast.success.key'),
+                __('messages.toast.success.value', ['verb' => 'create', 'object' => 'stock'])
             );
         }
 
-        $this->showMovementModal = false;
-        $this->reset('movementForm');
-
-        $this->dispatch('toast', [
-            'type' => 'success',
-            'message' => 'Movimento de stock registrado com sucesso!'
-        ]);
+        else {
+            $this->toastError(
+                __('messages.toast.error.key'),
+                __('messages.toast.error.value', ['verb' => 'create', 'object' => 'stock'])
+            );
+        }
     }
+
+
 
     public function render()
     {
-        $companyId = auth()->user()->company_id;
+       $companyId = auth()->user()->company_id;
 
-        $stats = [
-            'total_items' => Product::byCompany($companyId)->active()->count(),
-            'low_stock'   => Product::byCompany($companyId)->lowStock()->count(),
-            'out_stock'   => Product::byCompany($companyId)->where('stock_quantity', '<=', 0)->count(),
-            'total_value' => Product::byCompany($companyId)
-                                ->selectRaw('SUM(stock_quantity * price) as total')
-                                ->value('total') ?? 0
-        ];
-
-        $recentMovements = StockMovement::byCompany($companyId)
-                            ->with(['product', 'user'])
-                            ->latest('date')
-                            ->limit(20)
-                            ->get();
-
-        $lowStockAlerts = Product::byCompany($companyId)
-                            ->lowStock()
-                            ->with('category')
-                            ->get();
+        $stocks = Stock::query()
+            ->where('company_id', $companyId)
+            ->when($this->search, fn($q) =>
+                $q->where('name', 'like', "%{$this->search}%")
+            )
+            ->when($this->statusFilter, fn($q) =>
+                $q->where('status', $this->statusFilter)
+            )
+            ->paginate($this->perPage);
 
         return view('livewire.stock.stock-management', [
-            'stocks' => Stock::all(),
-            'title'           => __('messages.stock_management.title'),
-            'breadcrumb'      => 'Dashboard > Stock'
+            'stocks'            => $stocks,
+            'title'             => __('messages.stock_management.title'),
+            'breadcrumb'        => 'Dashboard > Stock'
         ]);
     }
 }
