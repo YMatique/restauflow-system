@@ -64,8 +64,6 @@ class ProductManagement extends Component
 
     public function saveProduct()
     {
-
-        dd($this->productForm);
         $this->validate();
 
         $data = array_merge($this->productForm, [
@@ -138,7 +136,7 @@ class ProductManagement extends Component
             'is_available' => true,
             'is_active' => true
         ];
-        $this->editingProduct = null;
+        $this->editingProduct = false;
         $this->showModal = false;
     }
 

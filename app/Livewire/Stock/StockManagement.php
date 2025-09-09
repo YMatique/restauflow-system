@@ -27,7 +27,7 @@ class StockManagement extends Component
     public $showModal = false;
 
 
-    public $editingStock  = null;
+    public $editingStock  = false;
 
     //Select
     public $statusDropDown = [];
@@ -60,7 +60,7 @@ class StockManagement extends Component
 
 
     public function createStock(){
-        $this->reset(['stockForm']);
+        $this->resetForm();
         $this->showModal = true;
     }
 
@@ -69,6 +69,24 @@ class StockManagement extends Component
         $this->showModal = false;
     }
 
+
+    public function editStock(Stock $stock){
+        $this->stockForm = collect($stock->attributesToArray())
+            ->except(['created_at', 'updated_at'])
+            ->toArray();
+        $this->editingStock = true;
+        $this->showModal = true;
+    }
+
+    public function updateStock(Stock $stock){
+        $this->validate();
+        $stock->update($this->stockForm);
+        $this->resetForm();
+    }
+
+    public function deleteStock(Stock $stock){
+        $stock->delete();
+    }
 
     public function saveStock(){
 

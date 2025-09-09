@@ -17,24 +17,25 @@ return new class extends Migration
 
             // Observações
             $table->text('notes')->nullable();
+
+            // Empresa que possui o stock
             $table->foreignId('company_id')->constrained()->onDelete('cascade');
-            $table->timestamps();
 
-
-            // 🔹 Armazém status
+            // Status do armazém
             $table->enum('status', ['active', 'inactive', 'maintenance'])
                 ->default('active')
                 ->comment('Status do armazém');
 
-            //CONNSTRAIN -- Grantir que cada empresa
-            // tenha apenas um stock com mesmo nome
+            $table->timestamps();
+
+            // Garantir que cada empresa tenha apenas um stock com o mesmo nome
             $table->unique(['company_id', 'name']);
 
-            // 🔹 Indexes extras para performance
+            // Indexes extras para performance
             $table->index('company_id', 'idx_stocks_company');
             $table->index('name', 'idx_stocks_name');
-            $table->index(['company_id', 'name'], 'idx_stocks_company_name');
         });
+
     }
 
     /**

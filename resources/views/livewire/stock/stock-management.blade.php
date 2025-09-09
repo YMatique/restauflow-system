@@ -7,7 +7,7 @@
             <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ $breadcrumb }}</p>
         </div>
         <button wire:click="createStock"
-            class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors">
+            class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors cursor-pointer">
             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 4v16m8-8H4" />
@@ -41,9 +41,9 @@
             <!-- Status Filter -->
             <select wire:model.live="statusFilter" class="border rounded p-2">
                 <option value="">-- All Status --</option>
-                <option value="active">Activo</option>
-                <option value="inactive">Inativo</option>
-                <option value="maintenance">Manuteção</option>
+                <option value="active">  {{ __('messages.status.active') }}</option>
+                <option value="inactive"> {{ __('messages.status.inactive') }}</option>
+                <option value="maintenance">{{ __('messages.status.maintenance') }}</option>
             </select>
         </div>
 
@@ -68,14 +68,18 @@
                             {{ $stock->notes ?? '-' }}
                         </td>
                         <td class="px-4 py-2 whitespace-nowrap">
-                            {{ $stock->quantity ?? '*' }}
+                            {{ __('messages.status.'.$stock->status) }}
                         </td>
 
                         <td class="px-4 py-2 whitespace-nowrap space-x-2">
                             <button wire:click="editStock({{ $stock->id }})"
-                                class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600" title="{{ __('messages.forms.title.edit') }}">🖋️</button>
+                                class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer" title="{{ __('messages.forms.title.edit') }}">👁️</button>
+
+                            <button wire:click="editStock({{ $stock->id }})"
+                                class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 cursor-pointer" title="{{ __('messages.forms.title.edit') }}">🖋️</button>
+
                             <button wire:click="deleteStock({{ $stock->id }})"
-                                class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600" title="{{ __('messages.forms.title.delete') }}">🗑️</button>
+                                class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer" title="{{ __('messages.forms.title.delete') }}">🗑️</button>
                         </td>
                     </tr>
                     @empty
@@ -102,7 +106,9 @@
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-lg p-6">
                     <h2 class="text-lg font-bold mb-4">{{ $editingStock ? 'Edit Stock' : 'New Stock' }}</h2>
 
-                    <form wire:submit.prevent="saveStock" class="space-y-4">
+                        {{-- <form wire:submit.prevent="{{ $editingStock ? 'updateStock(stockForm.id)' :'saveStock' }}" class="space-y-4"> --}}
+                        <form wire:submit.prevent="{{ $editingStock ? 'updateStock(' . $stockForm['id'] . ')' : 'saveStock' }}" class="space-y-4">
+
                         <div>
                             <label class="block text-sm font-medium">Name</label>
                             <input type="text" wire:model.defer="stockForm.name" class="w-full border rounded p-2">
@@ -133,10 +139,11 @@
 
 
                         <div class="flex justify-end space-x-2">
-                            <button type="button" wire:click="resetForm" class="px-4 py-2 bg-gray-400 text-white rounded">Cancel</button>
-                            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">
+                            <button type="button" wire:click="resetForm" class="px-4 py-2 bg-gray-400 text-white rounded cursor-pointer">Cancel</button>
+                           <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer">
                                 {{ $editingStock ? 'Update' : 'Save' }}
                             </button>
+
                         </div>
                     </form>
                 </div>
