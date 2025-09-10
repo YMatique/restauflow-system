@@ -112,12 +112,15 @@ return [
 
     //Products Managment
     'product_management' => [
+        'key' => 'Products',
         'title'         => 'Products Management',
+
     ],
 
 
     // Stock Managment
     'stock_management' => [
+        'key'           => 'Stocks',
         'title'         => 'Stock Management',
         'stock_low'     => 'Low stock for :item.',
         'stock_updated' => 'Stock updated.',

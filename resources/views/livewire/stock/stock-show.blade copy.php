@@ -68,38 +68,58 @@
                     <tr>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">#</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Name</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Datalhes</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Stock</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Available</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Reserved</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Damaged</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+
+
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
-                    @forelse($stocks as $stock)
+                    @forelse($products as $product)
                     <tr>
                         <td class="px-4 py-2 whitespace-nowrap">{{ $loop->iteration }}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">{{ $stock->name }}</td>
+
+                        <td class="px-4 py-2 whitespace-nowrap">{{ $product->name }}</td>
+
                         <td class="px-4 py-2 whitespace-nowrap">
-                            {{ $stock->notes ?? '-' }}
+                            {{ $product->total }}
                         </td>
-                        <td class="px-4 py-2 whitespace-nowrap">
-                            {{ __('messages.status.'.$stock->status) }}
+
+                         <td class="px-4 py-2 whitespace-nowrap">
+                            {{ $product->available }}
+                        </td>
+
+
+                         <td class="px-4 py-2 whitespace-nowrap">
+                            {{ $product->reserved }}
+                        </td>
+
+                           <td class="px-4 py-2 whitespace-nowrap">
+                            {{ $product->damaged }}
                         </td>
 
                         <td class="px-4 py-2 whitespace-nowrap space-x-2">
-                            <button wire:click="showDetailedStock({{ $stock->id }})"
+                            -
+
+                            {{-- <button wire:click="editStock({{ $product->id }})"
                                 class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer" title="{{ __('messages.forms.title.edit') }}">👁️</button>
 
-                            <button wire:click="editStock({{ $stock->id }})"
+                            <button wire:click="editStock({{ $product->id }})"
                                 class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 cursor-pointer" title="{{ __('messages.forms.title.edit') }}">🖋️</button>
 
-                            <button wire:click="deleteStock({{ $stock->id }})"
-                                class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer" title="{{ __('messages.forms.title.delete') }}">🗑️</button>
-                        </td>
+                            <button wire:click="deleteStock({{ $product->id }})"
+                                class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer" title="{{ __('messages.forms.title.delete') }}">🗑️</button> --}}
+
+
+                            </td>
                     </tr>
                     @empty
                     <tr>
                         <td colspan="6" class="px-4 py-4 text-center text-gray-500 dark:text-gray-300">
-                            {{ __('messages.nothing_found', ['record' => __('messages.stock_management.key')]) }}
+                            {{ __('messages.nothing_found', ['record' => __('messages.product_management.key')]) }}
                         </td>
                     </tr>
                     @endforelse
@@ -111,7 +131,7 @@
 
         <!-- PAGINATION -->
         <div class="flex justify-end mt-4">
-            {{ $stocks->links() }}
+            {{ $products->links() }}
         </div>
 
         <!-- Modal de criação/edição -->

@@ -3,7 +3,10 @@
     <!-- HEADER -->
     <div class="flex items-center justify-between mb-4">
         <div>
-            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ $title }}</h1>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                {{ $title }} ➡️
+                {{ \App\Models\Stock::find($selectedStockId)->name }}
+            </h1>
             <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                 @foreach ($breadcrumb as $item)
                     @if(isset($item['url']))
@@ -18,6 +21,8 @@
                         <span class="mx-1">/</span>
                     @endif
                 @endforeach
+
+
             </p>
         </div>
         <button wire:click="createStock"
@@ -77,53 +82,77 @@
 
                     </tr>
                 </thead>
+
                 <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
                     @forelse($products as $product)
-                    <tr>
-                        <td class="px-4 py-2 whitespace-nowrap">{{ $loop->iteration }}</td>
+                        <tr>
+                            <td class="px-4 py-2 whitespace-nowrap">{{ $loop->iteration }}</td>
+                            <td class="px-4 py-2 whitespace-nowrap">{{ $product->name }}</td>
 
-                        <td class="px-4 py-2 whitespace-nowrap">{{ $product->name }}</td>
-
-                        <td class="px-4 py-2 whitespace-nowrap">
-                            {{ $product->total }}
-                        </td>
-
-                         <td class="px-4 py-2 whitespace-nowrap">
-                            {{ $product->available }}
-                        </td>
+                            <!-- Total -->
+                            <td class="px-4 py-2 whitespace-nowrap">{{ $product->total }}</td>
 
 
-                         <td class="px-4 py-2 whitespace-nowrap">
-                            {{ $product->reserved }}
-                        </td>
-
-                           <td class="px-4 py-2 whitespace-nowrap">
-                            {{ $product->damaged }}
-                        </td>
-
-                        <td class="px-4 py-2 whitespace-nowrap space-x-2">
-                            -
-
-                            {{-- <button wire:click="editStock({{ $product->id }})"
-                                class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer" title="{{ __('messages.forms.title.edit') }}">👁️</button>
-
-                            <button wire:click="editStock({{ $product->id }})"
-                                class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600 cursor-pointer" title="{{ __('messages.forms.title.edit') }}">🖋️</button>
-
-                            <button wire:click="deleteStock({{ $product->id }})"
-                                class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600 cursor-pointer" title="{{ __('messages.forms.title.delete') }}">🗑️</button> --}}
-
-
+                            <!-- Available -->
+                            <td class="px-4 py-2 whitespace-nowrap">
+                                @if($editingCell === "available-{$product->id}")
+                                    <input type="number"
+                                        wire:model.defer="editableValues.available"
+                                        wire:keydown.enter="saveInline({{ $product->id }}, 'available')"
+                                        wire:blur="saveInline({{ $product->id }}, 'available')"
+                                        class="w-20 border rounded p-1">
+                                @else
+                                    <span wire:click="$set('editingCell', 'available-{{ $product->id }}')"
+                                        class="cursor-pointer">
+                                        {{ $product->available }}
+                                    </span>
+                                @endif
                             </td>
-                    </tr>
+
+                            <!-- Reserved -->
+                            <td class="px-4 py-2 whitespace-nowrap">
+                                @if($editingCell === "reserved-{$product->id}")
+                                    <input type="number"
+                                        wire:model.defer="editableValues.reserved"
+                                        wire:keydown.enter="saveInline({{ $product->id }}, 'reserved')"
+                                        wire:blur="saveInline({{ $product->id }}, 'reserved')"
+                                        class="w-20 border rounded p-1">
+                                @else
+                                    <span wire:click="$set('editingCell', 'reserved-{{ $product->id }}')"
+                                        class="cursor-pointer">
+                                        {{ $product->reserved }}
+                                    </span>
+                                @endif
+                            </td>
+
+                            <!-- Damaged -->
+                            <td class="px-4 py-2 whitespace-nowrap">
+                                @if($editingCell === "damaged-{$product->id}")
+                                    <input type="number"
+                                        wire:model.defer="editableValues.damaged"
+                                        wire:keydown.enter="saveInline({{ $product->id }}, 'damaged')"
+                                        wire:blur="saveInline({{ $product->id }}, 'damaged')"
+                                        class="w-20 border rounded p-1">
+                                @else
+                                    <span wire:click="$set('editingCell', 'damaged-{{ $product->id }}')"
+                                        class="cursor-pointer">
+                                        {{ $product->damaged }}
+                                    </span>
+                                @endif
+                            </td>
+
+                            <td class="px-4 py-2 whitespace-nowrap">-</td>
+                        </tr>
                     @empty
-                    <tr>
-                        <td colspan="6" class="px-4 py-4 text-center text-gray-500 dark:text-gray-300">
-                            {{ __('messages.nothing_found', ['record' => __('messages.stock')]) }}
-                        </td>
-                    </tr>
+                        <tr>
+                            <td colspan="6" class="px-4 py-4 text-center text-gray-500 dark:text-gray-300">
+                                {{ __('messages.nothing_found', ['record' => __('messages.product_management.key')]) }}
+                            </td>
+                        </tr>
                     @endforelse
                 </tbody>
+
+
             </table>
         </div>
         <!-- END TABLE -->

@@ -3,6 +3,7 @@
 namespace App\Livewire\Stock;
 
 use App\Models\Stock;
+use App\Models\StockProduct;
 use App\Traits\WithToast;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -12,6 +13,39 @@ class StockManagement extends Component
     use WithPagination, WithToast;
 
     protected string $layout = 'layouts.app';
+
+
+    public $editingCell = null;
+
+    public $editableValues = [
+        'available' => null,
+        'reserved' => null,
+        'damaged' => null,
+    ];
+
+   public function saveInline($productId, $field)
+{
+    $stockProduct = StockProduct::where('product_id', $productId)
+        ->where('stock_id', $this->selectedStockId)
+        ->where('company_id', auth()->user()->company_id)
+        // ->where('status', $field) // ⚠ cuidado, só use se quiser filtrar status atual
+        ->first(); // ⬅ aqui, não get()
+
+    if (!$stockProduct) {
+        $this->toast('error', 'Registro de estoque não encontrado.');
+        return;
+    }
+
+    // Atualiza o campo editado
+    $stockProduct->quantity = $this->editableValues[$field];
+    $stockProduct->save();
+
+    $this->editingCell = null;
+
+    $this->toast('success', 'Registro salvo com sucesso.');
+}
+
+
 
     // Pagination
     public $perPage = 10;
@@ -116,11 +150,19 @@ class StockManagement extends Component
 
     public function deleteStock(Stock $stock)
     {
-        $stock->delete();
+        if ($stock->availableProducts()->doesntExist()) {
 
-        $this->toastSuccess(
-            __('messages.toast.success.key'),
-            __('messages.toast.success.value', ['verb' => 'delete', 'object' => 'stock'])
+            $stock->delete();
+
+             $this->toastSuccess(
+                __('messages.toast.success.key'),
+                __('messages.toast.success.value', ['verb' => 'delete', 'object' => 'stock'])
+            );
+        }
+
+        $this->toastError(
+            __('messages.toast.error.key'),
+            __('messages.toast.error.value', ['verb' => 'delete', 'object' => 'stock'])
         );
     }
 
