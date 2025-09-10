@@ -121,6 +121,7 @@ return [
         'title'         => 'Stock Management',
         'stock_low'     => 'Low stock for :item.',
         'stock_updated' => 'Stock updated.',
+        'stock_detail'  => 'Stock Details'
     ],
 
 
