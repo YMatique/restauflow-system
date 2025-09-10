@@ -83,75 +83,48 @@
                     </tr>
                 </thead>
 
-                <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
+                 <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
                     @forelse($products as $product)
-                        <tr>
-                            <td class="px-4 py-2 whitespace-nowrap">{{ $loop->iteration }}</td>
-                            <td class="px-4 py-2 whitespace-nowrap">{{ $product->name }}</td>
+                    <tr>
+                        <td class="px-4 py-2 whitespace-nowrap">{{ $loop->iteration }}</td>
 
-                            <!-- Total -->
-                            <td class="px-4 py-2 whitespace-nowrap">{{ $product->total }}</td>
+                        <td class="px-4 py-2 whitespace-nowrap">{{ $product->name }}</td>
+
+                        <td class="px-4 py-2 whitespace-nowrap">
+                            {{ $product->total }}
+                        </td>
+
+                         <td class="px-4 py-2 whitespace-nowrap">
+                            {{ $product->available }}
+                        </td>
 
 
-                            <!-- Available -->
-                            <td class="px-4 py-2 whitespace-nowrap">
-                                @if($editingCell === "available-{$product->id}")
-                                    <input type="number"
-                                        wire:model.defer="editableValues.available"
-                                        wire:keydown.enter="saveInline({{ $product->id }}, 'available')"
-                                        wire:blur="saveInline({{ $product->id }}, 'available')"
-                                        class="w-20 border rounded p-1">
-                                @else
-                                    <span wire:click="$set('editingCell', 'available-{{ $product->id }}')"
-                                        class="cursor-pointer">
-                                        {{ $product->available }}
-                                    </span>
-                                @endif
-                            </td>
+                         <td class="px-4 py-2 whitespace-nowrap">
+                            {{ $product->reserved }}
+                        </td>
 
-                            <!-- Reserved -->
-                            <td class="px-4 py-2 whitespace-nowrap">
-                                @if($editingCell === "reserved-{$product->id}")
-                                    <input type="number"
-                                        wire:model.defer="editableValues.reserved"
-                                        wire:keydown.enter="saveInline({{ $product->id }}, 'reserved')"
-                                        wire:blur="saveInline({{ $product->id }}, 'reserved')"
-                                        class="w-20 border rounded p-1">
-                                @else
-                                    <span wire:click="$set('editingCell', 'reserved-{{ $product->id }}')"
-                                        class="cursor-pointer">
-                                        {{ $product->reserved }}
-                                    </span>
-                                @endif
-                            </td>
+                           <td class="px-4 py-2 whitespace-nowrap">
+                            {{ $product->damaged }}
+                        </td>
 
-                            <!-- Damaged -->
-                            <td class="px-4 py-2 whitespace-nowrap">
-                                @if($editingCell === "damaged-{$product->id}")
-                                    <input type="number"
-                                        wire:model.defer="editableValues.damaged"
-                                        wire:keydown.enter="saveInline({{ $product->id }}, 'damaged')"
-                                        wire:blur="saveInline({{ $product->id }}, 'damaged')"
-                                        class="w-20 border rounded p-1">
-                                @else
-                                    <span wire:click="$set('editingCell', 'damaged-{{ $product->id }}')"
-                                        class="cursor-pointer">
-                                        {{ $product->damaged }}
-                                    </span>
-                                @endif
-                            </td>
+                        <td class="px-4 py-2 whitespace-nowrap space-x-2">
 
-                            <td class="px-4 py-2 whitespace-nowrap">-</td>
-                        </tr>
+                            <button wire:click="editStock({{ $product->id }})"
+                                class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer" title="{{ __('messages.forms.title.edit') }}">
+                                👁️
+                            </button>
+                            
+                        </td>
+
+                    </tr>
                     @empty
-                        <tr>
-                            <td colspan="6" class="px-4 py-4 text-center text-gray-500 dark:text-gray-300">
-                                {{ __('messages.nothing_found', ['record' => __('messages.product_management.key')]) }}
-                            </td>
-                        </tr>
+                    <tr>
+                        <td colspan="6" class="px-4 py-4 text-center text-gray-500 dark:text-gray-300">
+                            {{ __('messages.nothing_found', ['record' => __('messages.product_management.key')]) }}
+                        </td>
+                    </tr>
                     @endforelse
                 </tbody>
-
 
             </table>
         </div>

@@ -14,39 +14,6 @@ class StockManagement extends Component
 
     protected string $layout = 'layouts.app';
 
-
-    public $editingCell = null;
-
-    public $editableValues = [
-        'available' => null,
-        'reserved' => null,
-        'damaged' => null,
-    ];
-
-   public function saveInline($productId, $field)
-{
-    $stockProduct = StockProduct::where('product_id', $productId)
-        ->where('stock_id', $this->selectedStockId)
-        ->where('company_id', auth()->user()->company_id)
-        // ->where('status', $field) // ⚠ cuidado, só use se quiser filtrar status atual
-        ->first(); // ⬅ aqui, não get()
-
-    if (!$stockProduct) {
-        $this->toast('error', 'Registro de estoque não encontrado.');
-        return;
-    }
-
-    // Atualiza o campo editado
-    $stockProduct->quantity = $this->editableValues[$field];
-    $stockProduct->save();
-
-    $this->editingCell = null;
-
-    $this->toast('success', 'Registro salvo com sucesso.');
-}
-
-
-
     // Pagination
     public $perPage = 10;
 
