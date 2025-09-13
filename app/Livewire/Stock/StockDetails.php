@@ -4,6 +4,7 @@ namespace App\Livewire\Stock;
 
 use App\Models\Stock;
 use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 
 
@@ -32,6 +33,7 @@ class StockDetails extends Component
     }
 
 
+    #[Title('Testando o layout')]
     public function render()
     {
 

@@ -54,10 +54,10 @@
 
             <!-- Status Filter -->
             <select wire:model.live="statusFilter" class="border rounded p-2">
-                <option value="">-- All Status --</option>
-                <option value="active">  {{ __('messages.status.active') }}</option>
-                <option value="inactive"> {{ __('messages.status.inactive') }}</option>
-                <option value="maintenance">{{ __('messages.status.maintenance') }}</option>
+                <option value="">--  All Status --</option>
+                 @foreach(\App\Models\Stock::statusOptions() as $key => $label)
+                    <option value="{{ $key }}"  @selected($statusFilter === $key) >{{ $label }}</option>
+                @endforeach
             </select>
         </div>
 
@@ -124,8 +124,7 @@
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-lg p-6">
                     <h2 class="text-lg font-bold mb-4">{{ $editingStock ? 'Edit Stock' : 'New Stock' }}</h2>
 
-                        {{-- <form wire:submit.prevent="{{ $editingStock ? 'updateStock(stockForm.id)' :'saveStock' }}" class="space-y-4"> --}}
-                        <form wire:submit.prevent="{{ $editingStock ? 'updateStock(' . $stockForm['id'] . ')' : 'saveStock' }}" class="space-y-4">
+                    <form wire:submit.prevent="{{ $editingStock ? 'updateStock(' . $stockForm['id'] . ')' : 'saveStock' }}" class="space-y-4">
 
                         <div>
                             <label class="block text-sm font-medium">Name</label>
@@ -143,7 +142,7 @@
                             @enderror
                         </div>
 
-                    <div>
+                        <div>
                             <label class="block text-sm font-medium">Status</label>
                             <select wire:model.defer="stockForm.status" class="w-full border rounded p-2">
                                 <option value="">-- Select --</option>
@@ -158,7 +157,7 @@
 
                         <div class="flex justify-end space-x-2">
                             <button type="button" wire:click="resetForm" class="px-4 py-2 bg-gray-400 text-white rounded cursor-pointer">Cancel</button>
-                           <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer">
+                            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer">
                                 {{ $editingStock ? 'Update' : 'Save' }}
                             </button>
 

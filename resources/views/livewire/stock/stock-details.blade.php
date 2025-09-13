@@ -27,8 +27,10 @@
         <a href="{{ route('restaurant.stocks') }}"
             class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors cursor-pointer">
                 Voltar
-            </a>
-        </div>
+        </a>
+
+
+    </div>
 
 
     <div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-md space-y-4">

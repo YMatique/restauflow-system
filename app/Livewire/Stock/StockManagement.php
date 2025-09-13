@@ -23,9 +23,6 @@ class StockManagement extends Component
     public $statusFilter = '';
     public $search = '';
 
-    // Status dropdown
-    public $statusDropDown = [];
-
     // View controllers
     public $showModal = false;
     public $editingStock = false;
@@ -38,15 +35,6 @@ class StockManagement extends Component
     ];
 
     #[Title('Gestão de Stocks')]
-    public function mount()
-    {
-        $this->statusDropDown = [
-            'active' => __('messages.status.active'),
-            'inactive' => __('messages.status.inactive'),
-            'maintenance' => __('messages.status.maintenance'),
-        ];
-    }
-
     // Validation rules
     protected $rules = [
         'stockForm.name' => 'required|string|max:255',

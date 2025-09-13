@@ -15,6 +15,24 @@ class Stock extends Model
     ];
 
 
+    // Status possíveis (constantes)
+    const STATUS_ACTIVE      = 'active';
+    const STATUS_INACTIVE    = 'inactive';
+    const STATUS_MAINTENANCE = 'maintenance';
+
+    /**
+     * Retorna todos os status para dropdown ou validação
+     */
+    public static function statusOptions(): array
+    {
+        return [
+            self::STATUS_ACTIVE      => __('messages.status.active'),
+            self::STATUS_INACTIVE    => __('messages.status.inactive'),
+            self::STATUS_MAINTENANCE => __('messages.status.maintenance'),
+        ];
+    }
+
+
     // Casts para facilitar manipulação
     protected $casts = [
         'status' => 'string', // poderia ser enum, mas string funciona bem

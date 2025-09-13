@@ -15,10 +15,15 @@
                 @endforeach
             </p>
         </div>
-       <a href="{{ route('restaurant.stocks.details', ['stock' => $stock->id]) }}"
-        class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors cursor-pointer">
-            Voltar
-        </a>
+
+        <button wire:click="createStockProduct"
+            class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors cursor-pointer">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 4v16m8-8H4" />
+            </svg>
+            {{ __('messages.dashboard.stoks') }}
+        </button>
 
     </div>
 
@@ -50,9 +55,10 @@
             <!-- Status Filter -->
             <select wire:model.live="statusFilter" class="border rounded p-2">
                 <option value="">-- Todos Status --</option>
-                <option value="available">Disponível</option>
-                <option value="reserved">Reservado</option>
-                <option value="damaged">Danificado</option>
+                @foreach(\App\Models\StockProduct::statusOptions() as $key => $label)
+                    <option value="{{ $key }}"  @selected($statusFilter === $key) >{{ $label }}</option>
+                @endforeach
+
             </select>
         </div>
 
@@ -64,25 +70,14 @@
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">#</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Quantidade</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Ações</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
                     @forelse ($stockProducts as $index => $stockProduct)
                     <tr>
                         <td class="px-4 py-2 whitespace-nowrap">{{ $index + 1 }}</td>
-                        <td class="px-4 py-2 whitespace-nowrap">{{ $stockProduct->status ?? 'N/A' }}</td>
+                        <td class="px-4 py-2 whitespace-nowrap">{{ __('messages.status.'.$stockProduct->status) ?? 'N/A' }}</td>
                         <td class="px-4 py-2 whitespace-nowrap">{{ $stockProduct->quantity ?? 'N/A' }}</td>
-                        <td class="px-4 py-2 whitespace-nowrap space-x-2">
-                            <button wire:click="editStockProduct({{ $stockProduct->id }})"
-                                class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600">
-                                Editar
-                            </button>
-                            <button wire:click="deleteStockProduct({{ $stockProduct->id }})"
-                                class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600">
-                                Excluir
-                            </button>
-                        </td>
                     </tr>
                     @empty
                     <tr>
@@ -99,6 +94,55 @@
         <div class="flex justify-end mt-4">
             {{ $stockProducts->links() }}
         </div>
+
+
+
+        <!-- Modal de criação/edição -->
+        @if($showModal)
+            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-lg p-6">
+                    <h2 class="text-lg font-bold mb-4">{{ $editStockProduct ? 'Edit Stock' : 'New Stock' }}</h2>
+
+                    <form wire:submit.prevent="{{ $editStockProduct ? 'updateStock(' . $stockProductForm['id'] . ')' : 'saveStockProduct' }}" class="space-y-4">
+
+                        {{-- STATUS --}}
+                        <div>
+                            <label class="block text-sm font-medium">Status</label>
+                            <select wire:model.defer="stockProductForm.status" class="w-full border rounded p-2">
+                                <option value="">-- Select --</option>
+                                @foreach(\App\Models\StockProduct::statusOptions() as $key => $label)
+                                    <option value="{{ $key }}"  @selected($statusFilter === $key) >{{ $label }}</option>
+                                @endforeach
+                            </select>
+                            @error('stockProductForm.status') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+
+                        {{-- QUANTITY --}}
+                        <div>
+                            <label class="block text-sm font-medium">Quantity</label>
+                            <input type="text" wire:model.defer="stockProductForm.quantity" class="w-full border rounded p-2">
+                            @error('stockProductForm.quantity') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
+                        </div>
+
+
+
+                        <div class="flex justify-end space-x-2">
+
+                            <button type="button" wire:click="resetForm" class="px-4 py-2 bg-gray-400 text-white rounded cursor-pointer">
+                                Cancel
+                            </button>
+
+                            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer">
+                                {{ $editStockProduct ? 'Update' : 'Save' }}
+                            </button>
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+        @endif
+        <!-- END BODY -->
+
 
     </div>
 </div>

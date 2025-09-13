@@ -22,12 +22,17 @@ return [
 
     //STATUS
     'status' => [
+
         'active'            => 'Active',
         'inactive'          => 'Inactive',
         'maintenance'       => 'Maintenance',
 
-        'unavailable'       => 'Unavailable',
         'available'         => 'Available',
+        'reserved'          => 'Reserved',
+        'damaged'           => 'Damaged',
+
+
+        'unavailable'       => 'Unavailable',
         'low-stock'         => 'Low stock',
     ],
 
