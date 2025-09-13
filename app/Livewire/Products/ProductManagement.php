@@ -166,7 +166,12 @@ class ProductManagement extends Component
             'products' => $products,
             'categories' => Category::active()->byCompany(auth()->user()->company_id)->get(),
             'title' => 'Gestão de Produtos',
-            'breadcrumb' => 'Dashboard > Produtos'
+            'breadcrumb' =>[
+                ['label' => 'Dashboard', 'url' => route('restaurant.dashboard')],
+                ['label' => __('messages.product_management.key')]
+            ],
         ]);
     }
 }
+
+

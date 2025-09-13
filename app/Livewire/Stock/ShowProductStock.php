@@ -29,7 +29,6 @@ class ShowProductStock extends Component
 
     // View controllers
     public bool $showModal = false;
-    public bool $editStockProduct = false;
 
     // Formulário de StockProduct
     public array $stockProductForm = [
@@ -58,7 +57,6 @@ class ShowProductStock extends Component
     public function createStockProduct(): void
     {
         $this->showModal = true;
-        $this->editStockProduct = false;
     }
 
     public function saveStockProduct(): void
@@ -81,7 +79,7 @@ class ShowProductStock extends Component
 
              $this->toastWarning(
                 __('messages.toast.success.key'),
-                __('messages.toast.success.value', ['verb' => 'update', 'object' => 'stock-product'])
+                __('messages.toast.success.value', ['verb' => 'update', 'object' => $this->product->name])
             );
 
             $this->resetForm();
@@ -103,7 +101,7 @@ class ShowProductStock extends Component
         {
             $this->toastError(
                 __('messages.toast.error.key'),
-                __('messages.toast.error.value', ['verb' => 'create', 'object' => 'stock-product'])
+                __('messages.toast.error.value', ['verb' => 'error', 'object' => 'stock-product'])
             );
 
         }
@@ -111,14 +109,10 @@ class ShowProductStock extends Component
 
     }
 
-    public function updateStockProduct(): void
-    {
-        // implementar se precisar de edição separada
-    }
 
     public function resetForm(): void
     {
-        $this->reset(['stockProductForm', 'editStockProduct', 'showModal']);
+        $this->reset(['stockProductForm', 'showModal']);
     }
 
     // ----------------------

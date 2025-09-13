@@ -76,13 +76,25 @@ class StockManagement extends Component
 
         $data = array_merge(['company_id' => $companyId], $this->stockForm);
 
-        if (Stock::create($data)) {
-            $this->toastSuccess(
-                __('messages.toast.success.key'),
-                __('messages.toast.success.value', ['verb' => 'create', 'object' => 'stock'])
-            );
-            $this->resetForm();
-        } else {
+
+        try {
+              $stock = Stock::create($data);
+
+            if ($stock->wasRecentlyCreated) {
+                
+                $this->toastSuccess(
+                    __('messages.toast.success.key'),
+                    __('messages.toast.success.value', ['verb' => 'create', 'object' => 'stock'])
+                );
+                $this->resetForm();
+            } 
+
+        
+        } 
+        
+        catch (\Exception $e)
+        
+        {
             $this->toastError(
                 __('messages.toast.error.key'),
                 __('messages.toast.error.value', ['verb' => 'create', 'object' => 'stock'])

@@ -146,10 +146,9 @@
                             <label class="block text-sm font-medium">Status</label>
                             <select wire:model.defer="stockForm.status" class="w-full border rounded p-2">
                                 <option value="">-- Select --</option>
-                                @foreach($statusDropDown as $key => $category)
-                                    <option value="{{$key}}" {{ $key == 'active' ? 'selected' : '' }}>
-                                        {{ $category }}
-                                    </option>                            @endforeach
+                                @foreach(\App\Models\Stock::statusOptions() as $key => $label)
+                                    <option value="{{ $key }}"  @selected($statusFilter === $key) >{{ $label }}</option>
+                                @endforeach                          
                             </select>
                             @error('stockForm.status') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
                         </div>

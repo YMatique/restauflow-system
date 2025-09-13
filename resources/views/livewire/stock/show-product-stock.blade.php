@@ -16,14 +16,10 @@
             </p>
         </div>
 
-        <button wire:click="createStockProduct"
-            class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors cursor-pointer">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 4v16m8-8H4" />
-            </svg>
-            {{ __('messages.dashboard.stoks') }}
-        </button>
+        <a href="{{ route('restaurant.stocks.details', ['stock' => $stock->id]) }}"
+            class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors cursor-pointer">
+                Voltar
+        </a>
 
     </div>
 
@@ -52,14 +48,16 @@
             <input type="text" wire:model.live="search" placeholder="Search stock items..."
                 class="px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-1/3">
 
-            <!-- Status Filter -->
-            <select wire:model.live="statusFilter" class="border rounded p-2">
-                <option value="">-- Todos Status --</option>
-                @foreach(\App\Models\StockProduct::statusOptions() as $key => $label)
-                    <option value="{{ $key }}"  @selected($statusFilter === $key) >{{ $label }}</option>
-                @endforeach
+            <!-- Status Alter -->
+             <button wire:click="createStockProduct"
+                class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors cursor-pointer">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 4v16m8-8H4" />
+                </svg>
+                Alter Stock
+            </button>
 
-            </select>
         </div>
 
         <!-- TABLE DE STOCK PRODUCTS -->
@@ -101,9 +99,9 @@
         @if($showModal)
             <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-lg p-6">
-                    <h2 class="text-lg font-bold mb-4">{{ $editStockProduct ? 'Edit Stock' : 'New Stock' }}</h2>
+                    <h2 class="text-lg font-bold mb-4">Alter Stock</h2>
 
-                    <form wire:submit.prevent="{{ $editStockProduct ? 'updateStock(' . $stockProductForm['id'] . ')' : 'saveStockProduct' }}" class="space-y-4">
+                    <form wire:submit.prevent="saveStockProduct" class="space-y-4">
 
                         {{-- STATUS --}}
                         <div>
@@ -133,7 +131,7 @@
                             </button>
 
                             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer">
-                                {{ $editStockProduct ? 'Update' : 'Save' }}
+                                Save
                             </button>
 
                         </div>
