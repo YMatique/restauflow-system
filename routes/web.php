@@ -11,6 +11,8 @@ use App\Livewire\Settings\Appearance;
 use App\Livewire\Settings\Password;
 use App\Livewire\Settings\Profile;
 use App\Livewire\Shifts\ShiftManagement;
+use App\Livewire\Stock\ShowProductStock;
+use App\Livewire\Stock\StockDetails;
 use App\Livewire\Stock\StockManagement;
 use App\Livewire\System\CompanyManagement;
 use App\Livewire\System\PlanManagement;
@@ -83,6 +85,9 @@ Route::middleware(['auth'])->prefix('restaurant')->name('restaurant.')->group(fu
 
     // Stock Management
     Route::get('/stock', StockManagement::class)->name('stocks');
+    Route::get('/stock/{stock}', StockDetails::class)->name('stocks.details');
+    Route::get('/stock/{stock}/product/{product}', ShowProductStock::class)->name('stock.products');
+
 
     // Reports
     Route::get('/reports', ReportsComponent::class)->name('reports');

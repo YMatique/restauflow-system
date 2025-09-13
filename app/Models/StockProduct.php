@@ -74,4 +74,23 @@ class StockProduct extends Model
         return false;
     }
 
+
+
+    /**
+     * Retorna StockProducts de um stock e produto específicos com paginação.
+     * @param Stock $stock
+     * @param Product $product
+     * @param int $companyId
+     * @param int $perPage
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getByStockProductAndCompany(Stock $stock, Product $product, int $companyId, int $perPage = 10)
+    {
+        return self::where('stock_id', $stock->id)
+            ->where('product_id', $product->id)
+            ->whereHas('stock', fn($q) => $q->where('company_id', $companyId))
+            ->paginate($perPage);
+    }
+
+
 }

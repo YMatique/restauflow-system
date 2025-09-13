@@ -108,6 +108,25 @@
                                         Planos de Internet
                                     </a>
                                 </li>
+
+                                <flux:navlist variant="outline">
+
+                                                <flux:navlist.group :heading="__('messages.dashboard.subtitle')" class="grid">
+
+                                                    {{-- Dashboard --}}
+                                                    <flux:navlist.item icon="home" :href="route('restaurant.dashboard')" :current="request()->routeIs('restaurant.dashboard')" wire:navigate>{{ __('messages.dashboard.title') }}</flux:navlist.item>
+
+                                                    {{-- Products --}}
+                                                    <flux:navlist.item icon="home" :href="route('restaurant.products')" :current="request()->routeIs('restaurant.products')" wire:navigate>{{ __('messages.dashboard.products') }}</flux:navlist.item>
+
+                                                    {{-- Stocks --}}
+                                                    <flux:navlist.item icon="home" :href="route('restaurant.stocks')" :current="request()->routeIs('restaurant.stocks')" wire:navigate>{{ __('messages.dashboard.stoks') }}</flux:navlist.item>
+
+                                                </flux:navlist.group>
+
+                                            </flux:navlist>
+
+
                                 <li>
                                     <a href=""
                                         class="text-gray-700 hover:text-blue-700 hover:bg-gray-50 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700"
@@ -455,7 +474,7 @@
                     <header
                         class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 mb-8">
                         <div class="mx-auto px-4 sm:px-6 lg:px-8">
-                           
+
 
                             <!-- Page Title & Description -->
                             @if (isset($pageTitle) || isset($pageDescription))

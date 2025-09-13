@@ -6,15 +6,16 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Subcategory;
 use App\Traits\WithToast;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
+
+
+#[Layout('components.layouts.app-main')]
 
 class ProductManagement extends Component
 {
     use WithPagination, WithToast;
-
-
-    protected string $layout = 'layouts.app';
 
     public $search = '';
 

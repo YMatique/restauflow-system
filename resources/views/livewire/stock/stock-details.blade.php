@@ -4,8 +4,7 @@
     <div class="flex items-center justify-between mb-4">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
-                {{ $title }} ➡️
-                {{ \App\Models\Stock::find($selectedStockId)->name }}
+                {{ $stock->name }}
             </h1>
             <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
                 @foreach ($breadcrumb as $item)
@@ -25,15 +24,11 @@
 
             </p>
         </div>
-        <button wire:click="createStock"
-            class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors cursor-pointer">
-            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 4v16m8-8H4" />
-            </svg>
-            {{ __('messages.dashboard.stoks') }}
-        </button>
-    </div>
+        <a href="{{ route('restaurant.stocks') }}"
+            class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors cursor-pointer">
+                Voltar
+            </a>
+        </div>
 
 
     <div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow-md space-y-4">
@@ -109,11 +104,11 @@
 
                         <td class="px-4 py-2 whitespace-nowrap space-x-2">
 
-                            <button wire:click="editStock({{ $product->id }})"
-                                class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer" title="{{ __('messages.forms.title.edit') }}">
+                            <button wire:click="redirectToStockProduct({{ $stock->id}}, {{ $product->id }})"
+                                    class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer">
                                 👁️
                             </button>
-                            
+
                         </td>
 
                     </tr>
@@ -136,56 +131,6 @@
             {{ $products->links() }}
         </div>
 
-        <!-- Modal de criação/edição -->
-        @if($showModal)
-            <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg w-full max-w-lg p-6">
-                    <h2 class="text-lg font-bold mb-4">{{ $editingStock ? 'Edit Stock' : 'New Stock' }}</h2>
-
-                        {{-- <form wire:submit.prevent="{{ $editingStock ? 'updateStock(stockForm.id)' :'saveStock' }}" class="space-y-4"> --}}
-                        <form wire:submit.prevent="{{ $editingStock ? 'updateStock(' . $stockForm['id'] . ')' : 'saveStock' }}" class="space-y-4">
-
-                        <div>
-                            <label class="block text-sm font-medium">Name</label>
-                            <input type="text" wire:model.defer="stockForm.name" class="w-full border rounded p-2">
-                            @error('stockForm.name') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium">Observações</label>
-                            <textarea wire:model.defer="stockForm.notes"
-                                    rows="3"
-                                    class="w-full border rounded p-2"></textarea>
-                            @error('stockForm.notes')
-                                <span class="text-red-500 text-sm">{{ $message }}</span>
-                            @enderror
-                        </div>
-
-                    <div>
-                            <label class="block text-sm font-medium">Status</label>
-                            <select wire:model.defer="stockForm.status" class="w-full border rounded p-2">
-                                <option value="">-- Select --</option>
-                                @foreach($statusDropDown as $key => $category)
-                                    <option value="{{$key}}" {{ $key == 'active' ? 'selected' : '' }}>
-                                        {{ $category }}
-                                    </option>                            @endforeach
-                            </select>
-                            @error('stockForm.status') <span class="text-red-500 text-sm">{{ $message }}</span> @enderror
-                        </div>
-
-
-                        <div class="flex justify-end space-x-2">
-                            <button type="button" wire:click="resetForm" class="px-4 py-2 bg-gray-400 text-white rounded cursor-pointer">Cancel</button>
-                           <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded cursor-pointer">
-                                {{ $editingStock ? 'Update' : 'Save' }}
-                            </button>
-
-                        </div>
-                    </form>
-                </div>
-            </div>
-        @endif
-        <!-- END BODY -->
     </div>
 
 </div>
