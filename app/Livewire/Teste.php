@@ -7,7 +7,8 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 
-#[Layout('components.layouts.app-main')]
+// #[Layout('components.layouts.app-main')]
+#[Layout('layouts.shift-layout')]
 #[Title('Testando o layout')]
 class Teste extends Component
 {

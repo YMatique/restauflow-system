@@ -202,6 +202,6 @@ class ShiftManagement extends Component
             'title' => 'Gestão de Turnos',
             'breadcrumb' => 'Dashboard > Turnos',
             'shiftStats' => $this->getShiftStats()
-        ])->layout('layouts.app');
+        ])->layout('layouts.shift-layout');//->layout('layouts.app');
     }
 }
