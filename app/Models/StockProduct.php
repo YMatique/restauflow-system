@@ -7,12 +7,32 @@ use Illuminate\Database\Eloquent\Model;
 class StockProduct extends Model
 {
 
+    //Status possíveis
+    const STATUS_AVAILABLE = 'available';
+    const STATUS_RESERVED = 'reserved';
+    const STATUS_DAMAGED = 'damaged';
+
+
+    /**
+     * Retorna todos os status para dropdown
+     */
+    public static function statusOptions(): array
+    {
+        return [
+            self::STATUS_AVAILABLE  => __('messages.status.available'),
+            self::STATUS_RESERVED   => __('messages.status.reserved'),
+            self::STATUS_DAMAGED    => __('messages.status.damaged'),
+        ];
+    }
+
+
     // Campos que podem ser preenchidos em massa
     protected $fillable = [
         'stock_id',
         'product_id',
         'quantity',
         'status',
+        'company_id',
     ];
 
     // Casts para facilitar manipulação
@@ -21,10 +41,6 @@ class StockProduct extends Model
         'status' => 'string', // ou enum se preferir
     ];
 
-    //Status possíveis
-    const STATUS_AVAILABLE = 'available';
-    const STATUS_RESERVED = 'reserved';
-    const STATUS_DAMAGED = 'damaged';
 
 
     // Relacionamentos
@@ -73,5 +89,35 @@ class StockProduct extends Model
         }
         return false;
     }
+
+
+
+    /**
+     * Retorna StockProducts de um stock e produto específicos com paginação.
+     * @param Stock $stock
+     * @param Product $product
+     * @param int $companyId
+     * @param int $perPage
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
+    public static function getByStockProductAndCompany(Stock $stock, Product $product, int $companyId, ?string $status = null, int $perPage = 10)
+    {
+        // return self::where('stock_id', $stock->id)
+        //     ->where('product_id', $product->id)
+        //     ->whereHas('stock', fn($q) => $q->where('company_id', $companyId))
+        //     ->paginate($perPage);
+
+            $query = self::where('stock_id', $stock->id)
+        ->where('product_id', $product->id)
+        ->whereHas('stock', fn($q) => $q->where('company_id', $companyId));
+
+        // Aplica filtro por status, se fornecido
+        if ($status) {
+            $query->where('status', $status);
+        }
+
+        return $query->paginate($perPage);
+    }
+
 
 }

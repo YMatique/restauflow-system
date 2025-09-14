@@ -16,7 +16,7 @@ class StockManagement extends Component
     protected string $layout = 'layouts.app';
 
     public $activeTab = 'products';
-    
+
     public $showMovementModal = false;
 
     public $movementType = 'in'; // 'in' or 'out'
@@ -96,6 +96,8 @@ class StockManagement extends Component
             'message' => 'Movimento de stock registrado com sucesso!'
         ]);
     }
+
+    
     public function render()
     {
          $stats = [

@@ -6,15 +6,16 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Subcategory;
 use App\Traits\WithToast;
+use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
+
+
+#[Layout('components.layouts.app-main')]
 
 class ProductManagement extends Component
 {
     use WithPagination, WithToast;
-
-
-    protected string $layout = 'layouts.app';
 
     public $search = '';
 
@@ -165,7 +166,12 @@ class ProductManagement extends Component
             'products' => $products,
             'categories' => Category::active()->byCompany(auth()->user()->company_id)->get(),
             'title' => 'Gestão de Produtos',
-            'breadcrumb' => 'Dashboard > Produtos'
+            'breadcrumb' =>[
+                ['label' => 'Dashboard', 'url' => route('restaurant.dashboard')],
+                ['label' => __('messages.product_management.key')]
+            ],
         ]);
     }
 }
+
+

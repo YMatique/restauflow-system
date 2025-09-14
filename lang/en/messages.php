@@ -22,12 +22,17 @@ return [
 
     //STATUS
     'status' => [
+
         'active'            => 'Active',
         'inactive'          => 'Inactive',
         'maintenance'       => 'Maintenance',
 
-        'unavailable'       => 'Unavailable',
         'available'         => 'Available',
+        'reserved'          => 'Reserved',
+        'damaged'           => 'Damaged',
+
+
+        'unavailable'       => 'Unavailable',
         'low-stock'         => 'Low stock',
     ],
 
@@ -112,12 +117,15 @@ return [
 
     //Products Managment
     'product_management' => [
+        'key' => 'Products',
         'title'         => 'Products Management',
+
     ],
 
 
     // Stock Managment
     'stock_management' => [
+        'key'           => 'Stocks',
         'title'         => 'Stock Management',
         'stock_low'     => 'Low stock for :item.',
         'stock_updated' => 'Stock updated.',

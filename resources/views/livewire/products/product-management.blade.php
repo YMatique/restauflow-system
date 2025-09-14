@@ -3,7 +3,16 @@
     <div class="flex items-center justify-between mb-4">
         <div>
             <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ __('messages.product_management.title') }}</h1>
-            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">{{ $breadcrumb }}</p>
+            <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">
+                @foreach ($breadcrumb as $item)
+                    @if(isset($item['url']))
+                        <a href="{{ $item['url'] }}" class="text-blue-600 hover:underline">{{ $item['label'] }}</a>
+                    @else
+                        <span>{{ $item['label'] }}</span>
+                    @endif
+                    @if(!$loop->last)<span class="mx-1">/</span>@endif
+                @endforeach
+            </p>
         </div>
 
         <button
@@ -68,25 +77,30 @@
                 <tbody class="bg-white dark:bg-gray-700 divide-y divide-gray-200 dark:divide-gray-600">
                     @forelse($products as $index => $product)
                         <tr>
-                            {{-- <td class="px-4 py-2 whitespace-nowrap">{{ $index + $products->firstItem() }}</td> --}}
                             <td class="px-4 py-2 whitespace-nowrap">{{ $product->code }}</td>
                             <td class="px-4 py-2 whitespace-nowrap">{{ $product->name }}</td>
                             <td class="px-4 py-2 whitespace-nowrap">{{ $product->category?->name ?? '-' }}</td>
-                            <td class="px-4 py-2 whitespace-nowrap">{{ $product->stock_quantity }}</td>
+                            <td class="px-4 py-2 whitespace-nowrap">{{ $product->subcategory?->name ?? '-' }}</td>
                             <td class="px-4 py-2 whitespace-nowrap">${{ number_format($product->price, 2) }}</td>
                             <td class="px-4 py-2 whitespace-nowrap space-x-2">
+                                <a href="{{ route('restaurant.stocks') }}"
+                                    class="px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 cursor-pointer">
+                                        👁️
+                                </a>
                                 <button wire:click="editProduct({{ $product->id }})"
-                                    class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600">Edit</button>
+                                    class="px-2 py-1 bg-yellow-500 text-white rounded hover:bg-yellow-600  cursor-pointer">🖋️</button>
                                 <button wire:click="deleteProduct({{ $product->id }})"
-                                    class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600">Delete</button>
+                                    class="px-2 py-1 bg-red-500 text-white rounded hover:bg-red-600  cursor-pointer">🗑️</button>
                             </td>
                         </tr>
                     @empty
                         <tr>
                             <td colspan="6" class="px-4 py-4 text-center text-gray-500 dark:text-gray-300">
                                {{
-                                    __('messages.nothing_found',
-                                    ['record' => __('messages.product')])
+                                    __(
+                                        'messages.nothing_found',
+                                        ['record' => __('messages.product')],
+                                    )
                                 }}
                             </td>
                         </tr>

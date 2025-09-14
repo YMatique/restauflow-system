@@ -3,15 +3,18 @@
 namespace App\Livewire\Stock;
 
 use App\Models\Stock;
+use App\Models\StockProduct;
 use App\Traits\WithToast;
+use Livewire\Attributes\Layout;
+use Livewire\Attributes\Title;
 use Livewire\Component;
 use Livewire\WithPagination;
 
+
+#[Layout('components.layouts.app-main')]
 class StockManagement extends Component
 {
     use WithPagination, WithToast;
-
-    protected string $layout = 'layouts.app';
 
     // Pagination
     public $perPage = 10;
@@ -20,15 +23,9 @@ class StockManagement extends Component
     public $statusFilter = '';
     public $search = '';
 
-    // Status dropdown
-    public $statusDropDown = [];
-
     // View controllers
-    public $currentView = 'stock';
     public $showModal = false;
     public $editingStock = false;
-    public $showDetailedStockMode = false;
-    public $selectedStockId = null;
 
     // Stock form
     public $stockForm = [
@@ -37,15 +34,7 @@ class StockManagement extends Component
         'status' => ''
     ];
 
-    public function mount()
-    {
-        $this->statusDropDown = [
-            'active' => __('messages.status.active'),
-            'inactive' => __('messages.status.inactive'),
-            'maintenance' => __('messages.status.maintenance'),
-        ];
-    }
-
+    #[Title('Gestão de Stocks')]
     // Validation rules
     protected $rules = [
         'stockForm.name' => 'required|string|max:255',
@@ -87,19 +76,33 @@ class StockManagement extends Component
 
         $data = array_merge(['company_id' => $companyId], $this->stockForm);
 
-        if (Stock::create($data)) {
-            $this->toastSuccess(
-                __('messages.toast.success.key'),
-                __('messages.toast.success.value', ['verb' => 'create', 'object' => 'stock'])
-            );
-            $this->resetForm();
-        } else {
+
+        try {
+              $stock = Stock::create($data);
+
+            if ($stock->wasRecentlyCreated) {
+                
+                $this->toastSuccess(
+                    __('messages.toast.success.key'),
+                    __('messages.toast.success.value', ['verb' => 'create', 'object' => 'stock'])
+                );
+                $this->resetForm();
+            } 
+
+        
+        } 
+        
+        catch (\Exception $e)
+        
+        {
             $this->toastError(
                 __('messages.toast.error.key'),
                 __('messages.toast.error.value', ['verb' => 'create', 'object' => 'stock'])
             );
         }
     }
+
+
 
     public function updateStock(Stock $stock)
     {
@@ -116,19 +119,20 @@ class StockManagement extends Component
 
     public function deleteStock(Stock $stock)
     {
-        $stock->delete();
+        if ($stock->availableProducts()->doesntExist()) {
 
-        $this->toastSuccess(
-            __('messages.toast.success.key'),
-            __('messages.toast.success.value', ['verb' => 'delete', 'object' => 'stock'])
+            $stock->delete();
+
+             $this->toastSuccess(
+                __('messages.toast.success.key'),
+                __('messages.toast.success.value', ['verb' => 'delete', 'object' => 'stock'])
+            );
+        }
+
+        $this->toastError(
+            __('messages.toast.error.key'),
+            __('messages.toast.error.value', ['verb' => 'delete', 'object' => 'stock'])
         );
-    }
-
-    public function showDetailedStock(Stock $stock)
-    {
-        $this->showDetailedStockMode = true;
-        $this->currentView = 'detail';
-        $this->selectedStockId = $stock->id;
     }
 
     // ----------------------
@@ -137,72 +141,23 @@ class StockManagement extends Component
     public function render()
     {
         $companyId = auth()->user()->company_id;
-        $config = $this->getViewConfig($this->currentView);
 
-        switch ($config['items']) {
-            case 'stocks':
-                $items = Stock::getFilteredStocks(
-                    companyId: $companyId,
-                    search: $this->search,
-                    status: $this->statusFilter,
-                    perPage: $this->perPage
-                );
-                break;
+        $stocks = Stock::getFilteredStocks(
+            companyId: $companyId,
+            search: $this->search,
+            status: $this->statusFilter,
+            perPage: $this->perPage
+        );
 
-            case 'products':
 
-                $items = Stock::getProductsSummary(
-                    companyId: $companyId,
-                    perPage:  $this->perPage,
-                    stockId: $this->selectedStockId, // opcional - caso contrario leva tudo
-                );
-
-                break;
-
-            default:
-                $items = collect();
-        }
-
-        return view($config['view'], [
-            $config['items'] => $items,
-            'title' => $config['title'],
-            'breadcrumb' => $config['breadcrumb'],
+        return view('livewire.stock.stock-management', [
+            'stocks' => $stocks,
+            'title'      => __('messages.stock_management.title'),
+            'breadcrumb' => [
+                ['label' => 'Dashboard', 'url' => route('restaurant.dashboard')],
+                ['label' => 'Stocks'] // item atual, sem link
+            ],
         ]);
     }
-    private function getViewConfig(string $view): array
-    {
-        return match ($view) {
-            'stock' => [
-                'view'       => 'livewire.stock.stock-management',
-                'title'      => __('messages.stock_management.title'),
-                'items'      => 'stocks',
-                 'breadcrumb' => [
-                                    ['label' => 'Dashboard', 'url' => route('restaurant.dashboard')],
-                                    ['label' => 'Stocks'] // item atual, sem link
-                ],
-            ],
-            'detail' => [
-                'view'       => 'livewire.stock.stock-show',
-                'title'      => __('messages.stock_management.stock_detail'),
-                'items'      => 'products',
-                'breadcrumb' => [
-                                    ['label' => 'Dashboard', 'url' => route('restaurant.dashboard')],
-                                    ['label' => 'Stocks', 'url' => route('restaurant.stocks')],
-                                    ['label' => 'Details'] // item atual, sem link
-                ],
-
-            ],
-            default => [
-                'view'       => 'livewire.stock.stock-management',
-                'title'      => __('messages.stock_management.title'),
-                'items'      => 'stocks',
-                'breadcrumb' => [
-                                    ['label' => 'Dashboard', 'url' => route('restaurant.dashboard')],
-                                    ['label' => 'Stocks'] // item atual, sem link
-                ],
-            ]
-        };
-    }
-
 
 }

@@ -15,6 +15,24 @@ class Stock extends Model
     ];
 
 
+    // Status possíveis (constantes)
+    const STATUS_ACTIVE      = 'active';
+    const STATUS_INACTIVE    = 'inactive';
+    const STATUS_MAINTENANCE = 'maintenance';
+
+    /**
+     * Retorna todos os status para dropdown ou validação
+     */
+    public static function statusOptions(): array
+    {
+        return [
+            self::STATUS_ACTIVE      => __('messages.status.active'),
+            self::STATUS_INACTIVE    => __('messages.status.inactive'),
+            self::STATUS_MAINTENANCE => __('messages.status.maintenance'),
+        ];
+    }
+
+
     // Casts para facilitar manipulação
     protected $casts = [
         'status' => 'string', // poderia ser enum, mas string funciona bem
@@ -27,17 +45,17 @@ class Stock extends Model
         return $this->belongsTo(Company::class);
     }
 
-    public function products()
-    {
-         return $this->hasManyThrough(
-            Product::class,
-            StockProduct::class,
-            'stock_id',   // FK em StockProduct
-            'id',         // PK do Product
-            'id',         // PK do Stock
-            'product_id'  // FK do StockProduct para Product
-        );
-    }
+    // public function products()
+    // {
+    //      return $this->hasManyThrough(
+    //         Product::class,
+    //         StockProduct::class,
+    //         'stock_id',   // FK em StockProduct
+    //         'id',         // PK do Product
+    //         'id',         // PK do Stock
+    //         'product_id'  // FK do StockProduct para Product
+    //     );
+    // }
 
 
 
@@ -96,6 +114,16 @@ class Stock extends Model
             'id',            // PK em Stock
             'product_id'     // FK em StockProduct que aponta para Product
         )->where('status', 'available');
+    }
+
+    public static function findStockProductId(int $productId, int $stockId, int $companyId, ?string $status = null): ?int
+    {
+        return self::query()
+            ->where('product_id', $productId)
+            ->where('stock_id', $stockId)
+            ->where('company_id', $companyId)
+            ->when($status, fn($q) => $q->where('status', $status))
+            ->value('id');
     }
 
 }
