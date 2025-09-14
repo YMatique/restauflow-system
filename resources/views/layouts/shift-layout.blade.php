@@ -51,7 +51,7 @@
     </div>
 
     {{-- Header flutuante --}}
-    <nav class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-white dark:bg-zinc-800 backdrop-blur-lg border border-zinc-200 dark:border-zinc-700 rounded-2xl px-8 py-4 w-full max-w-6xl mx-4 shadow-lg transition-all duration-500">
+    <nav class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-white dark:bg-zinc-800 backdrop-blur-lg border border-zinc-200 dark:border-zinc-700 rounded-2xl px-4 py-4 w-full max-w-7xl  shadow-lg transition-all duration-500">
         <div class="flex items-center justify-between">
             {{-- Logo --}}
             <div class="flex items-center space-x-3">
@@ -81,7 +81,7 @@
     </nav>
 
     {{-- Conteúdo Principal --}}
-    <main class="relative z-10 pt-32 pb-20">
+    <main class="relative z-10 pt-32 pb-20 max-w-7xl mx-auto">
         {{ $slot }}
     </main>
 
