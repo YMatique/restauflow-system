@@ -62,7 +62,8 @@ class StockManagement extends Component
 
     public function resetForm()
     {
-        $this->reset(['stockForm', 'editingStock', 'showModal']);
+        // $this->reset(['stockForm', 'editingStock', 'showModal', 'search', 'statusFilter']);
+        $this->reset();//RESET ALL PUBLIC PROPRIETES
     }
 
     // ----------------------
@@ -127,6 +128,8 @@ class StockManagement extends Component
                 __('messages.toast.success.key'),
                 __('messages.toast.success.value', ['verb' => 'delete', 'object' => 'stock'])
             );
+
+            return;
         }
 
         $this->toastError(
