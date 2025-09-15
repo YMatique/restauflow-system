@@ -124,21 +124,8 @@ class ProductManagement extends Component
 
     public function resetForm()
     {
-        $this->productForm = [
-            'name' => '',
-            'category_id' => '',
-            'description' => '',
-            'price' => '',
-            'type' => 'simple',
-            'stock_quantity' => '',
-            'min_level' => '',
-            'barcode' => '',
-            'track_stock' => true,
-            'is_available' => true,
-            'is_active' => true
-        ];
-        $this->editingProduct = false;
-        $this->showModal = false;
+        // $this->reset('productForm', 'editingProduct', 'showModal', 'statusFilter', 'categoryFilter', 'subcategories' );
+        $this->reset();
     }
 
     public function render()

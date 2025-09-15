@@ -17,12 +17,12 @@ class StockDetails extends Component
 
     public Stock $stock;
 
+    public string $statusFilter = '';
+
 
     public function mount(Stock $stock){//Injeção do stock atraves da rota
         $this->stock = $stock;
     }
-
-
 
     public function redirectToStockProduct($stockId, $productId)
     {
