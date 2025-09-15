@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ isset($title) ? $title . ' - Perfic' : 'Perfic' }}</title>
+    <title>{{ isset($title) ? $title . ' - RestauFlow' : 'RestauFlow' }}</title>
     
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -56,9 +56,9 @@
             {{-- Logo --}}
             <div class="flex items-center space-x-3">
                 <div class="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center shadow-sm">
-                    <span class="material-icons text-white text-lg">trending_up</span>
+                    <span class="material-icons text-zinc-900 dark:text-white text-lg">trending_up</span>
                 </div>
-                <h1 class="text-xl font-bold text-zinc-900 dark:text-white">Perfic</h1>
+                <h1 class="text-xl font-bold text-zinc-900 dark:text-white">RestauFlow</h1>
             </div>
 
             {{-- Navigation Links --}}

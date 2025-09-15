@@ -20,51 +20,52 @@
 <body class="font-inter bg-zinc-50 dark:bg-zinc-900 text-zinc-900 dark:text-zinc-100 min-h-screen transition-all duration-500">
     
     {{-- Header Suspenso --}}
-    <header class="fixed top-6  transform  z-50 bg-white dark:bg-zinc-800 backdrop-blur-lg border border-zinc-200 dark:border-zinc-700 rounded-2xl shadow-xl w-full  mx-4 transition-all duration-300">
-        <div class="px-8 py-4">
-            <div class="flex items-center justify-between">
-                
-                {{-- Left Section --}}
-                <div class="flex items-center space-x-4">
-                    <div class="flex items-center space-x-3">
-                        <div class="w-10 h-10 bg-blue-600 dark:bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
-                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h1 class="text-xl font-bold text-zinc-900 dark:text-white leading-none">RestauFlow</h1>
-                            <div class="flex items-center gap-2 mt-0.5">
-                                <span class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">LTD</span>
-                                <span class="text-xs text-zinc-400 dark:text-zinc-500">•</span>
-                                <span class="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded">POS</span>
+    <header class="fixed top-2 z-50 mx-2" style="left: 4px; right: 4px;">
+        <div class="bg-white dark:bg-zinc-800 backdrop-blur-lg border border-zinc-200 dark:border-zinc-700 rounded-2xl shadow-xl transition-all duration-300">
+            <div class="px-4 py-4">
+                <div class="flex items-center justify-between">
+                    
+                    {{-- Left Section --}}
+                    <div class="flex items-center space-x-4">
+                        <div class="flex items-center space-x-3">
+                            <div class="w-10 h-10 bg-blue-600 dark:bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+                                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                                </svg>
+                            </div>
+                            <div>
+                                <h1 class="text-xl font-bold text-zinc-900 dark:text-white leading-none">RestauFlow, LTD</h1>
+                                <div class="flex items-center gap-2 mt-0.5">
+                                    {{-- <span class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">LTD</span> --}}
+                                    <span class="text-xs text-zinc-400 dark:text-zinc-500">•</span>
+                                    <span class="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-2 py-0.5 rounded">POS</span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                {{-- Center Section --}}
-                <div class="hidden md:block text-center">
-                    <div class="flex items-center justify-center space-x-2">
-                        <svg class="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                        </svg>
-                        <h2 class="text-lg font-semibold text-zinc-800 dark:text-zinc-200">Módulo de Restauração</h2>
+                    {{-- Center Section --}}
+                    <div class="hidden md:block text-center">
+                        <div class="flex items-center justify-center space-x-2">
+                            <svg class="w-5 h-5 text-zinc-600 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            </svg>
+                            <h2 class="text-lg font-semibold text-zinc-800 dark:text-zinc-200">Módulo de Restauração</h2>
+                        </div>
                     </div>
-                </div>
 
-                {{-- Right Section --}}
-                <div class="flex items-center space-x-6">
-                    <div class="flex items-center space-x-3">
-                        <div class="text-right hidden sm:block">
-                            <div class="flex items-center justify-end gap-2 mb-1">
+                    {{-- Right Section --}}
+                    <div class="flex items-center space-x-4">
+                        {{-- User Info --}}
+                        <div class="hidden sm:flex flex-col items-end space-y-1">
+                            <div class="flex items-center gap-2">
                                 <svg class="w-4 h-4 text-zinc-500 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                 </svg>
                                 <span class="text-sm font-medium text-zinc-900 dark:text-white">{{ auth()->user()->name ?? 'Usuário' }}</span>
                             </div>
                             
-                            <div class="flex items-center justify-end gap-2 mb-1">
+                            <div class="flex items-center gap-2">
                                 <svg class="w-4 h-4 text-zinc-500 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                                 </svg>
@@ -73,7 +74,7 @@
                                 </span>
                             </div>
                             
-                            <div class="flex items-center justify-end gap-2">
+                            <div class="flex items-center gap-2">
                                 <svg class="w-4 h-4 text-zinc-500 dark:text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                                 </svg>
@@ -83,6 +84,7 @@
                             </div>
                         </div>
                         
+                        {{-- Avatar --}}
                         <div class="relative">
                             <div class="w-10 h-10 bg-zinc-200 dark:bg-zinc-700 rounded-full flex items-center justify-center ring-2 ring-zinc-300 dark:ring-zinc-600">
                                 <span class="text-sm font-semibold text-zinc-700 dark:text-zinc-300">
@@ -91,29 +93,29 @@
                             </div>
                             <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white dark:border-zinc-800 rounded-full"></div>
                         </div>
+
+                        {{-- Theme Toggle --}}
+                        <button onclick="toggleTheme()" class="p-2 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all duration-200">
+                            <svg id="themeIcon" class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                            </svg>
+                        </button>
+
+                        {{-- Mobile Menu --}}
+                        <button class="md:hidden p-2 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                            </svg>
+                        </button>
                     </div>
-
-                    <button onclick="toggleTheme()" class="p-2 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-all duration-200">
-                        <svg id="themeIcon" class="w-5 h-5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                        </svg>
-                    </button>
-
-                    <button class="md:hidden p-2 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700 transition-colors">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
                 </div>
             </div>
         </div>
     </header>
 
     {{-- Main Content --}}
-    <main class="pt-28 px-6 pb-8">
-        <div class="max-w-7xl mx-auto">
-            {{ $slot }}
-        </div>
+    <main class="pt-28 pb-8" style="margin-left: 16px; margin-right: 16px;">
+        {{ $slot }}
     </main>
 
     {{-- JavaScript --}}
