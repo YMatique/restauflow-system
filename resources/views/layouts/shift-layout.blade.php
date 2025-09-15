@@ -49,16 +49,15 @@
         <div class="absolute bottom-1/4 left-1/3 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl"></div>
         <div class="absolute top-1/2 right-1/3 w-72 h-72 bg-violet-500/5 rounded-full blur-3xl"></div>
     </div>
-
     {{-- Header flutuante --}}
-    <nav class="fixed top-6 left-1/2 transform -translate-x-1/2 z-50 bg-white dark:bg-zinc-800 backdrop-blur-lg border border-zinc-200 dark:border-zinc-700 rounded-2xl px-4 py-4 w-full max-w-7xl  shadow-lg transition-all duration-500">
+    <nav class="fixed top-2 left-1/2 transform -translate-x-1/2 z-50 bg-white dark:bg-zinc-800 backdrop-blur-lg border border-zinc-200 dark:border-zinc-700 rounded-2xl px-4 py-2 w-full max-w-7xl  shadow-lg transition-all duration-500">
         <div class="flex items-center justify-between">
             {{-- Logo --}}
             <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center shadow-sm">
-                    <span class="material-icons text-zinc-900 dark:text-white text-lg">trending_up</span>
+                <div class="w-6 h-6 bg-primary-500 rounded-lg flex items-center justify-center shadow-sm">
+                    <span class="material-icons text-zinc-900 dark:text-white text-md">trending_up</span>
                 </div>
-                <h1 class="text-xl font-bold text-zinc-900 dark:text-white">RestauFlow</h1>
+                <h1 class="text-lg font-bold text-zinc-900 dark:text-white">RestauFlow</h1>
             </div>
 
             {{-- Navigation Links --}}
@@ -66,8 +65,8 @@
                 <a href="#" class="text-zinc-700 hover:text-primary-600 dark:text-zinc-300 dark:hover:text-white text-sm font-medium transition-colors">Dashboard</a>
                 <a href="#" class="text-zinc-700 hover:text-primary-600 dark:text-zinc-300 dark:hover:text-white text-sm font-medium transition-colors">Profile</a>
                 <a href="#" class="text-zinc-700 hover:text-primary-600 dark:text-zinc-300 dark:hover:text-white text-sm font-medium transition-colors">Sign Up</a>
-                <button onclick="toggleTheme()" class="p-2 text-zinc-700 hover:text-primary-600 dark:text-zinc-300 dark:hover:text-white focus:outline-none transition-colors rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-700">
-                    <span id="themeIcon" class="material-icons text-lg transition-transform duration-300">dark_mode</span>
+                <button onclick="toggleTheme()" class="p-1 text-zinc-700 hover:text-primary-600 dark:text-zinc-300 dark:hover:text-white focus:outline-none transition-colors rounded-md hover:bg-zinc-100 dark:hover:bg-zinc-700">
+                    <span id="themeIcon" class="material-icons text-sm transition-transform duration-300">dark_mode</span>
                 </button>
             </div>
 
@@ -93,10 +92,10 @@
                     © {{ date('Y') }}, made with ❤️ by Yuvi Matique for a better web.
                 </p>
                 <div class="flex space-x-8">
-                    <a href="#" class="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white text-sm transition-colors font-medium">Creative Tim</a>
-                    <a href="#" class="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white text-sm transition-colors font-medium">About Us</a>
+                    <a href="#" class="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white text-sm transition-colors font-medium">YAM</a>
+                    <a href="#" class="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white text-sm transition-colors font-medium">Aly</a>
                     <a href="#" class="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white text-sm transition-colors font-medium">Blog</a>
-                    <a href="#" class="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white text-sm transition-colors font-medium">License</a>
+                    {{-- <a href="#" class="text-zinc-500 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-white text-sm transition-colors font-medium">License</a> --}}
                 </div>
             </div>
         </div>
