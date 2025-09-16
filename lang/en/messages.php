@@ -86,6 +86,39 @@ return [
         'monthly_report'   => 'Monthly Report',
     ],
 
+    //Inventrories
+    'inventory_management' => [
+        'key'      => 'Inventory',
+        'title'    => 'Inventory Management',
+        'types'    => [
+            'in'         => 'In',
+            'out'        => 'Out',
+            'sale'       => 'Sale',
+            'loss'       => 'Loss',
+            'return'     => 'Return',
+            'expired'    => 'Expired',
+            'adjustment' => 'Adjustment',
+        ],
+
+    ],
+
+
+    //Products Managment
+    'product_management' => [
+        'key' => 'Products',
+        'title'         => 'Products Management',
+
+    ],
+
+
+    // Stock Managment
+    'stock_management' => [
+        'key'           => 'Stocks',
+        'title'         => 'Stock Management',
+        'stock_low'     => 'Low stock for :item.',
+        'stock_updated' => 'Stock updated.',
+        'stock_detail'  => 'Stock Details'
+    ],
 
     // Authentication
     'login'          => 'Login',
@@ -115,22 +148,6 @@ return [
     'payment_success'  => 'Payment completed successfully.',
     'payment_error'    => 'Payment error. Please check the details.',
 
-    //Products Managment
-    'product_management' => [
-        'key' => 'Products',
-        'title'         => 'Products Management',
-
-    ],
-
-
-    // Stock Managment
-    'stock_management' => [
-        'key'           => 'Stocks',
-        'title'         => 'Stock Management',
-        'stock_low'     => 'Low stock for :item.',
-        'stock_updated' => 'Stock updated.',
-        'stock_detail'  => 'Stock Details'
-    ],
 
 
 

@@ -40,6 +40,30 @@ class StockMovement extends Model
         'expiry_date' => 'date'
     ];
 
+    //TYPE OF MOVIMENT
+    const IN = 'in';
+    const OUT = 'out';
+    const SALE = 'sale'; 
+    const LOSS = 'loss';
+    const RETURN = 'return';
+    const EXPIRED = 'expired';
+    const ADJUSTMENT = 'adjustment';
+
+
+    public static function typesOptions(): array
+{
+    return [
+        self::IN            => __('messages.inventory_management.types.in'),
+        self::OUT           => __('messages.inventory_management.types.out'),
+        self::SALE          => __('messages.inventory_management.types.sale'),
+        self::LOSS          => __('messages.inventory_management.types.loss'),
+        self::RETURN        => __('messages.inventory_management.types.return'),
+        self::EXPIRED       => __('messages.inventory_management.types.expired'),
+        self::ADJUSTMENT    => __('messages.inventory_management.types.adjustment'),
+    ];
+}
+
+
     // Relationships
     public function company(): BelongsTo
     {

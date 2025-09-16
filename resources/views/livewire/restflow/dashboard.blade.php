@@ -60,19 +60,34 @@
                         </a>
                     </div>
 
-                    <!-- Card 2 -->
+                    <!-- Card 3 -->
+                    <div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow text-center">
+                        <div class="text-4xl mb-4">📋</div>
+                        <h3 class="text-lg font-semibold mb-2 text-gray-900 dark:text-white">Inventário</h3>
+                        <p class="text-gray-600 dark:text-gray-300 mb-4">
+                            Gerencie entradas e saídas de estoque em tempo real
+                        </p>
+                        <a href="{{ route('restaurant.inventory') }}"
+                            class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors">
+                            📋 Inventário
+                        </a>
+                    </div>
+
+
+
+                    <!-- Card 4 -->
                     <div class="bg-white dark:bg-gray-700 p-6 rounded-lg shadow text-center">
                         <div class="text-4xl mb-4">📊</div>
                         <h3 class="text-lg font-semibold mb-2">Relatórios</h3>
                         <p class="text-white-600 mb-4">Visualize relatórios de vendas e performance</p>
                         <a href="{{ route('restaurant.reports') }}" class="inline-flex items-center px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-lg transition-colors">
-                            📈 Ver Relatórios
+                            📈 Relatórios
                         </a>
                     </div>
 
                 </div>
             </div>
-            
+
         </div>
 
     </div>
