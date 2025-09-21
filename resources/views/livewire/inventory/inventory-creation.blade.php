@@ -42,16 +42,26 @@
         <!-- Filters Section -->
         <div class="p-6 border-b border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                <!-- Per Page -->
+                
+                <!-- selectedStockId -->
                 <div class="space-y-2">
-                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">{{ __('messages.stock_management.stock_center') }}</label>
-                    <select wire:model.live="perPage"
+                    <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">
+                        {{ __('messages.stock_management.stock_center') }}
+                    </label>
+                    <select wire:model.live="selectedStockId"
                             class="w-full px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
-                        <@foreach($stocks as $object)
+                        <option value="">-- Select {{ __('messages.stock_management.stock_center') }} --</option>
+                        @foreach($stocks as $object)
                             <option value="{{ $object->id }}">{{ $object->name }}</option>
                         @endforeach
                     </select>
+
+                    <!-- Error alert -->
+                    @error('selectedStockId')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
+
 
                 <!-- Search -->
                 <div class="space-y-2 lg:col-span-2 relative">
@@ -88,7 +98,7 @@
                 <!-- Status Filter -->
                 <div class="space-y-2">
                     <label class="text-sm font-medium text-zinc-700 dark:text-zinc-300">Categories</label>
-                    <select wire:model.live="statusFilter"
+                    <select wire:model.live="selectedCategoryId"
                             class="w-full px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                         <option value="">-- All Types --</option>
                         @foreach(\App\Models\Category::all() as $cat)
@@ -106,7 +116,7 @@
                 <thead>
                     <tr class="bg-zinc-50 dark:bg-zinc-900/70 border-b border-zinc-200 dark:border-zinc-700">
                         <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">
-                            # 
+                            #
                         </th>
                         <th scope="col" class="px-6 py-4 text-left text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider whitespace-nowrap">
                             Name
@@ -228,20 +238,45 @@
             </table>
         </div>
 
-        <div class="mt-6 flex items-center justify-end space-x-3 border-t pt-4">
+        <div class="m-6 flex items-center justify-end space-x-3 border-t pt-4">
             <!-- Save as Draft -->
-            <button type="button"
-                    wire:click="saveDraft"
-                    class="px-4 py-2 bg-gray-200 dark:bg-zinc-700 text-gray-800 dark:text-zinc-200 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-600 transition-colors">
-                Save as Draft
-            </button>
+            <div>
+                <button type="button"
+                        wire:click="saveDraft"
+                        wire:loading.remove
+                        wire:target="saveDraft"
+                        class="px-4 py-2 bg-gray-200 dark:bg-zinc-700 text-gray-800 dark:text-zinc-200 rounded-lg hover:bg-gray-300 dark:hover:bg-zinc-600 transition-colors">
+                    Save as Draft
+                </button>
+                <button
+                    class="px-4 py-2 bg-gray-400 text-white rounded cursor-not-allowed"
+                    disabled
+                    wire:loading
+                    wire:target="saveDraft">
+                    Salvando como Rascunho...
+                </button>
+            </div>
 
             <!-- Save -->
-            <button type="submit"
-                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                Save
-            </button>
+            <div>
+                <button
+                    wire:click="save"
+                    wire:loading.remove
+                    wire:target="save"
+                    class="px-4 py-2 bg-blue-600 text-white rounded">
+                    Salvar
+                </button>
+                <button
+                    class="px-4 py-2 bg-gray-400 text-white rounded cursor-not-allowed"
+                    disabled
+                    wire:loading
+                    wire:target="save">
+                    Salvando...
+                </button>
+            </div>
         </div>
+
+
 
     </div>
 

@@ -13,8 +13,18 @@ return new class extends Migration
     {
         Schema::create('inventories', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
+            $table->string('reference');
+            $table->decimal('subtotal', 10, 2);
+            $table->decimal('total', 10, 2);
 
+            $table->foreignId('stock_id')->constrained('stocks')->onDelete('cascade');
+
+            $table->enum('status', ['draft', 'finalized', 'canceled']);
+            $table->foreignId('company_id')->constrained('companies')->onDelete('cascade');
+            $table->foreignId('user_id')
+                ->nullable()
+                ->constrained('users')
+                ->onDelete('set null');
             $table->timestamps();
         });
     }
@@ -24,7 +34,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('invectories');
+        Schema::dropIfExists('inventories');
 
     }
 };

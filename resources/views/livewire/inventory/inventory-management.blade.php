@@ -68,8 +68,8 @@
                     <select wire:model.live="statusFilter"
                             class="w-full px-3 py-2 bg-white dark:bg-zinc-800 border border-zinc-300 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                         <option value="">-- All Types --</option>
-                        @foreach(\App\Models\StockMovement::typesOptions() as $key => $label)
-                            <option value="{{ $key }}"  @selected($typesFilter === $key) >{{ $label }}</option>
+                        @foreach(\App\Models\Inventory::statusOptions() as $key => $label)
+                            <option value="{{ $key }}"  @selected($statusFilter === $key) >{{ $label }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -103,7 +103,10 @@
                             Status
                         </th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
-                            Datalhes
+                            Subtotal
+                        </th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                            Total
                         </th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
                             Actions
@@ -121,7 +124,7 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                                    {{ $inventory->name }}
+                                    {{ $inventory->reference }}
                                 </div>
                             </td>
 
@@ -132,12 +135,18 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="text-sm text-zinc-600 dark:text-zinc-400">
-                                    {{ $inventory->notes ?? '-'  }}
+                                    {{ $inventory->subtotal ?? '-'  }}
+                                </span>
+                            </td>
+
+                              <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-sm text-zinc-600 dark:text-zinc-400">
+                                    {{ $inventory->total ?? '-'  }}
                                 </span>
                             </td>
 
 
-                            <td class="px-6 py-4 whitespace-nowrap text-center">
+                            {{-- <td class="px-6 py-4 whitespace-nowrap text-center">
                                 <div class="flex items-center justify-center gap-1">
                                     <!-- View -->
                                     <a href="{{ route('restaurant.inventories.details', $stock->id) }}"
@@ -168,7 +177,7 @@
                                     </button>
                                 </div>
                             </td>
-                        </tr>
+                        </tr> --}}
                     @empty
                         <tr>
                             <td colspan="6" class="px-6 py-12 text-center">

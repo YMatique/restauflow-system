@@ -10,6 +10,7 @@ return [
     | system in Portuguese. You can modify them as needed.
     |
     */
+    //messages.php
 
     // General
     'appName' => 'Restflow',
@@ -30,6 +31,10 @@ return [
         'available'         => 'Available',
         'reserved'          => 'Reserved',
         'damaged'           => 'Damaged',
+
+        'draft' => 'Draft',
+        'finalized' => 'Finalized',
+        'canceled' => 'Canceled',
 
 
         'unavailable'       => 'Unavailable',

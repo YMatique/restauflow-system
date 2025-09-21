@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('invectory_items', function (Blueprint $table) {
+        Schema::create('inventory_items', function (Blueprint $table) {
             $table->engine = 'InnoDB';
 
             $table->id();
@@ -21,7 +21,13 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
 
             // Quantidade atual
-            $table->decimal('current_stock', 10, 3)->default(0);
+            $table->integer('quantity')->default(0);
+            $table->decimal('subtotal', 10, 2);
+            $table->decimal('price', 10, 2);
+
+            
+
+            $table->string('status', 10);
 
             // Controlo por lote/validade
             $table->string('batch_number')->nullable();
@@ -39,6 +45,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('invectory_items');
+        Schema::dropIfExists('inventory_items');
     }
 };

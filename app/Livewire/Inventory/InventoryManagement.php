@@ -2,6 +2,7 @@
 
 namespace App\Livewire\Inventory;
 
+use App\Models\Inventory;
 use App\Models\StockMovement;
 use App\Traits\WithToast;
 use Livewire\Attributes\Layout;
@@ -18,7 +19,7 @@ class InventoryManagement extends Component
     public $perPage = 10;
 
     // Filters & Search
-    public $typesFilter = '';
+    public $statusFilter = '';
     public $search = ''; 
 
     // View controllers
@@ -30,8 +31,10 @@ class InventoryManagement extends Component
     public function render()
     {
 
-        $inventories = StockMovement::byCompany(auth()->user()->company_id)
-            ->paginate($this->perPage);
+       $inventories = Inventory::byCompany(
+            companyId: auth()->user()->company_id, 
+            status: $this->statusFilter,
+        )->paginate($this->perPage);
 
 
         return view('livewire.inventory.inventory-management', [
