@@ -115,6 +115,7 @@ return [
     'stock_management' => [
         'key'           => 'Stocks',
         'title'         => 'Stock Management',
+        'stock_center'        => 'Stock Center',
         'stock_low'     => 'Low stock for :item.',
         'stock_updated' => 'Stock updated.',
         'stock_detail'  => 'Stock Details'
