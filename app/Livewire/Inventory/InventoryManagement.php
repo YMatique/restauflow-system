@@ -15,6 +15,8 @@ class InventoryManagement extends Component
 {
     use WithPagination, WithToast;
 
+  
+
     // Pagination
     public $perPage = 10;
 

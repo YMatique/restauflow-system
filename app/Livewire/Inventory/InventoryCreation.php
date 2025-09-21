@@ -18,6 +18,12 @@ class InventoryCreation extends Component
 
     use WithToast;
 
+    public function goBack()
+    {
+        return $this->js('history.back()');
+    }
+
+
     // VIEW
     public $search;
     public $stocks;
