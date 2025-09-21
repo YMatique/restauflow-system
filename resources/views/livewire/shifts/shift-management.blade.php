@@ -1,4 +1,3 @@
-{{-- resources/views/livewire/shifts/shift-management.blade.php --}}
 <div class=" space-y-8">
     @if(!$activeShift)
         {{-- Sistema Bloqueado --}}
