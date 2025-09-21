@@ -58,7 +58,7 @@
                         </li>
 
                         <!-- Clientes -->
-                        <li>
+                        {{-- <li>
                             <div class="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wide">Clientes
                             </div>
                             <ul role="list" class="-mx-2 mt-2 space-y-1">
@@ -89,10 +89,10 @@
                                     </a>
                                 </li>
                             </ul>
-                        </li>
+                        </li> --}}
 
                         <!-- Serviços -->
-                        <li>
+                        {{-- <li>
                             <div class="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wide">Serviços
                             </div>
                             <ul role="list" class="-mx-2 mt-2 space-y-1">
@@ -107,7 +107,7 @@
                                         </svg>
                                         Planos de Internet
                                     </a>
-                                </li>
+                                </li> --}}
 
                                 <flux:navlist variant="outline">
 
@@ -125,7 +125,7 @@
                                                 </flux:navlist.group>
 
                                             </flux:navlist>
-
+{{-- 
 
                                 <li>
                                     <a href=""
@@ -152,10 +152,10 @@
                                     </a>
                                 </li>
                             </ul>
-                        </li>
+                        </li> --}}
 
                         <!-- Financeiro -->
-                        <li>
+                        {{-- <li>
                             <div class="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wide">
                                 Financeiro</div>
                             <ul role="list" class="-mx-2 mt-2 space-y-1">
@@ -184,10 +184,10 @@
                                     </a>
                                 </li>
                             </ul>
-                        </li>
+                        </li> --}}
 
                         <!-- Operações -->
-                        <li>
+                        {{-- <li>
                             <div class="text-xs font-semibold leading-6 text-gray-400 uppercase tracking-wide">
                                 Operações</div>
                             <ul role="list" class="-mx-2 mt-2 space-y-1">
@@ -216,10 +216,10 @@
                                     </a>
                                 </li>
                             </ul>
-                        </li>
+                        </li> --}}
 
                         <!-- Relatórios -->
-                        <li>
+                        {{-- <li>
                             <a href="#"
                                 class="text-gray-700 hover:text-blue-700 hover:bg-gray-50 group flex gap-x-3 rounded-md p-2 text-sm leading-6 font-semibold dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-700"
                                 wire:navigate>
@@ -232,7 +232,7 @@
                                 </svg>
                                 Relatórios
                             </a>
-                        </li>
+                        </li> --}}
                     </ul>
                 </nav>
 
