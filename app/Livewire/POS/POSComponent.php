@@ -139,11 +139,6 @@ class POSComponent extends Component
 
     public function render()
     {
-
-        $companyId = auth()->user()->company_id;
-        $activeShift = auth()->user()->getActiveShift();
-
-        // dd(Table::active()->get());
         return view('livewire.p-o-s.p-o-s-component', [
             'cartTotal' => $this->cartTotal,
             'cartCount' => $this->cartCount,
