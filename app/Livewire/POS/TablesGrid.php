@@ -28,14 +28,19 @@ class TablesGrid extends Component
 
         // Disparar evento para o componente pai
         $this->dispatch('tableSelected', tableId: $tableId);
+        // dd('asas');
     }
 
     public function getTablesProperty()
     {
-        return Table::active()
-            ->byCompany(auth()->user()->company_id)
-            ->orderBy('name')
-            ->get();
+        // return Table::active()
+        //     ->byCompany(auth()->user()->company_id)
+        //     ->orderBy('name')
+        //     ->get();
+         return Table::where('company_id', auth()->user()->company_id)
+        ->where('is_active', true) // ou a coluna que usas para status ativo
+        ->orderBy('name')
+        ->get();
     }
     public function render()
     {

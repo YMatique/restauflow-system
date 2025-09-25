@@ -12,7 +12,7 @@ class POSComponent extends Component
 {
 
     
-    // Estados da Interface
+ // Estados da Interface
     public $currentView = 'tables'; // 'tables' ou 'products'
     public $currentTable = null;
     public $selectedCategory = null;
@@ -31,7 +31,8 @@ class POSComponent extends Component
         'cartItemUpdated' => 'handleCartItemUpdate',
         'cartCleared' => 'handleCartClear',
         'orderFinalized' => 'handleOrderFinalized',
-        'viewChanged' => 'handleViewChange'
+        'viewChanged' => 'handleViewChange',
+        'showProducts'=> 'showProducts'
     ];
 
     public function mount()
@@ -48,9 +49,9 @@ class POSComponent extends Component
         // Carregar stats iniciais
         $this->loadDailyStats();
         
-        // Definir categoria inicial
-        $this->selectedCategory = Category::active()
-            ->byCompany(auth()->user()->company_id)
+        // Definir categoria inicial (query simples)
+        $this->selectedCategory = Category::where('company_id', auth()->user()->company_id)
+            ->where('is_active', true)
             ->first()?->id;
     }
 
@@ -60,7 +61,6 @@ class POSComponent extends Component
     {
         $table = Table::find($tableId);
         
-        // dd('tableSelected', $table);
         if (!$table) {
             $this->dispatch('toast', [
                 'type' => 'error',
@@ -73,11 +73,11 @@ class POSComponent extends Component
         
         // Se a mesa já tem pedidos, carregá-los no carrinho
         // (isso seria implementado com um relacionamento no modelo)
-        
-        $this->dispatch('toast', [
-            'type' => 'success', 
-            'message' => "Mesa {$table->name} selecionada"
-        ]);
+         $this->dispatch('tableUpdated', ['table' => (object)$table]);
+        // $this->dispatch('toast', [
+        //     'type' => 'success', 
+        //     'message' => "Mesa {$table->name} selecionada"
+        // ]);
     }
 
     public function handleProductAddition($productId, $quantity = 1)
@@ -92,12 +92,24 @@ class POSComponent extends Component
 
         $product = Product::find($productId);
         
-        if (!$product || !$product->canSell($quantity)) {
+        // Verificação simplificada - substituir canSell() por verificações básicas
+        if (!$product || !$product->is_available || !$product->is_active) {
             $this->dispatch('toast', [
                 'type' => 'error',
-                'message' => 'Produto indisponível ou sem stock'
+                'message' => 'Produto indisponível'
             ]);
             return;
+        }
+
+        // Verificar stock se product rastreia stock
+        if (isset($product->track_stock) && $product->track_stock && isset($product->stock_quantity)) {
+            if ($product->stock_quantity < $quantity) {
+                $this->dispatch('toast', [
+                    'type' => 'error',
+                    'message' => 'Stock insuficiente'
+                ]);
+                return;
+            }
         }
 
         $cartKey = $productId;
@@ -188,6 +200,7 @@ class POSComponent extends Component
 
     public function showProducts()
     {
+        dd('called');
         if (!$this->currentTable) {
             $this->dispatch('toast', [
                 'type' => 'warning',
@@ -247,8 +260,10 @@ class POSComponent extends Component
         ];
     }
 
+
     public function render()
     {
+         $companyId = auth()->user()->company_id;
         return view('livewire.p-o-s.p-o-s-component', [
             'cartTotal' => $this->cartTotal,
             'cartCount' => $this->cartCount,

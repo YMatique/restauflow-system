@@ -15,6 +15,7 @@ class ProductsGrid extends Component
 
     public function mount($selectedCategory = null)
     {
+        dd('asas');
         $this->selectedCategory = $selectedCategory;
     }
 

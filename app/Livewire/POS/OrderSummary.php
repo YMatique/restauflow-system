@@ -10,7 +10,8 @@ class OrderSummary extends Component
     public $currentTable = null;
 
     protected $listeners = [
-        'cartChanged' => 'updateCart'
+        'cartChanged' => 'updateCart',
+        'tableUpdated' => 'updateTable'
     ];
 
     public function updateCart($cart)
@@ -25,6 +26,10 @@ class OrderSummary extends Component
             cartKey: $cartKey, 
             newQuantity: $newQuantity
         );
+    }
+    public function showProducts()
+    {
+        $this->dispatch('showProducts');
     }
 
     public function removeItem($cartKey)
@@ -82,7 +87,12 @@ class OrderSummary extends Component
     {
         return collect($this->cart)->sum('quantity');
     }
+public function updateTable($data)
+{
 
+    $this->currentTable = (object)$data['table'];
+        // dd($this->currentTable);
+}
     public function render()
     {
         return view('livewire.p-o-s.order-summary',[
