@@ -1,6 +1,15 @@
 {{-- resources/views/livewire/pos/partials/order-summary.blade.php --}}
-<div class="flex flex-col h-full">
-    @if(!$currentTable)
+<div class="flex flex-col h-full"  >
+    <!-- DEBUG INFO TEMPORÁRIO -->
+    <div class="p-2 bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200 text-xs">
+        Mesa: {{ $currentTable ? $currentTable->name : 'NENHUMA' }} |
+        View: {{ $currentView }} |
+        Carrinho: {{ count($cart) }} itens |
+        Total: {{ number_format($cartTotal ?? 0) }} MT |
+        Timestamp: {{ now()->format('H:i:s') }}
+    </div>
+
+    @if(!$currentTable || $currentView === 'tables')
         <!-- Estado Inicial - Nenhuma Mesa Selecionada -->
         <div class="flex items-center justify-center h-full">
             <div class="text-center p-6">
@@ -129,28 +138,21 @@
                         </button>
                         <button wire:click="backToTables"
                                 class="bg-zinc-500 hover:bg-zinc-600 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm">
-                            Cancelar
+                            Voltar
                         </button>
                     </div>
                 </div>
             @else
-                <!-- Botão para Adicionar Produtos (quando carrinho vazio) -->
-                @if($currentView === 'tables')
-                    <button disabled
-                            class="w-full bg-zinc-300 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400 font-medium py-3 px-4 rounded-lg cursor-not-allowed">
-                        Selecione uma mesa primeiro
+                <!-- Quando carrinho está vazio mas mesa selecionada -->
+                <div class="text-center space-y-3">
+                    <p class="text-zinc-500 dark:text-zinc-400 text-sm">
+                        Clique nos produtos para adicionar ao carrinho
+                    </p>
+                    <button wire:click="backToTables"
+                            class="w-full bg-zinc-500 hover:bg-zinc-600 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                        ← Voltar às Mesas
                     </button>
-                @else
-                    <div class="text-center">
-                        <p class="text-zinc-500 dark:text-zinc-400 text-sm mb-3">
-                            Clique nos produtos para adicionar ao carrinho
-                        </p>
-                        <button wire:click="backToTables"
-                                class="bg-zinc-500 hover:bg-zinc-600 text-white font-medium py-2 px-4 rounded-lg transition-colors text-sm">
-                            Voltar às Mesas
-                        </button>
-                    </div>
-                @endif
+                </div>
             @endif
         </div>
     @endif

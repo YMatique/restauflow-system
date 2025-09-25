@@ -9,11 +9,11 @@ use Livewire\Component;
 
 class POSComponent extends Component
 {
-    // Estados da interface
+ // Estados da interface
     public string $currentView = 'tables'; // 'tables' ou 'products'
     
     // Dados principais
-    public ?Table $currentTable = null;
+    public  $currentTable = null;
     public ?int $selectedCategory = null;
     public array $cart = [];
     
@@ -29,20 +29,58 @@ class POSComponent extends Component
     }
 
     // ===========================================
+    // MÉTODO TEMPORÁRIO PARA DEBUG
+    // ===========================================
+    
+    public function debugInfo()
+    {
+        $info = [
+            'currentView' => $this->currentView,
+            'currentTable' => $this->currentTable ? $this->currentTable->name : null,
+            'selectedCategory' => $this->selectedCategory,
+            'products_count' => count($this->products),
+            'cart_count' => count($this->cart),
+            'cart' => $this->cart
+        ];
+        
+        logger("DEBUG INFO: " . json_encode($info));
+        $this->dispatch('toast', ['type' => 'info', 'message' => 'Info enviada para logs']);
+    }
+
+     public function forceRefresh()
+    {
+        // Força uma re-renderização completa
+        $this->skipRender = false;
+        logger("FORCE REFRESH executado");
+    }
+    // ===========================================
     // MÉTODOS DE NAVEGAÇÃO
     // ===========================================
     
     public function selectTable($tableId)
     {
+        logger("=== SELECT TABLE CHAMADO ===");
+        logger("Table ID: {$tableId}");
+        
         $this->currentTable = Table::find($tableId);
         
+        // dd($this->selectTable());
         if (!$this->currentTable) {
+            logger("ERRO: Mesa não encontrada - ID: {$tableId}");
             $this->dispatch('toast', ['type' => 'error', 'message' => 'Mesa não encontrada']);
             return;
         }
 
+        logger("Mesa encontrada: {$this->currentTable->name}");
         $this->currentView = 'products';
-        $this->loadProducts();
+        logger("View alterada para: {$this->currentView}");
+        
+        $this->loadProducts(); // Carrega produtos quando seleciona mesa
+        logger("Produtos carregados: " . count($this->products));
+
+        // FORÇA ATUALIZAÇÃO DO COMPONENTE
+        $this->dispatch('$refresh');
+        logger("=== FIM SELECT TABLE ===");
         
         $this->dispatch('toast', ['type' => 'success', 'message' => "Mesa {$this->currentTable->name} selecionada"]);
     }
@@ -52,7 +90,9 @@ class POSComponent extends Component
         $this->currentView = 'tables';
         $this->currentTable = null;
         $this->selectedCategory = null;
-        $this->cart = []; // Opcional: limpar carrinho ao voltar
+        $this->products = []; // Limpa produtos
+        // Opcional: limpar carrinho ao voltar
+        // $this->cart = [];
     }
 
     // ===========================================
@@ -93,6 +133,7 @@ class POSComponent extends Component
                 'unit_price' => $product->price,
                 'quantity' => $quantity,
             ];
+            logger("Novo produto adicionado ao carrinho");
         }
 
         $this->cart[$cartKey]['total_price'] = 
@@ -207,11 +248,22 @@ class POSComponent extends Component
     // ===========================================
     
     public function render()
-    {
+    {      
         return view('livewire.p-o-s.p-o-s-component', [
             'cartTotal' => $this->cartTotal,
             'cartCount' => $this->cartCount,
             'quickTables' => $this->quickTables,
+
+
+            
+            // CORREÇÃO: Passar todas as variáveis necessárias explicitamente
+            'currentView' => $this->currentView,
+            'currentTable' => $this->currentTable,
+            'selectedCategory' => $this->selectedCategory,
+            'cart' => $this->cart,
+            'tables' => $this->tables,
+            'categories' => $this->categories,
+            'products' => $this->products,
         ])->layout('layouts.pos-new');
     }
 }

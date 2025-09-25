@@ -1,5 +1,5 @@
 {{-- resources/views/livewire/pos/pos-component.blade.php --}}
-<div>
+<div >
     <!-- Sidebar Esquerdo -->
     <x-slot name="sidebar">
         @include('livewire.p-o-s.partials.sidebar')

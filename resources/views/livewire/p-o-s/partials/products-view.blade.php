@@ -1,10 +1,34 @@
 {{-- resources/views/livewire/pos/partials/products-view.blade.php --}}
 <div class="p-6">
-    <div class="mb-6">
-        <h2 class="text-2xl font-bold text-zinc-900 dark:text-white mb-2">
-            Produtos - Mesa {{ $currentTable->name }}
-        </h2>
-        <p class="text-zinc-600 dark:text-zinc-400">Clique nos produtos para adicionar ao carrinho</p>
+    <!-- Header com botão voltar -->
+    <div class="mb-6 flex items-center gap-4">
+        <!-- Botão Voltar -->
+        <button wire:click="backToTables" 
+                class="flex items-center gap-2 px-4 py-2 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-800 dark:hover:bg-zinc-700 text-zinc-700 dark:text-zinc-300 rounded-lg font-medium transition-colors">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Voltar às Mesas
+        </button>
+        
+        <div class="flex-1">
+            <h2 class="text-2xl font-bold text-zinc-900 dark:text-white mb-2">
+                Produtos - Mesa {{ $currentTable->name }}
+            </h2>
+            <p class="text-zinc-600 dark:text-zinc-400">Clique nos produtos para adicionar ao carrinho</p>
+        </div>
+        
+        <!-- DEBUG INFO (temporário) -->
+        <div class="text-xs bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-200 p-2 rounded flex items-center gap-2">
+            Produtos: {{ count($products) }} | Carrinho: {{ count($cart) }}
+            <button wire:click="debugInfo" class="bg-yellow-200 dark:bg-yellow-800 px-2 py-1 rounded text-xs">
+                Debug
+            </button>
+           
+            <button wire:click="forceRefresh" class="bg-red-200 dark:bg-red-800 px-2 py-1 rounded text-xs">
+                Force Refresh
+            </button>
+        </div>
     </div>
 
     <!-- Barra de Categorias -->
