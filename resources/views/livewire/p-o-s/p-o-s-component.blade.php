@@ -1,56 +1,178 @@
 <div>
-    <div class="h-screen flex flex-col bg-gray-50">
-        <!-- Header -->
-        <div class="bg-white border-b px-6 py-4 flex items-center justify-between">
-            <div class="flex items-center gap-4">
-                <h1 class="text-2xl font-bold">POS</h1>
-                
-                @if($currentTable)
-                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
-                        Mesa: {{ $currentTable->name }}
-                    </span>
-                @else
-                    <button 
-                        wire:click="openTableModal"
-                        class="px-3 py-1 bg-blue-500 text-white rounded-lg text-sm font-medium"
-                    >
-                        Selecionar Mesa
-                    </button>
-                @endif
-            </div>
-
-            <div class="flex items-center gap-4">
-                @if($activeShift)
-                    <div class="text-sm">
-                        <span class="text-gray-500">Turno:</span>
-                        <span class="font-medium">{{ $activeShift->opened_at->format('H:i') }}</span>
+    <!-- Sidebar Esquerdo -->
+<x-slot name="sidebar">
+    <div class="flex flex-col h-full">
+        <!-- Header do Sidebar -->
+        <div class="p-6 border-b border-zinc-200 dark:border-zinc-700 flex-shrink-0">
+            <div class="flex items-center space-x-3 mb-4">
+                <div class="w-12 h-12 bg-blue-600 dark:bg-blue-500 rounded-xl flex items-center justify-center shadow-lg">
+                    <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-zinc-900 dark:text-white leading-none">RestauFlow</h1>
+                    <div class="flex items-center gap-2 mt-0.5">
+                        <span class="text-xs text-zinc-500 dark:text-zinc-400 font-medium">POS</span>
+                        <span class="text-xs text-zinc-400 dark:text-zinc-500">•</span>
+                        <span class="text-xs font-semibold text-green-600 dark:text-green-400">Ativo</span>
                     </div>
-                @endif
+                </div>
+            </div>
+        </div>
+
+        <!-- Conteúdo Scrollável -->
+        <div class="flex-1 overflow-y-auto">
+            <!-- Estatísticas do Dia -->
+            <div class="p-6 space-y-4">
+                <h3 class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider">Resumo do Dia</h3>
                 
-                <livewire:pos.shift-management-modal />
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-zinc-50 dark:bg-zinc-900 p-4 rounded-lg">
+                        <div class="text-2xl font-bold text-zinc-900 dark:text-white">{{ $dailyStats['activeTables'] }}</div>
+                        <div class="text-xs text-zinc-500 dark:text-zinc-400">Mesas Ativas</div>
+                    </div>
+                    <div class="bg-zinc-50 dark:bg-zinc-900 p-4 rounded-lg">
+                        <div class="text-2xl font-bold text-green-600 dark:text-green-400">{{ $dailyStats['ordersToday'] }}</div>
+                        <div class="text-xs text-zinc-500 dark:text-zinc-400">Pedidos Hoje</div>
+                    </div>
+                </div>
+                
+                <div class="bg-zinc-50 dark:bg-zinc-900 p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ number_format($dailyStats['todayRevenue']) }} MT</div>
+                    <div class="text-xs text-zinc-500 dark:text-zinc-400">Faturação Hoje</div>
+                </div>
+            </div>
+
+            <!-- Acesso Rápido às Mesas -->
+            <div class="p-6">
+                <h3 class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 uppercase tracking-wider mb-4">Acesso Rápido</h3>
+                
+                <livewire:pos.quick-tables-grid />
             </div>
         </div>
-
-        <!-- Main Content -->
-        <div class="flex-1 flex overflow-hidden">
-            <!-- Produtos (70%) -->
-            <div class="flex-1 border-r">
-                <livewire:pos.product-list />
-            </div>
-
-            <!-- Carrinho (30%) -->
-            <div class="w-96 bg-white flex flex-col">
-                <livewire:pos.order-summary 
-                    :cart="$cart" 
-                    :currentTable="$currentTable"
-                />
-            </div>
-        </div>
-
-        <!-- Tables Modal Component -->
-        <livewire:pos.tables-list />
-
-        <!-- Payment Modal -->
-        <livewire:pos.payment-modal :cart="$cart" :currentTable="$currentTable" />
     </div>
+</x-slot>
+
+<!-- Área Central -->
+@if($currentView === 'tables')
+    <!-- Grid de Mesas -->
+    <div class="p-6 h-full overflow-y-auto">
+        <div class="flex items-center justify-between mb-6">
+            <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Mesas do Restaurante</h2>
+            <div class="flex gap-4 text-sm">
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                    <span class="text-zinc-600 dark:text-zinc-400">Livre</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-red-500 rounded-full"></div>
+                    <span class="text-zinc-600 dark:text-zinc-400">Ocupada</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                    <span class="text-zinc-600 dark:text-zinc-400">Aguardando</span>
+                </div>
+            </div>
+        </div>
+        
+        <livewire:pos.tables-grid />
+    </div>
+
+@else
+    <!-- Grid de Produtos -->
+    <div class="p-6 h-full overflow-y-auto">
+        <div class="flex items-center gap-4 mb-6">
+            <button wire:click="showTables" 
+                    class="flex items-center gap-2 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 px-4 py-2 rounded-lg transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Voltar
+            </button>
+            <h2 class="text-xl font-bold text-zinc-900 dark:text-white">
+                Produtos - Mesa {{ $currentTable?->name ?? '' }}
+            </h2>
+        </div>
+        
+        <!-- Categorias -->
+        @livewire('pos.categories-bar', ['selectedCategory' => $selectedCategory])
+        
+        <!-- Grid de Produtos -->
+        @livewire('pos.products-grid', ['selectedCategory' => $selectedCategory])
+    </div>
+@endif
+
+<!-- Painel Direito -->
+<x-slot name="rightPanel">
+    <livewire:pos.order-summary 
+        :currentTable="$currentTable" 
+        :cart="$cart" 
+        :cartTotal="$cartTotal" 
+        :cartCount="$cartCount" 
+    />
+</x-slot>
+
+<!-- Toast Notifications -->
+<div id="toast-container" class="fixed top-24 right-6 z-50 space-y-2">
+    <!-- Toasts serão inseridos aqui via JavaScript -->
+</div>
+
+@push('scripts')
+<script>
+    // Listener para toasts
+    document.addEventListener('livewire:initialized', () => {
+        Livewire.on('toast', (data) => {
+            showToast(data[0]);
+        });
+    });
+
+    function showToast(data) {
+        const container = document.getElementById('toast-container');
+        const toast = document.createElement('div');
+        
+        const colors = {
+            success: 'bg-green-600',
+            error: 'bg-red-600',
+            warning: 'bg-yellow-600',
+            info: 'bg-blue-600'
+        };
+
+        const icons = {
+            success: '✓',
+            error: '✕',
+            warning: '⚠',
+            info: 'ℹ'
+        };
+
+        toast.className = `${colors[data.type]} text-white px-6 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 flex items-center gap-3`;
+        toast.innerHTML = `
+            <span class="text-lg">${icons[data.type]}</span>
+            <span>${data.message}</span>
+            <button onclick="this.parentElement.remove()" class="ml-2 text-white hover:text-gray-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        `;
+
+        container.appendChild(toast);
+
+        // Animate in
+        setTimeout(() => {
+            toast.classList.remove('translate-x-full');
+        }, 100);
+
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            toast.classList.add('translate-x-full');
+            setTimeout(() => {
+                if (toast.parentElement) {
+                    toast.remove();
+                }
+            }, 300);
+        }, 5000);
+    }
+</script>
+@endpush
 </div>
