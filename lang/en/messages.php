@@ -10,6 +10,7 @@ return [
     | system in Portuguese. You can modify them as needed.
     |
     */
+    //messages.php
 
     // General
     'appName' => 'Restflow',
@@ -30,6 +31,10 @@ return [
         'available'         => 'Available',
         'reserved'          => 'Reserved',
         'damaged'           => 'Damaged',
+
+        'draft' => 'Draft',
+        'finalized' => 'Finalized',
+        'canceled' => 'Canceled',
 
 
         'unavailable'       => 'Unavailable',
@@ -115,6 +120,7 @@ return [
     'stock_management' => [
         'key'           => 'Stocks',
         'title'         => 'Stock Management',
+        'stock_center'        => 'Stock Center',
         'stock_low'     => 'Low stock for :item.',
         'stock_updated' => 'Stock updated.',
         'stock_detail'  => 'Stock Details'
