@@ -9,11 +9,12 @@ use Livewire\Component;
 
 class POSComponent extends Component
 {
- // Estados da interface
-    public string $currentView = 'tables'; // 'tables' ou 'products'
+    // Estados da interface
+    public string $currentView = 'tables';
     
-    // Dados principais
-    public  $currentTable = null;
+    // Dados principais - propriedades simples
+    public ?int $currentTableId = null;
+    public ?string $currentTableName = null;
     public ?int $selectedCategory = null;
     public array $cart = [];
     
@@ -29,70 +30,35 @@ class POSComponent extends Component
     }
 
     // ===========================================
-    // MÉTODO TEMPORÁRIO PARA DEBUG
-    // ===========================================
-    
-    public function debugInfo()
-    {
-        $info = [
-            'currentView' => $this->currentView,
-            'currentTable' => $this->currentTable ? $this->currentTable->name : null,
-            'selectedCategory' => $this->selectedCategory,
-            'products_count' => count($this->products),
-            'cart_count' => count($this->cart),
-            'cart' => $this->cart
-        ];
-        
-        logger("DEBUG INFO: " . json_encode($info));
-        $this->dispatch('toast', ['type' => 'info', 'message' => 'Info enviada para logs']);
-    }
-
-     public function forceRefresh()
-    {
-        // Força uma re-renderização completa
-        $this->skipRender = false;
-        logger("FORCE REFRESH executado");
-    }
-    // ===========================================
     // MÉTODOS DE NAVEGAÇÃO
     // ===========================================
     
     public function selectTable($tableId)
     {
-        logger("=== SELECT TABLE CHAMADO ===");
-        logger("Table ID: {$tableId}");
+        $table = Table::find($tableId);
         
-        $this->currentTable = Table::find($tableId);
-        
-        // dd($this->selectTable());
-        if (!$this->currentTable) {
-            logger("ERRO: Mesa não encontrada - ID: {$tableId}");
+        if (!$table) {
             $this->dispatch('toast', ['type' => 'error', 'message' => 'Mesa não encontrada']);
             return;
         }
 
-        logger("Mesa encontrada: {$this->currentTable->name}");
+        $this->currentTable = $table;
+        $this->currentTableId = $table->id;
+        $this->currentTableName = $table->name;
         $this->currentView = 'products';
-        logger("View alterada para: {$this->currentView}");
         
-        $this->loadProducts(); // Carrega produtos quando seleciona mesa
-        logger("Produtos carregados: " . count($this->products));
-
-        // FORÇA ATUALIZAÇÃO DO COMPONENTE
-        $this->dispatch('$refresh');
-        logger("=== FIM SELECT TABLE ===");
+        $this->loadProducts();
         
-        $this->dispatch('toast', ['type' => 'success', 'message' => "Mesa {$this->currentTable->name} selecionada"]);
+        $this->dispatch('toast', ['type' => 'success', 'message' => "Mesa {$table->name} selecionada"]);
     }
 
     public function backToTables()
     {
         $this->currentView = 'tables';
-        $this->currentTable = null;
+        $this->currentTableId = null;
+        $this->currentTableName = null;
         $this->selectedCategory = null;
-        $this->products = []; // Limpa produtos
-        // Opcional: limpar carrinho ao voltar
-        // $this->cart = [];
+        $this->products = [];
     }
 
     // ===========================================
@@ -111,7 +77,7 @@ class POSComponent extends Component
     
     public function addToCart($productId, $quantity = 1)
     {
-        if (!$this->currentTable) {
+        if (!$this->currentTableId) {
             $this->dispatch('toast', ['type' => 'warning', 'message' => 'Selecione uma mesa primeiro']);
             return;
         }
@@ -133,7 +99,6 @@ class POSComponent extends Component
                 'unit_price' => $product->price,
                 'quantity' => $quantity,
             ];
-            logger("Novo produto adicionado ao carrinho");
         }
 
         $this->cart[$cartKey]['total_price'] = 
@@ -176,23 +141,23 @@ class POSComponent extends Component
             return;
         }
 
-        if (!$this->currentTable) {
+        if (!$this->currentTableId) {
             $this->dispatch('toast', ['type' => 'warning', 'message' => 'Mesa não selecionada']);
             return;
         }
 
-        // Aqui você colocaria a lógica para salvar a venda no banco
-        // Por enquanto, apenas simula
+        // Aqui colocaria a lógica para salvar no banco
         
         $this->cart = [];
-        $this->currentTable = null;
+        $this->currentTableId = null;
+        $this->currentTableName = null;
         $this->currentView = 'tables';
         
         $this->dispatch('toast', ['type' => 'success', 'message' => 'Pedido finalizado com sucesso!']);
     }
 
     // ===========================================
-    // MÉTODOS DE CARREGAMENTO DE DADOS
+    // MÉTODOS DE CARREGAMENTO
     // ===========================================
     
     public function loadTables()
@@ -228,6 +193,17 @@ class POSComponent extends Component
     // PROPRIEDADES COMPUTADAS
     // ===========================================
     
+    public function getCurrentTableProperty()
+    {
+        if ($this->currentTableId) {
+            return (object) [
+                'id' => $this->currentTableId,
+                'name' => $this->currentTableName
+            ];
+        }
+        return null;
+    }
+
     public function getCartTotalProperty()
     {
         return collect($this->cart)->sum('total_price');
@@ -236,11 +212,6 @@ class POSComponent extends Component
     public function getCartCountProperty()
     {
         return collect($this->cart)->sum('quantity');
-    }
-
-    public function getQuickTablesProperty()
-    {
-        return collect($this->tables)->take(8);
     }
 
     // ===========================================
@@ -252,7 +223,7 @@ class POSComponent extends Component
         return view('livewire.p-o-s.p-o-s-component', [
             'cartTotal' => $this->cartTotal,
             'cartCount' => $this->cartCount,
-            'quickTables' => $this->quickTables,
+            // 'quickTables' => $this->quickTables,
 
 
             

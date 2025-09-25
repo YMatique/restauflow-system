@@ -117,19 +117,19 @@
     <div class="flex h-screen pt-32 pb-20" style="margin-left: 16px; margin-right: 16px;">
         
         <!-- Coluna 1: Sidebar Esquerdo -->
-        <div class="w-80 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl mr-4 flex flex-col overflow-hidden">
+        {{-- <div class="w-80 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl mr-4 flex flex-col overflow-hidden">
             {{ $sidebar ?? '' }}
-        </div>
+        </div> --}}
 
         <!-- Coluna 2: Área Central Principal -->
-        <div class="flex-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl mr-4 flex flex-col overflow-hidden">
+        <div class="w-full bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl mr-4 flex flex-col overflow-hidden">
             {{ $slot }}
         </div>
 
         <!-- Coluna 3: Painel Direito -->
-        <div class="w-80 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl flex flex-col overflow-hidden">
+        {{-- <div class="w-80 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl flex flex-col overflow-hidden">
             {{ $rightPanel ?? '' }}
-        </div>
+        </div> --}}
     </div>
 
     <!-- Bottom Navigation -->
