@@ -9,34 +9,74 @@ use Livewire\Component;
 
 class OrderSummary extends Component
 {
-    // Propriedade injetada pelo POSComponent (aqui usamos o cast para simplificar)
-    public $currentTable = null; 
-    
-    // O carrinho é uma propriedade LOCAL do OrderSummary (a chave para a performance)
+ public ?Table $currentTable = null; 
     public array $cart = []; 
+    public int $currentTableId = 0; // ID da mesa para controle interno
 
     protected $listeners = [
-        // Ouve o evento DIRETO do ProductsGrid
-        'productAddedToCart' => 'handleProductAddition', 
+        'productAddedToCart' => 'handleProductAddition',
+        'tableSelected' => 'handleTableUpdate', // Escuta diretamente a seleção
     ];
 
-    // MODIFICADO: Centraliza a lógica de adição. O POSComponent não se envolve.
-     #[On('productAddedToCart')]
+    public function mount($currentTable = null)
+    {
+        if ($currentTable) {
+            $this->currentTable = $currentTable;
+            $this->currentTableId = $currentTable->id;
+        }
+        logger("OrderSummary mounted com mesa: " . ($currentTable ? $currentTable->name : 'null'));
+    }
+
+    // Escuta mudanças de mesa diretamente
+    public function handleTableUpdate($tableId)
+    {
+        // dd($tableId);
+        // logger("OrderSummary: Recebendo nova mesa ID: {$tableId}");
+                $tableId = (int) $tableId;
+
+        if ($tableId !== $this->currentTableId) {
+            $this->currentTable = Table::find($tableId);
+            $this->currentTableId = $tableId;
+            
+            // Opcional: limpar carrinho ao mudar mesa
+            // $this->cart = [];
+            
+            logger("OrderSummary: Mesa atualizada para: " . ($this->currentTable ? $this->currentTable->name : 'null'));
+        }
+    }
+
+    public function updatedCurrentTable($value)
+    {
+        if ($value && $value->id !== $this->currentTableId) {
+            $this->currentTableId = $value->id;
+            logger("OrderSummary: currentTable prop atualizada para: " . $value->name);
+        }
+    }
+
+    #[On('productAddedToCart')]
     public function handleProductAddition(int $productId, int $quantity = 1, $tableId = null): void
     {
+        logger("OrderSummary: Adicionando produto {$productId} para mesa {$tableId}");
 
-        // dd($this->currentTable);
-
-         if (!$tableId) {
-        $this->dispatch('toast', ['type' => 'warning', 'message' => 'Selecione uma mesa primeiro.']);
-        return;
-    }
-    $this->currentTable = Table::find($tableId); 
-        if (!$this->currentTable) {
+        // Usar o tableId passado ou o atual
+        $targetTableId = $tableId ?? $this->currentTableId;
+        
+        if (!$targetTableId) {
             $this->dispatch('toast', ['type' => 'warning', 'message' => 'Selecione uma mesa primeiro.']);
             return;
         }
-  // $this->currentTable = Table::find($tableId); 
+        
+        // Garantir que temos a mesa atualizada
+        if (!$this->currentTable || $this->currentTable->id !== $targetTableId) {
+            $this->currentTable = Table::find($targetTableId);
+            $this->currentTableId = $targetTableId;
+        }
+        
+        if (!$this->currentTable) {
+            $this->dispatch('toast', ['type' => 'warning', 'message' => 'Mesa não encontrada.']);
+            return;
+        }
+
         $product = Product::find($productId);
         
         if (!$product) {
@@ -44,7 +84,7 @@ class OrderSummary extends Component
              return;
         }
 
-        $cartKey = $productId; // Usar o ID do produto como chave
+        $cartKey = $productId;
 
         if (isset($this->cart[$cartKey])) {
             $this->cart[$cartKey]['quantity'] += $quantity;
@@ -57,17 +97,14 @@ class OrderSummary extends Component
             ];
         }
         
-        // Recalcular total (Local e Rápido)
         $this->cart[$cartKey]['total_price'] = 
             $this->cart[$cartKey]['quantity'] * $this->cart[$cartKey]['unit_price'];
 
         $this->dispatch('toast', ['type' => 'success', 'message' => "{$product->name} adicionado!"]);
     }
 
-    // MODIFICADO: Atualização LOCAL e RÁPIDA da quantidade.
     public function updateQuantity(int $cartKey, int $newQuantity): void
     {
-        // Se a nova quantidade for zero ou menos, remove o item
         if ($newQuantity <= 0) {
             if (isset($this->cart[$cartKey])) {
                 unset($this->cart[$cartKey]);
@@ -78,7 +115,6 @@ class OrderSummary extends Component
             $this->cart[$cartKey]['total_price'] = $newQuantity * $this->cart[$cartKey]['unit_price'];
         }
         
-        // Se o carrinho ficar vazio, avisa o POSComponent para talvez liberar a mesa
         if (empty($this->cart) && $this->currentTable) {
             $this->dispatch('cartEmptied', tableId: $this->currentTable->id)
                  ->to(\App\Livewire\POS\POSComponent::class); 
@@ -99,7 +135,6 @@ class OrderSummary extends Component
 
         $this->cart = [];
         
-        // Avisa o POSComponent que o carrinho foi limpo
         if ($this->currentTable) {
             $this->dispatch('cartEmptied', tableId: $this->currentTable->id)
                  ->to(\App\Livewire\POS\POSComponent::class);
@@ -120,14 +155,12 @@ class OrderSummary extends Component
             return;
         }
 
-        // Simulação de Finalizar/Salvar e abrir Modal
         $this->finalizeOrder(); 
     }
 
     public function finalizeOrder(): void
     {
-        $this->cart = []; // Limpa o carrinho localmente
-        // Avisa o POSComponent que a venda foi concluída
+        $this->cart = [];
         $this->dispatch('orderFinalized')
              ->to(\App\Livewire\POS\POSComponent::class); 
     }
@@ -141,11 +174,14 @@ class OrderSummary extends Component
     {
         return collect($this->cart)->sum('quantity');
     }
+    
     public function render()
     {
-        return view('livewire.p-o-s.order-summary',[
-             'cartTotal' => $this->cartTotal, // Acedido via $this->cartTotal
-        'cartCount' => $this->cartCount 
+         logger("OrderSummary render - Mesa atual: " . ($this->currentTable ? $this->currentTable->name : 'null'));
+        
+        return view('livewire.p-o-s.order-summary', [
+            'cartTotal' => $this->cartTotal, // Acedido via $this->cartTotal
+            'cartCount' => $this->cartCount,
         ]);
     }
 }

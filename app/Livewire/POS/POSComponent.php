@@ -4,82 +4,214 @@ namespace App\Livewire\POS;
 
 use App\Models\Product;
 use App\Models\Table;
-use App\Livewire\POS\TablesList;
 use App\Models\Category;
 use Livewire\Component;
 
 class POSComponent extends Component
 {
+    // Estados da interface
+    public string $currentView = 'tables'; // 'tables' ou 'products'
+    
+    // Dados principais
+    public ?Table $currentTable = null;
+    public ?int $selectedCategory = null;
+    public array $cart = [];
+    
+    // Dados para templates
+    public $tables = [];
+    public $categories = [];
+    public $products = [];
 
-// Define se a view principal é 'tables' ou 'products'
-    public string $currentView = 'tables'; 
+    public function mount()
+    {
+        $this->loadTables();
+        $this->loadCategories();
+    }
 
-    // A mesa selecionada, passada para OrderSummary
-    public ?Table $currentTable = null; 
-
-    protected $listeners = [
-        // Ouve a seleção das grids de mesa
-        'tableSelected' => 'handleTableSelection', 
-        
-        // Ouve o clique no botão 'Adicionar Produtos' do OrderSummary
-        'showProducts' => 'showProducts',
-        
-        // Ouve quando o OrderSummary zera o carrinho e precisa liberar a mesa
-        'cartEmptied' => 'handleCartEmptied', 
-        
-        // Ouve quando o pagamento é finalizado
-        'orderFinalized' => 'handleOrderFinalized', 
-    ];
-
-    public function handleTableSelection(int $tableId): void
+    // ===========================================
+    // MÉTODOS DE NAVEGAÇÃO
+    // ===========================================
+    
+    public function selectTable($tableId)
     {
         $this->currentTable = Table::find($tableId);
         
-        if ($this->currentTable) {
-            $this->currentView = 'products';
-            // Se a mesa estava disponível, pode ser marcada como ocupada aqui, ou na finalização do pedido.
-            // Para simplificar, assumimos que o status é atualizado na finalização.
-        } else {
-            $this->dispatch('toast', ['type' => 'error', 'message' => 'Mesa não encontrada.']);
+        if (!$this->currentTable) {
+            $this->dispatch('toast', ['type' => 'error', 'message' => 'Mesa não encontrada']);
+            return;
         }
-    }
 
-    public function showProducts(): void
-    {
         $this->currentView = 'products';
+        $this->loadProducts();
+        
+        $this->dispatch('toast', ['type' => 'success', 'message' => "Mesa {$this->currentTable->name} selecionada"]);
     }
 
-    public function showTables(): void
+    public function backToTables()
     {
         $this->currentView = 'tables';
+        $this->currentTable = null;
+        $this->selectedCategory = null;
+        $this->cart = []; // Opcional: limpar carrinho ao voltar
     }
 
-    public function handleCartEmptied(int $tableId): void
+    // ===========================================
+    // MÉTODOS DE CATEGORIA
+    // ===========================================
+    
+    public function selectCategory($categoryId = null)
     {
-        // Ao limpar o carrinho, atualiza o status da mesa para "available"
-        $table = Table::find($tableId);
-        if ($table && $table->status === 'occupied') { 
-            $table->update(['status' => 'available']);
-            $this->dispatch('refreshTables'); // Avisa as grids de mesa para atualizar
+        $this->selectedCategory = $categoryId;
+        $this->loadProducts();
+    }
+
+    // ===========================================
+    // MÉTODOS DO CARRINHO
+    // ===========================================
+    
+    public function addToCart($productId, $quantity = 1)
+    {
+        if (!$this->currentTable) {
+            $this->dispatch('toast', ['type' => 'warning', 'message' => 'Selecione uma mesa primeiro']);
+            return;
+        }
+
+        $product = Product::find($productId);
+        if (!$product) {
+            $this->dispatch('toast', ['type' => 'error', 'message' => 'Produto não encontrado']);
+            return;
+        }
+
+        $cartKey = $productId;
+
+        if (isset($this->cart[$cartKey])) {
+            $this->cart[$cartKey]['quantity'] += $quantity;
+        } else {
+            $this->cart[$cartKey] = [
+                'product_id' => $product->id,
+                'product_name' => $product->name,
+                'unit_price' => $product->price,
+                'quantity' => $quantity,
+            ];
+        }
+
+        $this->cart[$cartKey]['total_price'] = 
+            $this->cart[$cartKey]['quantity'] * $this->cart[$cartKey]['unit_price'];
+
+        $this->dispatch('toast', ['type' => 'success', 'message' => "{$product->name} adicionado ao carrinho"]);
+    }
+
+    public function updateQuantity($cartKey, $newQuantity)
+    {
+        if ($newQuantity <= 0) {
+            unset($this->cart[$cartKey]);
+            $this->dispatch('toast', ['type' => 'info', 'message' => 'Item removido']);
+        } else {
+            $this->cart[$cartKey]['quantity'] = $newQuantity;
+            $this->cart[$cartKey]['total_price'] = $newQuantity * $this->cart[$cartKey]['unit_price'];
         }
     }
 
-    public function handleOrderFinalized(): void
+    public function removeFromCart($cartKey)
     {
-        // Lógica de reset total após uma venda
+        unset($this->cart[$cartKey]);
+        $this->dispatch('toast', ['type' => 'info', 'message' => 'Item removido do carrinho']);
+    }
+
+    public function clearCart()
+    {
+        $this->cart = [];
+        $this->dispatch('toast', ['type' => 'info', 'message' => 'Carrinho limpo']);
+    }
+
+    // ===========================================
+    // MÉTODOS DE FINALIZAÇÃO
+    // ===========================================
+    
+    public function finalizeOrder()
+    {
+        if (empty($this->cart)) {
+            $this->dispatch('toast', ['type' => 'warning', 'message' => 'Carrinho vazio']);
+            return;
+        }
+
+        if (!$this->currentTable) {
+            $this->dispatch('toast', ['type' => 'warning', 'message' => 'Mesa não selecionada']);
+            return;
+        }
+
+        // Aqui você colocaria a lógica para salvar a venda no banco
+        // Por enquanto, apenas simula
+        
+        $this->cart = [];
         $this->currentTable = null;
         $this->currentView = 'tables';
-        $this->dispatch('refreshTables');
+        
         $this->dispatch('toast', ['type' => 'success', 'message' => 'Pedido finalizado com sucesso!']);
     }
 
+    // ===========================================
+    // MÉTODOS DE CARREGAMENTO DE DADOS
+    // ===========================================
+    
+    public function loadTables()
+    {
+        $this->tables = Table::where('company_id', auth()->user()->company_id)
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+    }
+
+    public function loadCategories()
+    {
+        $this->categories = Category::where('company_id', auth()->user()->company_id)
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+    }
+
+    public function loadProducts()
+    {
+        $query = Product::where('company_id', auth()->user()->company_id)
+            ->where('is_active', true)
+            ->where('is_available', true);
+
+        if ($this->selectedCategory) {
+            $query->where('category_id', $this->selectedCategory);
+        }
+
+        $this->products = $query->orderBy('name')->get();
+    }
+
+    // ===========================================
+    // PROPRIEDADES COMPUTADAS
+    // ===========================================
+    
+    public function getCartTotalProperty()
+    {
+        return collect($this->cart)->sum('total_price');
+    }
+
+    public function getCartCountProperty()
+    {
+        return collect($this->cart)->sum('quantity');
+    }
+
+    public function getQuickTablesProperty()
+    {
+        return collect($this->tables)->take(8);
+    }
+
+    // ===========================================
+    // RENDER
+    // ===========================================
+    
     public function render()
     {
-         $companyId = auth()->user()->company_id;
         return view('livewire.p-o-s.p-o-s-component', [
-            'cartTotal' => 0,
-            'cartCount' => 0,
-            'activeShift' => 0,
+            'cartTotal' => $this->cartTotal,
+            'cartCount' => $this->cartCount,
+            'quickTables' => $this->quickTables,
         ])->layout('layouts.pos-new');
     }
 }
