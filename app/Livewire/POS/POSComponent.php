@@ -4,12 +4,12 @@ namespace App\Livewire\POS;
 
 use App\Models\Product;
 use App\Models\Table;
+use App\Livewire\POS\TablesList;
 use Livewire\Component;
 
 class POSComponent extends Component
 {
     public $currentTable = null;
-
     public $cart = [];
 
     protected $listeners = [
@@ -23,14 +23,23 @@ class POSComponent extends Component
     public function mount()
     {
         // Verifica turno ativo
-        if (! auth()->user()->getActiveShift()) {
+        if (!auth()->user()->getActiveShift()) {
             $this->dispatch('toast', [
                 'type' => 'error',
-                'message' => 'É necessário ter um turno ativo para usar o POS',
+                'message' => 'É necessário ter um turno ativo para usar o POS'
             ]);
-
             return redirect()->route('restaurant.shifts');
         }
+    }
+
+    // ===== TABLE MANAGEMENT =====
+
+    public function openTableModal()
+    {
+        
+        // Dispara evento para abrir modal de mesas
+        // $this->dispatch('openTableModal')->to(TablesList::class);
+        $this->dispatch('openTableModal');
     }
 
     // ===== HANDLERS DE EVENTOS =====
@@ -39,21 +48,20 @@ class POSComponent extends Component
     {
         $table = \App\Models\Table::find($tableId);
         $this->currentTable = $table;
+        $this->showTableModal = false; // Fecha o modal
     }
 
     public function handleProductAddition($productId, $quantity = 1)
     {
         $product = Product::find($productId);
-
-        if (! $product) {
-            return;
-        }
+        
+        if (!$product) return;
 
         $cartKey = $productId;
 
         if (isset($this->cart[$cartKey])) {
             $this->cart[$cartKey]['quantity'] += $quantity;
-            $this->cart[$cartKey]['total_price'] =
+            $this->cart[$cartKey]['total_price'] = 
                 $this->cart[$cartKey]['quantity'] * $this->cart[$cartKey]['unit_price'];
         } else {
             $this->cart[$cartKey] = [
@@ -61,7 +69,7 @@ class POSComponent extends Component
                 'product_name' => $product->name,
                 'unit_price' => $product->price,
                 'quantity' => $quantity,
-                'total_price' => $product->price * $quantity,
+                'total_price' => $product->price * $quantity
             ];
         }
 
@@ -76,17 +84,16 @@ class POSComponent extends Component
         } else {
             // Validar stock
             $product = Product::find($this->cart[$cartKey]['product_id']);
-            if (! $product->canSell($newQuantity)) {
+            if (!$product->canSell($newQuantity)) {
                 $this->dispatch('toast', [
                     'type' => 'error',
-                    'message' => 'Quantidade não disponível em stock',
+                    'message' => 'Quantidade não disponível em stock'
                 ]);
-
                 return;
             }
 
             $this->cart[$cartKey]['quantity'] = $newQuantity;
-            $this->cart[$cartKey]['total_price'] =
+            $this->cart[$cartKey]['total_price'] = 
                 $newQuantity * $this->cart[$cartKey]['unit_price'];
         }
 
@@ -98,13 +105,13 @@ class POSComponent extends Component
         // Reset após venda
         $this->cart = [];
         $this->currentTable = null;
-
+        
         // Limpa seleção de mesa
         $this->dispatch('tableCleared');
-
+        
         $this->dispatch('toast', [
             'type' => 'success',
-            'message' => 'Venda concluída com sucesso!',
+            'message' => 'Venda concluída com sucesso!'
         ]);
     }
 

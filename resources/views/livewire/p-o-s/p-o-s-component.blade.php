@@ -11,7 +11,7 @@
                     </span>
                 @else
                     <button 
-                        wire:click="$dispatch('openModal', { component: 'pos.tables-list' })"
+                        wire:click="openTableModal"
                         class="px-3 py-1 bg-blue-500 text-white rounded-lg text-sm font-medium"
                     >
                         Selecionar Mesa
@@ -47,7 +47,10 @@
             </div>
         </div>
 
+        <!-- Tables Modal Component -->
+        <livewire:pos.tables-list />
+
         <!-- Payment Modal -->
-        <livewire:pos.payment-modal :cart="$cart" />
+        <livewire:pos.payment-modal :cart="$cart" :currentTable="$currentTable" />
     </div>
 </div>

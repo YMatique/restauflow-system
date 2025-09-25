@@ -8,25 +8,29 @@ use Livewire\Component;
 class TablesList extends Component
 {
 
+    public $showModal = false;
     public $currentTableId = null;
     
     protected $listeners = [
-        'tableCleared' => '$refresh'
+        'openTableModal' => 'open',
     ];
+
+    public function open()
+    {
+        //    dd('Método openTableModal foi chamado!');
+        $this->showModal = true;
+    }
+
+    public function close()
+    {
+        $this->showModal = false;
+    }
 
     public function selectTable($tableId)
     {
         $table = Table::find($tableId);
         
-        if (!$table) {
-            $this->dispatch('toast', [
-                'type' => 'error',
-                'message' => 'Mesa não encontrada'
-            ]);
-            return;
-        }
-
-        if (!$table->isAvailable()) {
+        if (!$table || !$table->isAvailable()) {
             $this->dispatch('toast', [
                 'type' => 'error',
                 'message' => 'Mesa não disponível'
@@ -34,10 +38,11 @@ class TablesList extends Component
             return;
         }
 
-        $this->currentTableId = $tableId;
-        
         // Envia evento para componente pai
         $this->dispatch('tableSelected', tableId: $tableId);
+        
+        // Fecha o modal
+        $this->close();
         
         $this->dispatch('toast', [
             'type' => 'success',
@@ -52,7 +57,6 @@ class TablesList extends Component
             ->get()
             ->groupBy('section');
     }
-
     public function render()
     {
         return view('livewire.p-o-s.tables-list',[
