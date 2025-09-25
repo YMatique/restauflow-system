@@ -33,20 +33,20 @@
 
                     <div class="grid grid-cols-2 gap-4">
                         <div class="bg-zinc-50 dark:bg-zinc-900 p-4 rounded-lg">
-                            <div class="text-2xl font-bold text-zinc-900 dark:text-white">
-                                {{ $dailyStats['activeTables'] }}</div>
+                            {{-- <div class="text-2xl font-bold text-zinc-900 dark:text-white">
+                                {{ $dailyStats['activeTables'] }}</div> --}}
                             <div class="text-xs text-zinc-500 dark:text-zinc-400">Mesas Ativas</div>
                         </div>
                         <div class="bg-zinc-50 dark:bg-zinc-900 p-4 rounded-lg">
-                            <div class="text-2xl font-bold text-green-600 dark:text-green-400">
-                                {{ $dailyStats['ordersToday'] }}</div>
+                            {{-- <div class="text-2xl font-bold text-green-600 dark:text-green-400">
+                                {{ $dailyStats['ordersToday'] }}</div> --}}
                             <div class="text-xs text-zinc-500 dark:text-zinc-400">Pedidos Hoje</div>
                         </div>
                     </div>
 
                     <div class="bg-zinc-50 dark:bg-zinc-900 p-4 rounded-lg">
-                        <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
-                            {{ number_format($dailyStats['todayRevenue']) }} MT</div>
+                        {{-- <div class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+                            {{ number_format($dailyStats['todayRevenue']) }} MT</div> --}}
                         <div class="text-xs text-zinc-500 dark:text-zinc-400">Faturação Hoje</div>
                     </div>
                 </div>
@@ -63,73 +63,27 @@
     </x-slot>
 
     <!-- Área Central -->
-    @if ($currentView === 'tables')
-        <!-- Grid de Mesas -->
-        <div class="p-6 h-full overflow-y-auto">
-            <div class="flex items-center justify-between mb-6">
-                <h2 class="text-xl font-bold text-zinc-900 dark:text-white">Mesas do Restaurante</h2>
-                <div class="flex gap-4 text-sm">
-                    <div class="flex items-center gap-2">
-                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
-                        <span class="text-zinc-600 dark:text-zinc-400">Livre</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-3 h-3 bg-red-500 rounded-full"></div>
-                        <span class="text-zinc-600 dark:text-zinc-400">Ocupada</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <div class="w-3 h-3 bg-yellow-500 rounded-full"></div>
-                        <span class="text-zinc-600 dark:text-zinc-400">Aguardando</span>
-                    </div>
-                </div>
-            </div>
 
-            <livewire:pos.tables-grid />
-        </div>
-    @else
-        <!-- Grid de Produtos -->
-        <div class="p-6 h-full overflow-y-auto">
-            <div class="flex items-center gap-4 mb-6">
-                <button wire:click="showTables"
-                    class="flex items-center gap-2 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-700 dark:hover:bg-zinc-600 px-4 py-2 rounded-lg transition-colors">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
-                    </svg>
-                    Voltar
-                </button>
-                <h2 class="text-xl font-bold text-zinc-900 dark:text-white">
-                    {{-- Produtos - Mesa {{ $currentTable?->name ?? '' }} --}}
-                </h2>
-            </div>
-
-            <!-- Categorias -->
-            {{-- @livewire('pos.categories-bar', ['selectedCategory' => $selectedCategory]) --}}
-
-            <!-- Grid de Produtos -->
-            {{-- @livewire('pos.products-grid', ['selectedCategory' => $selectedCategory]) --}}
-            <!-- Coloca isto temporariamente: -->
-            <div class="p-6">
-                @if ($currentTable)
-                    <h3>Mesa: {{ $currentTable->name }}</h3>
-                    <p>Status: {{ $currentTable->status }}</p>
-                @else
-                    <p>Nenhuma mesa selecionada</p>
-                @endif
-            </div>
-        </div>
+      @if($currentView === 'tables')
+        <livewire:pos.tables-grid /> 
+    @elseif($currentView === 'products')
+        <livewire:pos.categories-bar />
+        <livewire:pos.products-grid :currentTableId="$currentTable?->id" />
     @endif
-
     <!-- Painel Direito -->
     <x-slot name="rightPanel">
         
         {{-- <livewire:pos.order-summary :currentTable="$currentTable" :cart="$cart" /> --}}
         {{-- <livewire:pos.order-summary :currentTable="$currentTable" :cart="$cart"
             wire:key="order-summary-{{ $currentTable?->id ?? 'none' }}" /> --}}
-            <livewire:pos.order-summary 
+            {{-- <livewire:pos.order-summary 
     :currentTable="$currentTable" 
     :cart="$cart" 
-    wire:key="order-{{ $currentTable?->id ?? 'none' }}" />
+    wire:key="order-{{ $currentTable?->id ?? 'none' }}" /> --}}
+     <livewire:pos.order-summary 
+        :currentTable="$currentTable" 
+        wire:key="order-summary-{{ $currentTable?->id ?? 'none' }}" 
+    />
         {{-- <livewire:pos.order-summary :currentTable="$currentTable" :cart="$cart" :cartTotal="$cartTotal" :cartCount="$cartCount" /> --}}
     </x-slot>
 

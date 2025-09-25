@@ -7,26 +7,25 @@ use Livewire\Component;
 
 class ProductsGrid extends Component
 {
-      public $selectedCategory = null;
+    // Apenas escuta a mudança de categoria
+    public $selectedCategory = null;
+    public $currentTableId = null; 
 
     protected $listeners = [
         'categorySelected' => 'updateCategory'
     ];
 
-    public function mount($selectedCategory = null)
-    {
-        dd('asas');
-        $this->selectedCategory = $selectedCategory;
-    }
-
-    public function updateCategory($categoryId)
+    public function updateCategory($categoryId): void
     {
         $this->selectedCategory = $categoryId;
     }
 
-    public function addToCart($productId, $quantity = 1)
+    // MODIFICADO: Disparo de evento DIRECIONADO para o OrderSummary
+    public function addToCart(int $productId, int $quantity = 1): void
     {
-        $this->dispatch('productAdded', productId: $productId, quantity: $quantity);
+        // dd('as');
+        $this->dispatch('productAddedToCart', productId: $productId, quantity: $quantity,  tableId: $this->currentTableId);
+            //  ->to(OrderSummary::class); 
     }
 
     public function getProductsProperty()
@@ -43,8 +42,8 @@ class ProductsGrid extends Component
     }
     public function render()
     {
-        return view('livewire.p-o-s.products-grid', [
-            'products' => $this->products
+        return view('livewire.p-o-s.products-grid',[
+            'products' => $this->products 
         ]);
     }
 }

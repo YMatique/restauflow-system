@@ -1,4 +1,5 @@
-<!-- Grid de Produtos -->
+<div>
+    <!-- Grid de Produtos -->
 <div class="grid grid-cols-4 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 gap-4">
     @forelse($products as $product)
         <div wire:click="addToCart({{ $product->id }})"
@@ -75,3 +76,4 @@
         @endif
     </div>
 @endif
+</div>
