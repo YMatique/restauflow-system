@@ -1,316 +1,348 @@
 {{-- resources/views/livewire/p-o-s/p-o-s-component.blade.php --}}
-<div class="w-full">
-    <div class="flex h-full w-full">
-    <!-- Left Sidebar - Categories -->
-    <div class="w-48 bg-white border-r-2 border-gray-200 p-4 overflow-y-auto scrollbar-thin">
-        <div class="space-y-2">
-            <!-- All Categories Button -->
-            <button wire:click="selectCategory(null)"
-                    class="w-full flex flex-col items-center p-3 rounded-xl transition-all duration-200 
-                           {{ $selectedCategory === null ? 'bg-purple-600 text-white' : 'hover:bg-gray-100' }}">
-                <div class="text-2xl mb-2">📋</div>
-                <div class="text-xs font-medium text-center">Todos</div>
-            </button>
+<div class="flex overflow-hidden h-full">
 
-            @forelse($categories as $category)
-                <button wire:click="selectCategory({{ $category->id }})"
-                        class="w-full flex flex-col items-center p-3 rounded-xl transition-all duration-200 
-                               {{ $selectedCategory === $category->id ? 'bg-blue-600 text-white' : 'hover:bg-gray-100' }}">
-                    <div class="text-2xl mb-2">{{ $category->emoji ?? '📦' }}</div>
-                    <div class="text-xs font-medium text-center">{{ $category->name }}</div>
-                </button>
-            @empty
-                <div class="text-center py-8">
-                    <div class="text-3xl mb-2">📋</div>
-                    <p class="text-gray-500 text-sm">Nenhuma categoria</p>
+    <!-- Sidebar Esquerdo -->
+    {{-- <x-slot name="sidebar"> --}}
+        <div class="w-80 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl mr-4 flex flex-col overflow-hidden">
+        <div class="flex flex-col h-full pt-12">
+            <!-- Header do Sidebar -->
+            <div class="p-6 border-b border-zinc-200 dark:border-zinc-700 flex-shrink-0">
+                <div class="flex items-center space-x-3 mb-4">
+                    <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
+                        <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-zinc-900 dark:text-white">RestauFlow</h1>
+                        <span class="text-xs text-green-600 font-semibold">POS Ativo</span>
+                    </div>
                 </div>
-            @endforelse
+            </div>
+
+            <!-- Stats -->
+            <div class="p-6 space-y-4">
+                <h3 class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 uppercase">Resumo</h3>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="bg-zinc-50 dark:bg-zinc-900 p-4 rounded-lg">
+                        <div class="text-2xl font-bold text-zinc-900 dark:text-white">{{ count($tables) }}</div>
+                        <div class="text-xs text-zinc-500 dark:text-zinc-400">Mesas</div>
+                    </div>
+                    <div class="bg-zinc-50 dark:bg-zinc-900 p-4 rounded-lg">
+                        <div class="text-2xl font-bold text-green-600">{{ count($cart) }}</div>
+                        <div class="text-xs text-zinc-500 dark:text-zinc-400">Itens</div>
+                    </div>
+                </div>
+
+                <div class="bg-zinc-50 dark:bg-zinc-900 p-4 rounded-lg">
+                    <div class="text-2xl font-bold text-blue-600">{{ number_format(collect($cart)->sum('total_price')) }} MT</div>
+                    <div class="text-xs text-zinc-500 dark:text-zinc-400">Total Carrinho</div>
+                </div>
+            </div>
+
+            <!-- Mesas Rápidas -->
+            <div class="p-6">
+                <h3 class="text-sm font-semibold text-zinc-700 dark:text-zinc-300 uppercase mb-4">Acesso Rápido</h3>
+                <div class="grid grid-cols-4 gap-2">
+                    @foreach(collect($tables)->take(8) as $table)
+                        <button wire:click="selectTable({{ $table->id }})"
+                                class="w-12 h-12 rounded-lg text-sm font-bold transition-all text-white
+                                @if($table->status === 'available') bg-green-500 hover:bg-green-600
+                                @elseif($table->status === 'occupied') bg-red-500 hover:bg-red-600
+                                @elseif($table->status === 'reserved') bg-yellow-500 hover:bg-yellow-600
+                                @else bg-gray-500 hover:bg-gray-600 @endif">
+                            {{ $table->name }}
+                        </button>
+                    @endforeach
+                    
+                    @for($i = count(collect($tables)->take(8)); $i < 8; $i++)
+                        <div class="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-lg flex items-center justify-center text-gray-400">-</div>
+                    @endfor
+                </div>
+            </div>
         </div>
     </div>
-    
-    <!-- Main Content - Products Grid -->
-    <div class="flex-1 p-6 bg-gray-50 overflow-y-auto scrollbar-thin">
-        <!-- Products Header -->
-        <div class="flex justify-between items-center mb-6">
-            <div>
-                <h2 class="text-xl font-bold text-gray-800">
-                    {{ $selectedCategory ? $categories->find($selectedCategory)?->name : 'Todos os Produtos' }}
-                </h2>
-                <p class="text-sm text-gray-600">{{ count($products) }} produtos disponíveis</p>
-            </div>
-            
-            <!-- Quick Search -->
-            <div class="relative">
-                <input type="text" 
-                       placeholder="🔍 Buscar produto..."
-                       class="pl-4 pr-10 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 w-64">
-                <div class="absolute right-3 top-2.5 text-gray-400">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                    </svg>
+    {{-- </x-slot> --}}
+
+    <!-- Área Central -->
+    <div class="flex-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl mr-4 flex flex-col overflow-hidden">
+          
+    <div class="pt-12">
+        @if($currentView === 'tables')
+            <!-- VIEW DE MESAS -->
+            <div class="p-6">
+                <div class="mb-6">
+                    <h2 class="text-2xl font-bold text-zinc-900 dark:text-white mb-2">Selecionar Mesa</h2>
+                    <p class="text-zinc-600 dark:text-zinc-400">Clique numa mesa para começar um novo pedido</p>
+                </div>
+
+                <!-- Grid de Mesas -->
+                <div class="grid grid-cols-6 xl:grid-cols-6 lg:grid-cols-5 md:grid-cols-4 sm:grid-cols-3 gap-4">
+                    @forelse($tables as $table)
+                        <div wire:click="selectTable({{ $table->id }})"
+                             class="w-20 h-20 rounded-xl flex items-center justify-center font-bold cursor-pointer transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl text-white
+                             @if($table->status === 'available') bg-green-500 hover:bg-green-600
+                             @elseif($table->status === 'occupied') bg-red-500 hover:bg-red-600
+                             @elseif($table->status === 'reserved') bg-yellow-500 hover:bg-yellow-600
+                             @else bg-gray-500 hover:bg-gray-600 @endif">
+                            <div class="text-center">
+                                <div class="text-lg font-bold">{{ $table->name }}</div>
+                                @if($table->capacity)
+                                    <div class="text-xs opacity-80">{{ $table->capacity }}p</div>
+                                @endif
+                            </div>
+                        </div>
+                    @empty
+                        <div class="col-span-full text-center py-12">
+                            <h3 class="text-lg font-semibold text-gray-600 mb-2">Nenhuma mesa configurada</h3>
+                            <p class="text-gray-500">Configure as mesas no sistema de gestão</p>
+                        </div>
+                    @endforelse
+                </div>
+
+                <!-- Legenda -->
+                <div class="mt-8 flex items-center justify-center gap-6 text-sm">
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 bg-green-500 rounded"></div>
+                        <span>Disponível</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 bg-red-500 rounded"></div>
+                        <span>Ocupada</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-4 h-4 bg-yellow-500 rounded"></div>
+                        <span>Reservada</span>
+                    </div>
                 </div>
             </div>
-        </div>
-
-        <!-- Products Grid -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
-            @forelse($products as $product)
-                 <div wire:click="addToCart({{ $product->id }})"
-                     class="bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer border border-gray-100 overflow-hidden group {{ !$product->canSell() ? 'opacity-50 cursor-not-allowed' : '' }}">
+        @else
+            <!-- VIEW DE PRODUTOS -->
+            <div class="p-6">
+                <!-- Header com botão voltar -->
+                <div class="mb-6 flex items-center gap-4">
+                    <button wire:click="backToTables" 
+                            class="flex items-center gap-2 px-4 py-2 bg-zinc-100 hover:bg-zinc-200 text-zinc-700 rounded-lg font-medium transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+                        </svg>
+                        Voltar às Mesas
+                    </button>
                     
-                    <!-- Card Header with Status -->
-                    <div class="relative p-4 pb-2">
-                        <div class="flex justify-between items-start">
-                            <!-- Stock Status -->
-                            <div class="flex items-center space-x-1">
-                                @if($product->getStockStatus() === 'in_stock')
-                                    <div class="w-2 h-2 bg-green-500 rounded-full"></div>
-                                    <span class="text-xs text-green-600 font-medium">Disponível</span>
-                                @elseif($product->getStockStatus() === 'low_stock')
-                                    <div class="w-2 h-2 bg-yellow-500 rounded-full"></div>
-                                    <span class="text-xs text-yellow-600 font-medium">Baixo</span>
-                                @else
-                                    <div class="w-2 h-2 bg-red-500 rounded-full"></div>
-                                    <span class="text-xs text-red-600 font-medium">Esgotado</span>
-                                @endif
+                    <div class="flex-1">
+                        <h2 class="text-2xl font-bold text-zinc-900 dark:text-white mb-2">
+                            Produtos - Mesa {{ $currentTable?->name }}
+                        </h2>
+                        <p class="text-zinc-600 dark:text-zinc-400">Clique nos produtos para adicionar ao carrinho</p>
+                    </div>
+                </div>
+
+                <!-- Barra de Categorias -->
+                <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+                    <button wire:click="selectCategory(null)"
+                            class="px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors
+                            @if(is_null($selectedCategory)) bg-blue-600 text-white
+                            @else bg-zinc-200 text-zinc-700 hover:bg-zinc-300 @endif">
+                        Todas
+                    </button>
+
+                    @foreach($categories as $category)
+                        <button wire:click="selectCategory({{ $category->id }})"
+                                class="px-4 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors
+                                @if($selectedCategory == $category->id) bg-blue-600 text-white
+                                @else bg-zinc-200 text-zinc-700 hover:bg-zinc-300 @endif">
+                            {{ $category->name }}
+                        </button>
+                    @endforeach
+                </div>
+
+                <!-- Grid de Produtos -->
+                <div class="grid grid-cols-4 xl:grid-cols-4 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 gap-4">
+                    @forelse($products as $product)
+                        <div wire:click="addToCart({{ $product->id }})"
+                             class="bg-zinc-50 rounded-xl border border-zinc-200 p-4 cursor-pointer hover:border-blue-400 hover:shadow-lg transition-all transform hover:scale-105">
+                            
+                            <!-- Imagem Placeholder -->
+                            <div class="w-full h-24 bg-zinc-200 rounded-lg mb-3 flex items-center justify-center">
+                                <svg class="w-8 h-8 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H7a2 2 0 00-2-2z"></path>
+                                </svg>
                             </div>
                             
-                            <!-- Featured Badge -->
-                            @if($product->is_featured)
-                                <div class="bg-yellow-100 text-yellow-600 px-2 py-1 rounded-full text-xs font-medium">
-                                    ⭐ Destaque
+                            <!-- Info do Produto -->
+                            <div>
+                                <h3 class="font-medium text-sm text-zinc-900 mb-1">{{ $product->name }}</h3>
+                                <div class="flex items-center justify-between">
+                                    <p class="text-green-600 font-bold text-sm">{{ number_format($product->price) }} MT</p>
+                                    <span class="text-xs bg-green-100 text-green-800 px-2 py-0.5 rounded">Disponível</span>
                                 </div>
-                            @endif
-                        </div>
-                    </div>
-
-                    <!-- Product Image/Icon -->
-                    <div class="flex justify-center py-4">
-                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300">
-                            {{ $product->category->emoji ?? '🍽️' }}
-                        </div>
-                    </div>
-
-                    <!-- Product Info -->
-                    <div class="px-4 pb-4">
-                        <!-- Product Name -->
-                        <h3 class="font-semibold text-gray-900 text-sm mb-1 line-clamp-2 leading-tight">
-                            {{ $product->name }}
-                        </h3>
-                        
-                        <!-- Product Description -->
-                        @if($product->description)
-                            <p class="text-xs text-gray-500 mb-2 line-clamp-2">
-                                {{ $product->description }}
-                            </p>
-                        @endif
-
-                        <!-- Price -->
-                        <div class="flex items-center justify-between mb-2">
-                            <div class="text-lg font-bold text-blue-600">
-                                {{ number_format($product->price, 0) }}
-                                <span class="text-xs text-gray-500">MT</span>
-                            </div>
-                            
-                            <!-- Stock Quantity -->
-                            <div class="text-xs text-gray-500">
-                                @if($product->track_stock)
-                                    📦 {{ number_format($product->stock_quantity, 0) }}
-                                @else
-                                    ♾️ Ilimitado
-                                @endif
                             </div>
                         </div>
+                    @empty
+                        <div class="col-span-full text-center py-12">
+                            <h3 class="text-lg font-semibold text-gray-600 mb-2">Nenhum produto disponível</h3>
+                            <p class="text-gray-500">Configure produtos no sistema de gestão</p>
+                        </div>
+                    @endforelse
+                </div>
 
-                        <!-- Add Button -->
-                        @if($product->canSell())
-                            <button class="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2 px-3 rounded-lg transition-colors duration-200 transform group-hover:scale-105">
-                                🛒 Adicionar
-                            </button>
-                        @else
-                            <div class="w-full bg-gray-300 text-gray-500 text-sm font-medium py-2 px-3 rounded-lg text-center">
-                                ❌ Indisponível
-                            </div>
-                        @endif
+                @if(count($products) > 0)
+                    <div class="mt-6 text-center text-sm text-zinc-500">
+                        {{ count($products) }} produto(s) disponível(is)
                     </div>
+                @endif
+            </div>
+        @endif
+    </div>
+    </div>
 
-                    <!-- Unavailable Overlay -->
-                    @if(!$product->canSell())
-                        <div class="absolute inset-0 bg-gray-900 bg-opacity-20 flex items-center justify-center">
-                            <div class="bg-white rounded-full p-3 shadow-lg">
-                                <span class="text-2xl">🚫</span>
-                            </div>
+    <!-- Painel Direito (Order Summary) -->
+    {{-- <x-slot name="rightPanel"> --}}
+        <div class="w-80 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl flex flex-col overflow-hidden">
+            
+        <div class="flex flex-col h-full pt-12">
+           
+            @if(!$currentTable || $currentView === 'tables')
+                <!-- Estado Inicial -->
+                <div class="flex items-center justify-center h-full">
+                    <div class="text-center p-6">
+                        <svg class="w-16 h-16 mx-auto mb-4 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        <p class="text-zinc-500 mb-2">Selecione uma mesa</p>
+                        <p class="text-xs text-zinc-400">Clique numa mesa para começar</p>
+                    </div>
+                </div>
+            @else
+                <!-- Mesa Selecionada -->
+                
+                <!-- Header -->
+                <div class="p-6 border-b border-zinc-200 bg-zinc-50 flex-shrink-0">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
+                            <span class="text-white font-bold text-lg">{{ $currentTable->name }}</span>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold text-zinc-900">Mesa {{ $currentTable->name }}</h3>
+                            <p class="text-sm font-medium text-green-600">Ativa</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lista de Itens -->
+                <div class="flex-1 overflow-y-auto p-6">
+                    @if(empty($cart))
+                        <div class="text-center py-8">
+                            <div class="w-12 h-12 bg-zinc-200 rounded-full flex items-center justify-center text-xl mx-auto mb-3">🛒</div>
+                            <p class="text-zinc-500 mb-2">Carrinho vazio</p>
+                            <p class="text-xs text-zinc-400">Clique nos produtos para adicionar</p>
+                        </div>
+                    @else
+                        <!-- Items do Carrinho -->
+                        <div class="space-y-3">
+                            @foreach($cart as $cartKey => $item)
+                                <div class="bg-white rounded-lg border p-4">
+                                    <div class="flex items-start justify-between mb-2">
+                                        <div class="flex-1">
+                                            <h4 class="font-medium text-sm text-zinc-900">{{ $item['product_name'] }}</h4>
+                                            <p class="text-xs text-zinc-500">{{ number_format($item['unit_price']) }} MT cada</p>
+                                        </div>
+                                        <button wire:click="removeFromCart({{ $cartKey }})" 
+                                                class="text-red-500 hover:text-red-700 p-1">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+
+                                    <!-- Controles de Quantidade -->
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <button wire:click="updateQuantity({{ $cartKey }}, {{ $item['quantity'] - 1 }})"
+                                                    class="w-8 h-8 rounded-full bg-zinc-200 flex items-center justify-center text-zinc-600 hover:bg-zinc-300">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                                                </svg>
+                                            </button>
+                                            <span class="w-12 text-center font-medium">{{ $item['quantity'] }}</span>
+                                            <button wire:click="updateQuantity({{ $cartKey }}, {{ $item['quantity'] + 1 }})"
+                                                    class="w-8 h-8 rounded-full bg-zinc-200 flex items-center justify-center text-zinc-600 hover:bg-zinc-300">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="font-bold text-green-600">{{ number_format($item['total_price']) }} MT</div>
+                                    </div>
+                                </div>
+                            @endforeach
                         </div>
                     @endif
                 </div>
-            @empty
-                <div class="col-span-full text-center py-12">
-                    <div class="text-6xl mb-4">🍽️</div>
-                    <h3 class="text-xl font-semibold text-gray-600 mb-2">Nenhum produto encontrado</h3>
-                    <p class="text-gray-500">
-                        @if($selectedCategory)
-                            Não há produtos nesta categoria.
-                        @else
-                            Configure produtos no sistema de gestão.
-                        @endif
-                    </p>
+
+                <!-- Footer/Actions -->
+                <div class="p-6 border-t border-zinc-200 bg-zinc-50 flex-shrink-0">
+                    @if(!empty($cart))
+                        <!-- Total -->
+                        <div class="mb-4 p-4 bg-white rounded-lg">
+                            <div class="flex items-center justify-between text-lg font-bold">
+                                <span>Total:</span>
+                                <span class="text-green-600">{{ number_format(collect($cart)->sum('total_price')) }} MT</span>
+                            </div>
+                            <div class="text-xs text-zinc-500 mt-1">{{ collect($cart)->sum('quantity') }} item(s)</div>
+                        </div>
+
+                        <!-- Botões -->
+                        <div class="space-y-3">
+                            <button wire:click="finalizeOrder"
+                                    class="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
+                                Finalizar Pedido
+                            </button>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button wire:click="clearCart" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg text-sm">Limpar</button>
+                                <button wire:click="backToTables" class="bg-zinc-500 hover:bg-zinc-600 text-white py-2 px-4 rounded-lg text-sm">Voltar</button>
+                            </div>
+                        </div>
+                    @else
+                        <div class="text-center space-y-3">
+                            <p class="text-zinc-500 text-sm">Clique nos produtos para adicionar</p>
+                            <button wire:click="backToTables" class="w-full bg-zinc-500 hover:bg-zinc-600 text-white py-3 px-4 rounded-lg">
+                                ← Voltar às Mesas
+                            </button>
+                        </div>
+                    @endif
                 </div>
-            @endforelse
+            @endif
         </div>
-    </div>
-    
-    <!-- Right Sidebar - Cart -->
-    @include('livewire.p-o-s.partials.cart-sidebar')
-</div>
-
-<!-- Modals -->
-@include('livewire.p-o-s.partials.table-modal')
-@include('livewire.p-o-s.partials.payment-modal')
-
-<!-- Toast Notifications -->
-<!-- Toast Notifications -->
-<div x-data="{ 
-        show: false, 
-        message: '', 
-        type: 'success',
-        showToast(data) {
-            this.message = data.detail[0].message;
-            this.type = data.detail[0].type;
-            this.show = true;
-            setTimeout(() => this.show = false, 3000);
-        }
-     }" 
-     @toast.window="showToast($event)"
-     x-show="show"
-     x-transition:enter="transition ease-out duration-300"
-     x-transition:enter-start="opacity-0 transform translate-y-2"
-     x-transition:enter-end="opacity-100 transform translate-y-0"
-     x-transition:leave="transition ease-in duration-200"
-     x-transition:leave-start="opacity-100 transform translate-y-0"
-     x-transition:leave-end="opacity-0 transform translate-y-2"
-     class="fixed top-20 right-4 z-[9999] max-w-sm w-full"
-     style="z-index: 9999;">
-    
-    <div class="border-l-4 p-4 rounded-r-lg shadow-xl backdrop-blur-sm"
-         :class="type === 'success' ? 'bg-green-100 border-green-500 text-green-700' : 
-                 type === 'error' ? 'bg-red-100 border-red-500 text-red-700' : 
-                 type === 'warning' ? 'bg-yellow-100 border-yellow-500 text-yellow-700' : 
-                 'bg-blue-100 border-blue-500 text-blue-700'">
-        <div class="flex items-center">
-            <div class="flex-shrink-0 text-lg">
-                <template x-if="type === 'success'">
-                    <span>✅</span>
-                </template>
-                <template x-if="type === 'error'">
-                    <span>❌</span>
-                </template>
-                <template x-if="type === 'warning'">
-                    <span>⚠️</span>
-                </template>
-                <template x-if="type === 'info'">
-                    <span>ℹ️</span>
-                </template>
-            </div>
-            <div class="ml-3 flex-1">
-                <p class="text-sm font-medium" x-text="message"></p>
-            </div>
-            <button @click="show = false" class="ml-4 text-gray-400 hover:text-gray-600 transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
         </div>
-    </div>
+    {{-- </x-slot> --}}
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="fixed top-24 right-6 z-40 space-y-2"></div>
+
+    @push('scripts')
+        <script>
+            document.addEventListener('livewire:initialized', () => {
+                Livewire.on('toast', (data) => {
+                    const container = document.getElementById('toast-container');
+                    const toast = document.createElement('div');
+                    const colors = {
+                        success: 'bg-green-600',
+                        error: 'bg-red-600',
+                        warning: 'bg-yellow-600',
+                        info: 'bg-blue-600'
+                    };
+                    toast.className = `${colors[data[0].type]} text-white px-4 py-3 rounded-lg shadow-lg transform translate-x-full transition-transform duration-300 flex items-center gap-2`;
+                    toast.innerHTML = `<span>${data[0].message}</span>`;
+                    container.appendChild(toast);
+                    setTimeout(() => toast.classList.remove('translate-x-full'), 100);
+                    setTimeout(() => {
+                        toast.classList.add('translate-x-full');
+                        setTimeout(() => toast.remove(), 300);
+                    }, 3000);
+                });
+            });
+        </script>
+    @endpush
 </div>
-
-<!-- Keyboard Shortcuts Help -->
-<div x-data="{ showHelp: false }" 
-     @keydown.window.ctrl.shift.h="showHelp = !showHelp"
-     x-show="showHelp"
-     x-transition
-     class="fixed bottom-4 left-4 bg-gray-900 text-white p-4 rounded-lg shadow-lg z-40">
-    
-    <h4 class="font-bold mb-2">⌨️ Atalhos de Teclado</h4>
-    <div class="text-sm space-y-1">
-        <div><kbd class="bg-gray-700 px-2 py-1 rounded text-xs">F1</kbd> Abrir Mesa</div>
-        <div><kbd class="bg-gray-700 px-2 py-1 rounded text-xs">F2</kbd> Finalizar Pagamento</div>
-        <div><kbd class="bg-gray-700 px-2 py-1 rounded text-xs">F3</kbd> Limpar Carrinho</div>
-        <div><kbd class="bg-gray-700 px-2 py-1 rounded text-xs">Esc</kbd> Fechar Modais</div>
-        <div><kbd class="bg-gray-700 px-2 py-1 rounded text-xs">Ctrl+Shift+H</kbd> Esta ajuda</div>
-    </div>
-</div>
-
-</div>
-
-@section('styles')
-<style>
-    .scrollbar-thin::-webkit-scrollbar {
-        width: 4px;
-    }
-    
-    .scrollbar-thin::-webkit-scrollbar-track {
-        background: #f1f5f9;
-    }
-    
-    .scrollbar-thin::-webkit-scrollbar-thumb {
-        background: #cbd5e1;
-        border-radius: 2px;
-    }
-    
-    .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-        background: #94a3b8;
-    }
-/* Line clamp for text truncation */
-    .line-clamp-2 {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-    }
-</style>
-@endsection
-
-
-
-@section('scripts')
-    <script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-        // Ignore if typing in input field
-        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') {
-            return;
-        }
-        
-        switch(e.key) {
-            case 'F1':
-                e.preventDefault();
-                @this.openTableModal();
-                break;
-            case 'F2':
-                e.preventDefault();
-                if (@this.cart && Object.keys(@this.cart).length > 0) {
-                    @this.openPaymentModal();
-                }
-                break;
-            case 'F3':
-                e.preventDefault();
-                if (confirm('Limpar carrinho?')) {
-                    @this.clearCart();
-                }
-                break;
-            case 'Escape':
-                e.preventDefault();
-                @this.closeTableModal();
-                @this.closePaymentModal();
-                break;
-        }
-    });
-    
-    // Auto-refresh shift info every minute
-    setInterval(function() {
-        @this.call('$refresh');
-    }, 60000);
-});
-</script>
-@endsection
