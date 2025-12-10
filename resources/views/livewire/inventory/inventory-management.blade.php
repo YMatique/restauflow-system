@@ -102,6 +102,10 @@
                         <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
                             Status
                         </th>
+                                                </th>
+                        <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
+                            Stock
+                        </th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
                             Subtotal
                         </th>
@@ -133,6 +137,13 @@
                                     {{ __('messages.status.'.$inventory->status) }}
                                 </span>
                             </td>
+
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="text-sm text-zinc-600 dark:text-zinc-400">
+                                    {{ $inventory->stock->name ?? 'No Stock' }}
+                                </span>
+                            </td>
+
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <span class="text-sm text-zinc-600 dark:text-zinc-400">
                                     {{ $inventory->subtotal ?? '-'  }}
@@ -146,12 +157,13 @@
                             </td>
 
 
-                            {{-- <td class="px-6 py-4 whitespace-nowrap text-center">
+                            <td class="px-6 py-4 whitespace-nowrap text-center">
                                 <div class="flex items-center justify-center gap-1">
                                     <!-- View -->
-                                    <a href="{{ route('restaurant.inventories.details', $stock->id) }}"
-                                       class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 text-blue-600 dark:text-blue-400 transition-colors"
-                                       title="View">
+                                    <a
+                                        href="{{ route('restaurant.inventory.details', $inventory->id) }}"
+                                        class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-800/50 text-blue-600 dark:text-blue-400 transition-colors"
+                                        title="View">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -159,7 +171,8 @@
                                     </a>
 
                                     <!-- Edit -->
-                                    <button wire:click="editStock({{ $stock->id }})"
+                                    <button
+                                        {{-- wire:click="editStock({{ $stock->id }})" --}}
                                             class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-900/30 dark:hover:bg-yellow-800/50 text-yellow-600 dark:text-yellow-400 transition-colors"
                                             title="Edit">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -168,7 +181,8 @@
                                     </button>
 
                                     <!-- Delete -->
-                                    <button wire:click="deleteStock({{ $stock->id }})"
+                                    <button
+                                        {{-- wire:click="deleteStock({{ $stock->id }})" --}}
                                             class="inline-flex items-center justify-center w-8 h-8 rounded-lg bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-800/50 text-red-600 dark:text-red-400 transition-colors"
                                             title="Delete">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,7 +191,7 @@
                                     </button>
                                 </div>
                             </td>
-                        </tr> --}}
+                        </tr>
                     @empty
                         <tr>
                             <td colspan="6" class="px-6 py-12 text-center">
@@ -193,6 +207,7 @@
                         </tr>
                     @endforelse
                 </tbody>
+
             </table>
         </div>
 

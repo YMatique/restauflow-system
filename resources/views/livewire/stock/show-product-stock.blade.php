@@ -119,6 +119,17 @@
                         </tr>
                     @endforelse
                 </tbody>
+                <tfoot class="bg-zinc-50 dark:bg-zinc-900/70 border-t border-zinc-200 dark:border-zinc-700">
+                    <tr>
+                        <td colspan="2" class="px-6 py-4 text-right text-sm font-semibold text-zinc-700 dark:text-zinc-300">
+                            Total
+                        </td>
+                        <td class="px-6 py-4 text-sm font-bold text-zinc-900 dark:text-zinc-100">
+                            {{ $stockProducts->sum('quantity') }}
+                        </td>
+                    </tr>
+                </tfoot>
+
             </table>
         </div>
 
@@ -137,77 +148,96 @@
         @endif
 
     </div>
-        <!-- Modal -->
-        @if($showModal)
-            <div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-                <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-2xl w-full max-w-lg border border-zinc-200 dark:border-zinc-700 max-h-[90vh] overflow-y-auto">
 
-                    <!-- Modal Header -->
-                    <div class="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-700">
-                        <h2 class="text-xl font-bold text-zinc-900 dark:text-white">
-                            Alter Stock                        
-                        </h2>
-                        <button wire:click="resetForm"
-                                class="w-8 h-8 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-700 dark:hover:bg-zinc-600 flex items-center justify-center text-zinc-500 dark:text-zinc-400 transition-colors">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
+
+    <!-- Modal -->
+    @if($showModal)
+        <div class="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+            <div class="bg-white dark:bg-zinc-800 rounded-2xl shadow-2xl w-full max-w-lg border border-zinc-200 dark:border-zinc-700 max-h-[90vh] overflow-y-auto">
+
+                <!-- Modal Header -->
+                <div class="flex items-center justify-between p-6 border-b border-zinc-200 dark:border-zinc-700">
+                    <h2 class="text-xl font-bold text-zinc-900 dark:text-white">
+                        Alter Stock
+                    </h2>
+                    <button wire:click="resetForm"
+                            class="w-8 h-8 rounded-lg bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-700 dark:hover:bg-zinc-600 flex items-center justify-center text-zinc-500 dark:text-zinc-400 transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Modal Body -->
+                <form wire:submit.prevent="saveStockProduct" class="p-6 space-y-6">
+
+                    <!-- STATUS -->
+                    <div>
+                        <label class="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">
+                            FROM *
+                        </label>
+                        <select wire:model.defer="stockProductForm.status.from"
+                                class="w-full px-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            <option value="">Select Category</option>
+                            @foreach(\App\Models\StockProduct::statusOptions() as $key => $label)
+                                <option value="{{ $key }}"  @selected($statusFilter === $key) >{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @error('stockProductForm.status.from')
+                            <span class="text-red-500 dark:text-red-400 text-sm mt-1 block">{{ $message }}</span>
+                        @enderror
+
+
+                        <label class="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">
+                            TO *
+                        </label>
+                        <select wire:model.defer="stockProductForm.status.to"
+                                class="w-full px-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            <option value="">Select Category</option>
+                            @foreach(\App\Models\StockProduct::statusOptions() as $key => $label)
+                                <option value="{{ $key }}"  @selected($statusFilter === $key) >{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @error('stockProductForm.status.to')
+                            <span class="text-red-500 dark:text-red-400 text-sm mt-1 block">{{ $message }}</span>
+                        @enderror
                     </div>
 
-                    <!-- Modal Body -->
-                    <form wire:submit.prevent="saveStockProduct" class="p-6 space-y-6">
-
-                        <!-- STATUS -->
-                        <div>
-                            <label class="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">
-                                STATUS *
-                            </label>
-                            <select wire:model.defer="stockProductForm.status"
-                                    class="w-full px-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
-                                <option value="">Select Category</option>
-                                @foreach(\App\Models\StockProduct::statusOptions() as $key => $label)
-                                    <option value="{{ $key }}"  @selected($statusFilter === $key) >{{ $label }}</option>
-                                @endforeach
-                            </select>
-                            @error('stockProductForm.status')
-                                <span class="text-red-500 dark:text-red-400 text-sm mt-1 block">{{ $message }}</span>
-                            @enderror
+                    <!-- QUANTITY -->
+                    <div>
+                        <label class="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">
+                            QUANTITY *
+                        </label>
+                        <div class="relative">
+                            {{-- <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-500 dark:text-zinc-400">MZN</span> --}}
+                            <input type="number"
+                                wire:model.defer="stockProductForm.quantity"
+                                step="0.01"
+                                class="w-full pl-8 pr-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 dark:placeholder-zinc-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                                placeholder="0">
                         </div>
-
-                        <!-- QUANTITY -->
-                        <div>
-                            <label class="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">
-                                QUANTITY *
-                            </label>
-                            <div class="relative">
-                                {{-- <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-500 dark:text-zinc-400">MZN</span> --}}
-                                <input type="number"
-                                    wire:model.defer="stockProductForm.quantity"
-                                    step="0.01"
-                                    class="w-full pl-8 pr-4 py-3 bg-white dark:bg-zinc-900 border border-zinc-300 dark:border-zinc-600 rounded-lg text-zinc-900 dark:text-zinc-100 placeholder-zinc-500 dark:placeholder-zinc-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                    placeholder="0">
-                            </div>
-                            @error('stockProductForm.quantity')
-                                <span class="text-red-500 dark:text-red-400 text-sm mt-1 block">{{ $message }}</span>
-                            @enderror
-                        </div>
+                        @error('stockProductForm.quantity')
+                            <span class="text-red-500 dark:text-red-400 text-sm mt-1 block">{{ $message }}</span>
+                        @enderror
+                    </div>
 
 
-                        <!-- Actions -->
-                        <div class="flex gap-3 pt-4">
-                            <button type="button"
-                                    wire:click="resetForm"
-                                    class="flex-1 px-6 py-3 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-zinc-700 dark:text-zinc-300 font-medium rounded-lg transition-colors">
-                                Cancel
-                            </button>
-                            <button type="submit"
-                                class="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
-                                Save
-                            </button>
-                        </div>
-                    </form>
-                </div>
+                    <!-- Actions -->
+                    <div class="flex gap-3 pt-4">
+                        <button type="button"
+                                wire:click="resetForm"
+                                class="flex-1 px-6 py-3 bg-zinc-100 hover:bg-zinc-200 dark:bg-zinc-700 dark:hover:bg-zinc-600 text-zinc-700 dark:text-zinc-300 font-medium rounded-lg transition-colors">
+                            Cancel
+                        </button>
+                        <button type="submit"
+                            class="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 dark:bg-blue-500 dark:hover:bg-blue-600 text-white font-medium rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
+                            Save
+                        </button>
+                    </div>
+                </form>
             </div>
-        @endif
+        </div>
+    @endif
+
+
 </div>

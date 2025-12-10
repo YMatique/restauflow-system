@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Inventory extends Model
@@ -55,6 +56,16 @@ class Inventory extends Model
         return $this->hasMany(InventoryItem::class);
     }
 
+    /**
+     * Get the stock related to this inventory
+     */
+    public function stock(): BelongsTo
+    {
+        return $this->belongsTo(Stock::class, 'stock_id');
+    }
+
+
+    //sCOPES
     public function getSubtotalAttribute(): float
     {
         return $this->items->sum(function($item) {

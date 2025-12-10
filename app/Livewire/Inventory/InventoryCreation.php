@@ -5,6 +5,7 @@ namespace App\Livewire\Inventory;
 use App\Models\DocType;
 use App\Models\Product;
 use App\Models\Inventory;
+use App\Models\StockProduct;
 use App\Traits\WithToast;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
@@ -112,12 +113,79 @@ class InventoryCreation extends Component
 
     public function saveDraft()
     {
-        // Implementar lógica de rascunho
+        $user = auth()->user();
+
+        $this->validate([
+            'selectedStockId' => 'required'
+        ]);
+
+        try {
+
+            DB::transaction(function () use ($user) {
+
+                // Criar ou atualizar DocType
+                $docType = DocType::updateOrCreate(
+                    [
+                        'company_id' => $user->company_id,
+                        'namespace'  => Inventory::class,
+                        'sigla'      => Inventory::SIGLA,
+                        'description'=> Inventory::DESCRIPTION,
+                    ]
+                );
+
+                // Calcular subtotal e total
+                $subtotal = $this->subtotal;
+                $total = $this->total;
+
+                $inventory = Inventory::create([
+                    'company_id' => $user->company_id,
+                    'stock_id'  => $this->selectedStockId,
+                    'user_id'    => $user->id,
+                    'reference'  => 'INV/' . str_pad($docType->nextNumerator(), 4, '0', STR_PAD_LEFT) . '-' . now()->format('Ymd'),
+                    'subtotal'   => $subtotal,
+                    'total'      => $total,
+                    'status'     => 'draft', // ou 'draft' se for salvar rascunho
+                ]);
+
+                // Opcional: salvar produtos relacionados
+                foreach ($this->products as $product) {
+                    // Cria um registro de item de inventário associado ao inventário atual
+                    $inventory->items()->create([
+                        'product_id'=> $product->id,
+                        'quantity' => $this->productsQuantity[$product->id] ?? 1,
+                        'status'   => $this->productsStatus[$product->id] ?? 'available',
+                        'price'    => $product->price,
+                        'subtotal' => $product->price * ($this->productsQuantity[$product->id]?? 1),
+                        'batch_number' => null, // ou fornecer valor se houver
+                        'expiry_date'  => null, // ou fornecer valor se houver
+                    ]);
+                }
+
+            });
+
+            $this->mount();       // RESET THE FORMS
+            $this->toastSuccess(
+                    __('messages.toast.success.key'),
+                    __('messages.toast.success.value', ['verb' => 'create', 'object' => 'Inventory::darft'])
+            );
+
+
+        }
+
+        catch (\Exception $e)
+        {
+            $this->toastError(
+                __('messages.toast.error.key'),
+                __('messages.toast.error.value', ['verb' => 'create', 'object' => 'Inventory'])
+            );
+        }
+
     }
 
     public function save()
     {
         $user = auth()->user();
+
 
         $this->validate([
             'selectedStockId' => 'required'
@@ -154,7 +222,8 @@ class InventoryCreation extends Component
 
                 // Opcional: salvar produtos relacionados
                 foreach ($this->products as $product) {
-                    $inventory->items()->create([
+                    // Cria um registro de item de inventário associado ao inventário atual
+                    $item = $inventory->items()->create([
                         'product_id'=> $product->id,
                         'quantity' => $this->productsQuantity[$product->id] ?? 1,
                         'status'   => $this->productsStatus[$product->id] ?? 'available',
@@ -163,19 +232,29 @@ class InventoryCreation extends Component
                         'batch_number' => null, // ou fornecer valor se houver
                         'expiry_date'  => null, // ou fornecer valor se houver
                     ]);
+
+                    //INSTANCIANDO O STOCKPRODUCTS
+                    StockProduct::create([
+                        'stock_id'    => $this->selectedStockId,
+                        'product_id'  => $product->id,
+                        'quantity'    => $item->quantity,
+                        'status'      => $item->status,
+                        'company_id'  => $user->company_id,
+                    ]);
+
                 }
 
             });
-            
-            $this->mount();       // Call the mount method again
 
-            $this->toastSuccess(
-                    __('messages.toast.success.key'),
-                    __('messages.toast.success.value', ['verb' => 'create', 'object' => 'Inventory'])
-            );
 
-            
-        } 
+            session()->flash('inventory_success', [
+                'title' => __('messages.toast.success.key'),
+                'message' => __('messages.toast.success.value', ['verb' => 'create', 'object' => 'Inventory']),
+            ]);
+
+            return $this->redirectRoute('restaurant.inventory', navigate: true);
+
+        }
 
         catch (\Exception $e)
         {
@@ -186,6 +265,9 @@ class InventoryCreation extends Component
         }
 
     }
+
+
+    private function saveInStock(Product $product){}
 
     #[Title('Criar - Inventório')]
     public function render()

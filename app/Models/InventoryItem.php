@@ -46,4 +46,9 @@ class InventoryItem extends Model
         return $this->quantity * ($this->product->price ?? 0);
     }
 
+    public function inventory(): BelongsTo
+    {
+        return $this->belongsTo(Inventory::class, 'inventory_id');
+    }
+
 }

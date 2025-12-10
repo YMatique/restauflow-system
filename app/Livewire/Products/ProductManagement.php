@@ -87,6 +87,9 @@ class ProductManagement extends Component
         ]);
     }
 
+
+
+
     public function editProduct(Product $product)
     {
         $this->editingProduct = $product;

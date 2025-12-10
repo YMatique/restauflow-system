@@ -4,6 +4,7 @@ use App\Livewire\Auth\System\SystemLogin;
 use App\Livewire\Dashboard\DashboardComponent;
 use App\Livewire\Inventory\InventoryCreation;
 use App\Livewire\Inventory\InventoryManagement;
+use App\Livewire\Inventory\InventoryViewer;
 use App\Livewire\POS\POSComponent;
 use App\Livewire\PosSystemTest;
 use App\Livewire\Products\ProductManagement;
@@ -87,6 +88,8 @@ Route::middleware(['auth'])->prefix('restaurant')->name('restaurant.')->group(fu
 
     Route::get('/inventory', InventoryManagement::class)->name('inventory');
     Route::get('/inventory/create', InventoryCreation::class)->name('inventory.create');
+    Route::get('/inventory/{inventory}', InventoryViewer::class)->name('inventory.details');
+
 
 
     // Stock Management

@@ -15,28 +15,52 @@ class InventoryManagement extends Component
 {
     use WithPagination, WithToast;
 
-  
+
 
     // Pagination
     public $perPage = 10;
 
     // Filters & Search
     public $statusFilter = '';
-    public $search = ''; 
+    public $search = '';
 
     // View controllers
     public $showModal = false;
     public $editingStock = false;
 
 
+
+    public function mount()
+    {
+        if (session()->has('inventory_success')) {
+            $toast = session('inventory_success');
+            // dd($toast);
+            $this->toastSuccess(
+                $toast['title'],
+                $toast['message']
+            );
+        }
+    }
+
+
+
+
     #[Title('Gestão de Inventorios')]
     public function render()
     {
 
-       $inventories = Inventory::byCompany(
-            companyId: auth()->user()->company_id, 
+        //    $inventories = Inventory::byCompany(
+        //         companyId: auth()->user()->company_id,
+        //         status: $this->statusFilter,
+        //     )->paginate($this->perPage);
+
+
+        $inventories = Inventory::with('stock')   // eager load stock
+        ->byCompany(
+            companyId: auth()->user()->company_id,
             status: $this->statusFilter,
-        )->paginate($this->perPage);
+        )
+        ->paginate($this->perPage);
 
 
         return view('livewire.inventory.inventory-management', [

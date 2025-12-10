@@ -10,6 +10,7 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
 use App\Traits\WithToast;
+use Illuminate\Support\Facades\DB;
 use Livewire\WithPagination;
 
 
@@ -39,10 +40,9 @@ class ShowProductStock extends Component
     ];
 
     protected array $rules = [
-        // 'stockProductForm.stock_id'   => 'required|exists:stocks,id',
-        // 'stockProductForm.product_id' => 'required|exists:products,id',
-        'stockProductForm.quantity'   => 'required|integer|min:0',
-        'stockProductForm.status'     => 'required|in:available,reserved,damaged',
+        'stockProductForm.quantity'     => 'required|integer|min:0',
+        'stockProductForm.from'         => 'required|in:available,reserved,damaged',
+        'stockProductForm.to'           => 'required|in:available,reserved,damaged',
     ];
 
     public function mount(Stock $stock, Product $product)
@@ -66,12 +66,39 @@ class ShowProductStock extends Component
         $data = [
             'stock_id'   => $this->stock->id,
             'product_id' => $this->product->id,
-            'status'     => $this->stockProductForm['status'],
+            'status'     => $this->stockProductForm['status']['from'],
             'company_id' => auth()->user()->company_id,
         ];
 
+        //TRATAR TRANSFERNCAI DE STOCK
 
-        $stockProduct = StockProduct::updateOrCreate($data, ['quantity' => $this->stockProductForm['quantity']]);
+        // $this->stockProductForm['status']['to'],
+        // $stockProduct = StockProduct::updateOrCreate($data, ['quantity' => $this->stockProductForm['quantity']]);
+
+
+        StockProduct::updateOrCreate(
+            [
+                'stock_id'   => $this->stock->id,
+                'product_id' => $this->product->id,
+                'status'     => $this->stockProductForm['status']['to'],
+                'company_id' => auth()->user()->company_id,
+            ],
+            [
+                'quantity' => DB::raw('quantity + ' . (int) $this->stockProductForm['quantity'])
+            ]
+        );
+
+        StockProduct::updateOrCreate(
+            [
+                'stock_id'   => $this->stock->id,
+                'product_id' => $this->product->id,
+                'status'     => $this->stockProductForm['status']['to'],
+                'company_id' => auth()->user()->company_id,
+            ],
+            [
+                'quantity' => DB::raw('quantity + ' . (int) $this->stockProductForm['quantity'])
+            ]
+        );
 
 
         // dd($stockProduct ->wasChanged());
@@ -94,7 +121,7 @@ class ShowProductStock extends Component
             );
 
             $this->resetForm();
-          
+
         }
 
         else

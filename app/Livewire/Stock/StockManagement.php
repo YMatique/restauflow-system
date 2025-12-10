@@ -31,7 +31,7 @@ class StockManagement extends Component
     public $stockForm = [
         'name' => '',
         'notes' => '',
-        'status' => ''
+        'status' => []
     ];
 
     #[Title('Gestão de Stocks')]
@@ -82,19 +82,19 @@ class StockManagement extends Component
               $stock = Stock::create($data);
 
             if ($stock->wasRecentlyCreated) {
-                
+
                 $this->toastSuccess(
                     __('messages.toast.success.key'),
                     __('messages.toast.success.value', ['verb' => 'create', 'object' => 'stock'])
                 );
                 $this->resetForm();
-            } 
+            }
 
-        
-        } 
-        
+
+        }
+
         catch (\Exception $e)
-        
+
         {
             $this->toastError(
                 __('messages.toast.error.key'),
