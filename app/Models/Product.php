@@ -28,7 +28,8 @@ class Product extends Model
         'is_available',
         'is_active',
         'is_featured',
-        'company_id'
+        'company_id',
+        'subcategory_id'
     ];
 
     protected $casts = [

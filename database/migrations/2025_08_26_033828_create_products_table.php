@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('category_id')->constrained('categories')->onDelete('cascade');
-            $table->foreignId('subcategory_id')->constrained('subcategories')->onDelete('cascade');
+            $table->foreignId('subcategory_id')->nullable()->constrained('subcategories')->onDelete('cascade');
             $table->string('code')->unique();
             $table->string('name');
             $table->string('slug');
@@ -25,7 +25,7 @@ return new class extends Migration
 
             // Para produtos simples (stock direto)
             $table->decimal('stock_quantity', 10, 3)->nullable();
-            $table->decimal('min_level', 10, 3)->default(0);
+            $table->decimal('min_level', 10, 3)->default(0);//min_stock
             $table->decimal('cost_per_unit', 10, 2)->nullable();
 
             // Configurações

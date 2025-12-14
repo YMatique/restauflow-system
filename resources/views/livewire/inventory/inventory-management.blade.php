@@ -216,9 +216,9 @@
         @if($inventories->hasPages())
             <div class="px-6 py-4 border-t border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/50">
                 <div class="flex items-center justify-between">
-                    <div class="text-sm text-zinc-600 dark:text-zinc-400">
+                    {{-- <div class="text-sm text-zinc-600 dark:text-zinc-400">
                         Showing {{ $inventories->firstItem() }} to {{ $inventories->lastItem() }} of {{ $inventories->total() }} results
-                    </div>
+                    </div> --}}
                     <div class="flex items-center space-x-2">
                         {{$inventories->links() }}
                     </div>

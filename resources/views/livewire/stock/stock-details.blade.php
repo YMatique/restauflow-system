@@ -30,6 +30,90 @@
         </a>
     </div>
 
+
+    @php
+        $totalProducts = $products->count();
+
+        // Valor total do stock (available * price)
+        $stockValue = $products->sum(fn($p) => $p->available * ($p->price ?? 0));
+
+        // Produtos abaixo do stock mínimo
+        $lowStockProducts = $products->filter(
+            fn($p) => $p->available < ($p->min_stock ?? 0)
+        );
+
+        // Valor da rutura (quantidade em falta * preço)
+        $stockOutValue = $lowStockProducts->sum(function ($p) {
+            $missing = max(0, ($p->min_stock ?? 0) - $p->available);
+            return $missing * ($p->price ?? 0);
+        });
+    @endphp
+    <!-- Summary Section -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6">
+
+        <!-- Total Products -->
+        <div class="p-6 bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400">Total de Produtos</p>
+                    <p class="text-2xl font-bold text-zinc-900 dark:text-white">
+                        {{ $totalProducts }}
+                    </p>
+                </div>
+                <div class="p-3 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400">
+                    📦
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Value -->
+        <div class="p-6 bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400">Valor do Stock</p>
+                    <p class="text-2xl font-bold text-zinc-900 dark:text-white">
+                        {{ number_format($stockValue, 2, ',', '.') }} MT
+                    </p>
+                </div>
+                <div class="p-3 rounded-xl bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400">
+                    💰
+                </div>
+            </div>
+        </div>
+
+        <!-- Low Stock -->
+        <div class="p-6 bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400">Abaixo do Stock</p>
+                    <p class="text-2xl font-bold text-zinc-900 dark:text-white">
+                        {{ $lowStockProducts->count() }}
+                    </p>
+                </div>
+                <div class="p-3 rounded-xl bg-yellow-100 dark:bg-yellow-900/30 text-yellow-600 dark:text-yellow-400">
+                    ⚠️
+                </div>
+            </div>
+        </div>
+
+        <!-- Stock Out Value -->
+        <div class="p-6 bg-white dark:bg-zinc-800 rounded-xl border border-zinc-200 dark:border-zinc-700 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-sm text-zinc-500 dark:text-zinc-400">Valor da Rutura</p>
+                    <p class="text-2xl font-bold text-red-600 dark:text-red-400">
+                        {{ number_format($stockOutValue, 2, ',', '.') }} MT
+                    </p>
+                </div>
+                <div class="p-3 rounded-xl bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400">
+                    ❌
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
     <!-- Main Content Card -->
     <div class="bg-white dark:bg-zinc-800 rounded-xl shadow-sm border border-zinc-200 dark:border-zinc-700 overflow-hidden">
 
@@ -170,6 +254,56 @@
                         </tr>
                     @endforelse
                 </tbody>
+                <tfoot class="border-t border-zinc-200 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-900/70">
+                    <tr class="font-semibold">
+                        <!-- # -->
+                        <td class="px-6 py-4 text-sm text-zinc-700 dark:text-zinc-300">
+                            —
+                        </td>
+
+                        <!-- Label -->
+                        <td class="px-6 py-4 text-sm text-zinc-900 dark:text-zinc-100 uppercase">
+                            Totais
+                        </td>
+
+                        <!-- Total -->
+                        <td class="px-6 py-4">
+                            <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium
+                                bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200">
+                                {{ $products->sum('total') }}
+                            </span>
+                        </td>
+
+                        <!-- Available -->
+                        <td class="px-6 py-4">
+                            <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium
+                                bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200">
+                                {{ $products->sum('available') }}
+                            </span>
+                        </td>
+
+                        <!-- Reserved -->
+                        <td class="px-6 py-4">
+                            <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium
+                                bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200">
+                                {{ $products->sum('reserved') }}
+                            </span>
+                        </td>
+
+                        <!-- Damaged -->
+                        <td class="px-6 py-4">
+                            <span class="inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium
+                                bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-200">
+                                {{ $products->sum('damaged') }}
+                            </span>
+                        </td>
+
+                        <!-- Actions -->
+                        <td class="px-6 py-4 text-center text-sm text-zinc-500">
+                            —
+                        </td>
+                    </tr>
+                </tfoot>
             </table>
         </div>
 

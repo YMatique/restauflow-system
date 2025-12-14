@@ -6,8 +6,10 @@ use App\Livewire\Inventory\InventoryCreation;
 use App\Livewire\Inventory\InventoryManagement;
 use App\Livewire\Inventory\InventoryViewer;
 use App\Livewire\POS\POSComponent;
-use App\Livewire\PosSystemTest;
 use App\Livewire\Products\ProductManagement;
+use App\Livewire\Products\ProductCreate;
+use App\Livewire\Products\ProductCreateOrEdit;
+use App\Livewire\Products\ProductView;
 use App\Livewire\Reports\ReportsComponent;
 use App\Livewire\Restflow\Dashboard;
 use App\Livewire\Settings\Appearance;
@@ -26,6 +28,7 @@ use App\Livewire\Teste;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Session;
+
 
 Route::get('/', function () {
     return view('welcome');
@@ -85,6 +88,15 @@ Route::middleware(['auth'])->prefix('restaurant')->name('restaurant.')->group(fu
 
     // Products Management
     Route::get('/products', ProductManagement::class)->name('products');
+
+    // Criação de produto
+    Route::get('/products/create', ProductCreateOrEdit::class)->name('products.create');
+
+    // Edição de produto
+    Route::get('/products/{productId}/edit', ProductCreateOrEdit::class)->name('products.edit');
+
+    Route::get('/products/show/{product}', ProductView::class)->name('products.view');
+
 
     Route::get('/inventory', InventoryManagement::class)->name('inventory');
     Route::get('/inventory/create', InventoryCreation::class)->name('inventory.create');

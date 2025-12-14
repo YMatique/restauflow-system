@@ -104,7 +104,7 @@
                         </th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
                             Datalhes
-                        </th>                   
+                        </th>
                         <th class="px-6 py-4 text-left text-xs font-semibold text-zinc-600 dark:text-zinc-400 uppercase tracking-wider">
                             Actions
                         </th>
@@ -136,7 +136,7 @@
                                 </span>
                             </td>
 
-                     
+
                             <td class="px-6 py-4 whitespace-nowrap text-center">
                                 <div class="flex items-center justify-center gap-1">
                                     <!-- View -->
@@ -186,7 +186,7 @@
                 </tbody>
             </table>
         </div>
-        
+
 
         <!-- Pagination -->
         @if($stocks->hasPages())
@@ -223,8 +223,8 @@
                 </div>
 
                 <!-- Modal Body -->
-                <form 
-                    wire:submit.prevent="{{ $editingStock ? 'updateStock(' . $stockForm['id'] . ')' : 'saveStock' }}" 
+                <form
+                    wire:submit.prevent="{{ $editingStock ? 'updateStock(' . $stockForm['id'] . ')' : 'saveStock' }}"
                     class="p-6 space-y-6">
                     <!-- Name -->
                     <div>
@@ -244,7 +244,7 @@
                     <!-- Observações -->
                     <div>
                         <label class="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">
-                            Observações 
+                            Observações
                         </label>
                         <div class="relative">
                             {{-- <span class="absolute left-3 top-1/2 transform -translate-y-1/2 text-zinc-500 dark:text-zinc-400">MZN</span> --}}

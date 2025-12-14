@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Subcategory;
 use App\Traits\WithToast;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Attributes\Layout;
 use Livewire\Component;
 use Livewire\WithPagination;
@@ -20,7 +21,7 @@ class ProductManagement extends Component
     public $search = '';
 
     public $subcategories = [];
-
+    
     public $categoryFilter = '';
 
     public $statusFilter = '';
@@ -68,7 +69,7 @@ class ProductManagement extends Component
         $this->validate();
 
         $data = array_merge($this->productForm, [
-            'company_id' => auth()->user()->company_id
+            'company_id' => Auth::user()->company_id
         ]);
 
         if ($this->editingProduct) {
@@ -134,7 +135,7 @@ class ProductManagement extends Component
     public function render()
     {
         $products = Product::query()
-            ->byCompany(auth()->user()->company_id)
+            ->byCompany(Auth::user()->company_id)
             ->when($this->search, function ($query) {
                 $query->where('name', 'like', '%' . $this->search . '%');
             })
@@ -154,7 +155,7 @@ class ProductManagement extends Component
 
         return view('livewire.products.product-management', [
             'products' => $products,
-            'categories' => Category::active()->byCompany(auth()->user()->company_id)->get(),
+            'categories' => Category::active()->byCompany(Auth::user()->company_id)->get(),
             'title' => 'Gestão de Produtos',
             'breadcrumb' =>[
                 ['label' => 'Dashboard', 'url' => route('restaurant.dashboard')],

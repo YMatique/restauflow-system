@@ -68,6 +68,7 @@ class Stock extends Model
             ->select(
                 'p.id',
                 'p.name',
+                'p.price',//I what to add
                 DB::raw('SUM(sp.quantity) as total'),
                 DB::raw('SUM(CASE WHEN sp.status = "available" THEN sp.quantity ELSE 0 END) as available'),
                 DB::raw('SUM(CASE WHEN sp.status = "reserved" THEN sp.quantity ELSE 0 END) as reserved'),
@@ -76,7 +77,7 @@ class Stock extends Model
             ->where('sp.company_id', $companyId)
             // Se $stockId estiver definido, adiciona filtro
             ->when($stockId, fn($q) => $q->where('sp.stock_id', $stockId))
-            ->groupBy('p.id', 'p.name');
+            ->groupBy('p.id', 'p.name', 'p.price');
 
         return $query->paginate($perPage);
     }

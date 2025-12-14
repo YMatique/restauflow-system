@@ -41,10 +41,11 @@ class StockDetails extends Component
 
 
         $products = Stock::getProductsSummary(
-                companyId: $companyId,
-                perPage:  $this->perPage,
-                stockId: $this->stock->id, // opcional - caso contrario leva tudo
+            companyId: $companyId,
+            perPage:  $this->perPage,
+            stockId: $this->stock->id, // opcional - caso contrario leva tudo
         );
+
 
         return view('livewire.stock.stock-details',[
             'products'   => $products,
